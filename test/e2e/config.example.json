@@ -1,0 +1,30 @@
+{
+  "_comment": "Copy to config.json (gitignored) and edit. Every field but name/kind/binary is optional.",
+  "targets": [
+    {
+      "name": "local",
+      "kind": "local",
+      "binary": "../../dist/agentic-os",
+      "hasDisplay": true,
+      "timeoutSeconds": 60
+    },
+    {
+      "name": "windows-vm",
+      "kind": "agentbus",
+      "node": "REPLACE-WITH-agentbus-node-name",
+      "binary": "../../dist/agentic-os-windows-arm64.exe",
+      "shell": "cmd",
+      "hasDisplay": true,
+      "timeoutSeconds": 90
+    },
+    {
+      "name": "linux-server",
+      "kind": "ssh",
+      "host": "REPLACE-WITH-ssh-host",
+      "binary": "../../dist/agentic-os-linux-amd64",
+      "remotePath": "/tmp/agentic-os-e2e",
+      "hasDisplay": false,
+      "timeoutSeconds": 60
+    }
+  ]
+}

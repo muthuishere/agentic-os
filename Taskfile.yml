@@ -1,0 +1,58 @@
+version: '3'
+
+vars:
+  BINARY: agentic-os
+  PKG: ./cmd/agentic-os
+  VERSION:
+    sh: git describe --tags --always --dirty 2>/dev/null || echo dev
+
+tasks:
+  default:
+    cmds: [task: check]
+
+  build:
+    desc: Build the binary for this machine into dist/
+    cmds:
+      - go build -ldflags "-s -w -X main.version={{.VERSION}}" -o dist/{{.BINARY}} {{.PKG}}
+
+  cross:
+    desc: Build for macOS, Windows, and Linux
+    # The macOS window backend is CoreGraphics through cgo, so darwin targets
+    # need CGO_ENABLED=1 and a toolchain that can emit that arch. Linux and
+    # Windows backends are pure Go and build anywhere.
+    cmds:
+      - for: [darwin/arm64, darwin/amd64, windows/amd64, windows/arm64, linux/amd64, linux/arm64]
+        cmd: |
+          os=$(echo {{.ITEM}} | cut -d/ -f1); arch=$(echo {{.ITEM}} | cut -d/ -f2)
+          ext=""; [ "$os" = windows ] && ext=".exe"
+          cgo=0; [ "$os" = darwin ] && cgo=1
+          CGO_ENABLED=$cgo GOOS=$os GOARCH=$arch go build -ldflags "-s -w -X main.version={{.VERSION}}" \
+            -o dist/{{.BINARY}}-$os-$arch$ext {{.PKG}}
+
+  test:
+    desc: Run the test suite
+    cmds: [go test ./...]
+
+  check:
+    desc: Vet, test, and lint the command registry
+    cmds:
+      - gofmt -l . | (! grep .)
+      - go vet ./...
+      - go test ./...
+      - go run {{.PKG}} commands --check
+
+  e2e:
+    desc: Run the end-to-end suite against the machines in test/e2e/config.json
+    deps: [cross, build]
+    cmds:
+      - go test ./test/e2e/ -v -timeout 20m
+
+  doctor:
+    desc: Diagnose this machine
+    cmds:
+      - go run {{.PKG}} doctor
+
+  install:
+    desc: Install into GOBIN
+    cmds:
+      - go install -ldflags "-X main.version={{.VERSION}}" {{.PKG}}
