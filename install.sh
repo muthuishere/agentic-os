@@ -15,6 +15,8 @@
 set -eu
 
 MODULE="github.com/muthuishere/agentic-os/cmd/aos@latest"
+RELEASE_BASE="https://github.com/muthuishere/agentic-os/releases/latest/download"
+BIN_DIR="${BIN_DIR:-$HOME/.local/bin}"
 MIN_GO_MAJOR=1
 MIN_GO_MINOR=24
 GO_INSTALL_DIR="${GO_INSTALL_DIR:-$HOME/.local/go}"
@@ -100,7 +102,49 @@ install_go() {
     say "    installed to $GO_INSTALL_DIR"
 }
 
-main() {
+# install_release fetches the prebuilt binary for this platform. Most people do
+# not need a Go toolchain to run a Go program, and asking them to install one is
+# a big ask for a first try.
+install_release() {
+    detect_platform
+    asset="aos-${os}-${arch}"
+    step "Downloading aos for ${os}/${arch}"
+
+    tmp=$(mktemp -d)
+    trap 'rm -rf "$tmp"' EXIT
+    if ! curl -fsSL "${RELEASE_BASE}/${asset}" -o "$tmp/aos" 2>/dev/null; then
+        say "    no prebuilt binary for this platform"
+        return 1
+    fi
+
+    # Verify against the checksums published beside the binaries. A failure to
+    # fetch them is a warning; a mismatch is fatal.
+    if curl -fsSL "${RELEASE_BASE}/checksums.txt" -o "$tmp/checksums.txt" 2>/dev/null; then
+        expected=$(grep " ${asset}\$" "$tmp/checksums.txt" | cut -d' ' -f1)
+        if command -v sha256sum >/dev/null 2>&1; then
+            actual=$(sha256sum "$tmp/aos" | cut -d' ' -f1)
+        elif command -v shasum >/dev/null 2>&1; then
+            actual=$(shasum -a 256 "$tmp/aos" | cut -d' ' -f1)
+        else
+            actual=""
+        fi
+        if [ -n "$expected" ] && [ -n "$actual" ]; then
+            [ "$expected" = "$actual" ] || die "checksum mismatch for $asset — refusing to install"
+            say "    checksum verified"
+        fi
+    fi
+
+    mkdir -p "$BIN_DIR"
+    mv "$tmp/aos" "$BIN_DIR/aos"
+    chmod +x "$BIN_DIR/aos"
+    binary="$BIN_DIR/aos"
+    say "    $binary"
+    return 0
+}
+
+# build_from_source is the fallback: a platform with no prebuilt binary, or a
+# release that cannot be reached.
+build_from_source() {
     if go_is_new_enough; then
         step "Go $(go env GOVERSION) is already installed"
     else
@@ -114,7 +158,14 @@ main() {
     [ -n "$gobin" ] || gobin="$(go env GOPATH)/bin"
     binary="$gobin/aos"
     [ -x "$binary" ] || die "expected a binary at $binary"
+    BIN_DIR="$gobin"
     say "    $binary"
+}
+
+main() {
+    if [ "${AOS_FROM_SOURCE:-}" = "1" ] || ! install_release; then
+        build_from_source
+    fi
 
     step "Installing the agent skill"
     "$binary" install --skills
@@ -127,11 +178,8 @@ main() {
     else
         # Say exactly what to add rather than editing someone's shell profile
         # without asking.
-        printf '\nReady, but %s is not on your PATH yet.\n' "$gobin"
-        printf 'Add this to your shell profile:\n\n    export PATH="%s:$PATH"\n' "$gobin"
-        if [ -d "$GO_INSTALL_DIR" ]; then
-            printf '    export PATH="%s/bin:$PATH"\n' "$GO_INSTALL_DIR"
-        fi
+        printf '\nReady, but %s is not on your PATH yet.\n' "$BIN_DIR"
+        printf 'Add this to your shell profile:\n\n    export PATH="%s:$PATH"\n' "$BIN_DIR"
         printf '\nOr run it directly: %s --help\n' "$binary"
     fi
 }

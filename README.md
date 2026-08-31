@@ -37,11 +37,20 @@ $ aos serve mcp                    # now every command above is an agent tool
 
 ## Install
 
-No Go? The script installs it first, then builds, then installs the agent skill.
+One line. It downloads the prebuilt binary for your platform, verifies it
+against the published checksums, and installs the agent skill. No Go needed.
 Everything lands in your home directory; nothing needs root.
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.sh | sh
+```
+
+Or take the binary yourself from
+[the latest release](https://github.com/muthuishere/agentic-os/releases/latest):
+
+```sh
+curl -fsSL -o aos https://github.com/muthuishere/agentic-os/releases/latest/download/aos-darwin-arm64
+chmod +x aos && ./aos install --skills && ./aos doctor
 ```
 
 On Windows:
