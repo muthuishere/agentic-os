@@ -44,6 +44,16 @@ Everything lands in your home directory; nothing needs root.
 curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.sh | sh
 ```
 
+On Windows:
+
+```bat
+curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.cmd -o install.cmd
+install.cmd
+```
+
+A `.cmd` rather than a `.ps1` on purpose: PowerShell's execution policy blocks
+unsigned script files by default, which stops most people before they start.
+
 Reading a script before piping it into a shell is the right instinct:
 
 ```sh
