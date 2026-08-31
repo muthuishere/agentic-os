@@ -21,7 +21,7 @@ func TestTargetedRecognisesEveryNamedTarget(t *testing.T) {
 	}{
 		{[]string{"--monitor=2"}, true},
 		{[]string{"--region=0,0,800,600"}, true},
-		{[]string{"--app=Ghostty"}, true},
+		{[]string{"--app=Chrome"}, true},
 		{[]string{"--title=Inbox"}, true},
 		{[]string{"region"}, false}, // the interactive mode, not a target
 		{[]string{"--copy"}, false}, // output choice, not a target
@@ -44,7 +44,7 @@ func TestScreenshotRefusesCopyWithATargetedCapture(t *testing.T) {
 	for _, args := range [][]string{
 		{"--copy", "--monitor=1"},
 		{"--copy", "--region=0,0,10,10"},
-		{"--copy", "--app=Ghostty"},
+		{"--copy", "--app=Chrome"},
 	} {
 		c, _, _ := testCtx("")
 		err := runScreenshot(c, args)

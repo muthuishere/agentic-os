@@ -63,14 +63,14 @@ func TestResolveKeepsAPositionalThatLooksLikeARouteWord(t *testing.T) {
 // A group default command (empty Name) is reached by the bare group word, and
 // everything after it is arguments, not route words.
 func TestResolveGroupDefaultTakesTheRestAsArguments(t *testing.T) {
-	cmd, rest, err := routeRegistry().Resolve([]string{"launch", "Ghostty", "--wait"})
+	cmd, rest, err := routeRegistry().Resolve([]string{"launch", "Chrome", "--wait"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if cmd.Route() != "launch" {
 		t.Fatalf("route = %q", cmd.Route())
 	}
-	if len(rest) != 2 || rest[0] != "Ghostty" || rest[1] != "--wait" {
+	if len(rest) != 2 || rest[0] != "Chrome" || rest[1] != "--wait" {
 		t.Fatalf("rest = %v", rest)
 	}
 }
@@ -91,11 +91,11 @@ func TestResolvePrefersARouteOverAnAlias(t *testing.T) {
 	}
 
 	// The alias still works on its own.
-	cmd, rest, err := r.Resolve([]string{"start", "Ghostty"})
+	cmd, rest, err := r.Resolve([]string{"start", "Chrome"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cmd.Route() != "launch" || len(rest) != 1 || rest[0] != "Ghostty" {
+	if cmd.Route() != "launch" || len(rest) != 1 || rest[0] != "Chrome" {
 		t.Fatalf("alias route = %q rest = %v", cmd.Route(), rest)
 	}
 }

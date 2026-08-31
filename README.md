@@ -10,7 +10,7 @@ your own — can drive the machine through the exact code path you type at a pro
 
 ```console
 $ agentic-os system info
-$ agentic-os window move Ghostty --zone=1B
+$ agentic-os window move Chrome --zone=1B
 $ agentic-os capture screenshot --app=Chrome --out=/tmp/shot.png
 $ agentic-os pkg install ripgrep          # brew / winget / pacman / apt, same verb
 $ agentic-os msg send --channel=ops "build passed"
@@ -167,7 +167,38 @@ rather than pretending not to exist.
 Like omarchy, a route is as many words as it needs: `audio output set default`
 resolves by longest prefix, and everything after it is the command's own args.
 
-### Plugins
+### Adapters — add a command without writing a program
+
+Most additions are a command line someone already runs. Drop a JSON file in
+`~/.config/agentic-os/adapters/` and it becomes a group:
+
+```json
+{
+  "group": "notes",
+  "description": "Personal notes",
+  "commands": [
+    { "name": "today", "summary": "Open today's note",
+      "run": "$EDITOR ~/notes/$(date +%F).md", "platforms": ["darwin", "linux"] }
+  ]
+}
+```
+
+```sh
+agentic-os adapters example --write   # a working starter file
+agentic-os adapters list              # what this machine has loaded
+agentic-os adapters path
+```
+
+`run` goes through the platform shell with the user's arguments appended and
+quoted. A command can declare `platforms`, `needsDisplay`, and `blocking`, so an
+adapter is gated and excluded from the MCP tool list on exactly the same terms
+as a built-in one — and adapter commands become MCP tools automatically.
+
+An adapter can never shadow a built-in command: a file in the config directory
+must not be able to change what a shipped command does. A malformed adapter is
+reported by `commands --check` rather than silently ignored.
+
+### Plugins — when you need a program
 
 Any executable named `agentic-os-<group>-<name>` in `$AGENTIC_OS_BIN_DIR`,
 `~/.config/agentic-os/bin`, or on `PATH` joins the CLI — and therefore the MCP

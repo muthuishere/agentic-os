@@ -3,7 +3,7 @@ package groups
 import "testing"
 
 func TestParseArgsFormsAndPositionals(t *testing.T) {
-	set, err := parseArgs([]string{"--zone=1B", "--monitor", "2", "--double", "Ghostty"}, "zone", "monitor")
+	set, err := parseArgs([]string{"--zone=1B", "--monitor", "2", "--double", "Chrome"}, "zone", "monitor")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -17,7 +17,7 @@ func TestParseArgsFormsAndPositionals(t *testing.T) {
 	if !set.Has("double") {
 		t.Fatal("boolean flag not recorded")
 	}
-	if len(set.Rest) != 1 || set.Rest[0] != "Ghostty" {
+	if len(set.Rest) != 1 || set.Rest[0] != "Chrome" {
 		t.Fatalf("rest = %v", set.Rest)
 	}
 }

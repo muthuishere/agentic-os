@@ -21,6 +21,9 @@ func main() {
 	// as far as the GUI commands are concerned, so adopt it before anything
 	// checks whether one exists.
 	groups.AdoptManagedDisplay(ctx.Env)
+	// User extensions, lowest precedence first is irrelevant here: both refuse
+	// to shadow a builtin, so the shipped commands always mean what they say.
+	cli.LoadAdapters(registry, ctx.Env)
 	cli.DiscoverPlugins(registry, ctx.Env)
 
 	os.Exit(cli.Run(ctx, os.Args[1:]))

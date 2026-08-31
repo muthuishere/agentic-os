@@ -4,6 +4,7 @@ package sys
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -118,4 +119,22 @@ func Shell() []string {
 		return []string{shell, "-c"}
 	}
 	return []string{"sh", "-c"}
+}
+
+// PassthroughEnv is Passthrough with an explicit environment.
+func PassthroughEnv(env []string, name string, args ...string) error {
+	cmd := exec.Command(name, args...)
+	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
+	cmd.Env = env
+	return cmd.Run()
+}
+
+// ExitCodeOf recovers a child process's exit status, or 0 when the failure was
+// something else.
+func ExitCodeOf(err error) int {
+	var exit *exec.ExitError
+	if errors.As(err, &exit) {
+		return exit.ExitCode()
+	}
+	return 0
 }

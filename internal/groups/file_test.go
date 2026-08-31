@@ -392,3 +392,48 @@ func TestExpandHomeOnlyTouchesALeadingTilde(t *testing.T) {
 		}
 	}
 }
+
+// TestIsProtectedPathRefusesSystemDirectories pins a real gap. The guard's
+// final check was `filepath.Dir(cleaned) == cleaned`, true only for the root,
+// which the preceding check already caught — so every system directory fell
+// through. `file delete /Users --recursive` reached os.RemoveAll and was
+// stopped only by the macOS kernel refusing to unlink a mount point; on Linux
+// `/etc` would have proceeded. `file delete` is reachable by an agent over
+// MCP, so this must hold without a human reading the path first.
+func TestIsProtectedPathRefusesSystemDirectories(t *testing.T) {
+	protected := []string{
+		filepath.FromSlash("/Users"),
+		filepath.FromSlash("/etc"),
+		filepath.FromSlash("/usr"),
+		filepath.FromSlash("/var"),
+		filepath.FromSlash("/tmp"),
+	}
+	for _, path := range protected {
+		absolute, err := filepath.Abs(path)
+		if err != nil {
+			t.Fatalf("abs %q: %v", path, err)
+		}
+		if !isProtectedPath(absolute) {
+			t.Errorf("isProtectedPath(%q) = false; a direct child of the root must be refused", absolute)
+		}
+	}
+}
+
+// TestIsProtectedPathAllowsOrdinaryPaths is the other half: the guard must not
+// become so broad that it refuses the deletes people actually want.
+func TestIsProtectedPathAllowsOrdinaryPaths(t *testing.T) {
+	allowed := []string{
+		filepath.Join(t.TempDir(), "scratch"),
+		filepath.FromSlash("/tmp/build-output"),
+		filepath.FromSlash("/var/log/agentic-os"),
+	}
+	for _, path := range allowed {
+		absolute, err := filepath.Abs(path)
+		if err != nil {
+			t.Fatalf("abs %q: %v", path, err)
+		}
+		if isProtectedPath(absolute) {
+			t.Errorf("isProtectedPath(%q) = true; an ordinary path must stay deletable", absolute)
+		}
+	}
+}

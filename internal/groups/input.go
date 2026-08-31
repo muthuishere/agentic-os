@@ -55,7 +55,7 @@ func init() {
 				Args:    "<text...> [--app=<name>|--title=<substring>]",
 				Examples: []string{
 					`agentic-os key type "hello world"`,
-					`agentic-os key type "git status" --app=Ghostty`,
+					`agentic-os key type "hello" --app=Chrome`,
 				},
 				Run: runKeyType,
 			},
@@ -65,7 +65,7 @@ func init() {
 				Args:    "<combo> [--app=<name>|--title=<substring>]",
 				Examples: []string{
 					"agentic-os key press cmd+shift+s",
-					"agentic-os key press enter --app=Ghostty",
+					"agentic-os key press enter --app=Chrome",
 				},
 				Run: runKeyPress,
 			},

@@ -21,7 +21,7 @@ func init() {
 				Args:    "[--app=<name>] [--title=<substring>] [--json]",
 				Examples: []string{
 					"agentic-os window list",
-					"agentic-os window list --app=Ghostty",
+					"agentic-os window list --app=Chrome",
 				},
 				Run: runWindowList,
 			},
@@ -29,7 +29,7 @@ func init() {
 				Group: "window", Name: "focus",
 				Summary:  "Bring a window to the front",
 				Args:     "<app> | --app=<name> | --title=<substring>",
-				Examples: []string{"agentic-os window focus Ghostty"},
+				Examples: []string{"agentic-os window focus Chrome"},
 				Run:      runWindowFocus,
 			},
 			&cli.Command{
@@ -37,7 +37,7 @@ func init() {
 				Summary: "Move a window to a zone, a split, or absolute bounds",
 				Args:    "<app> (--zone=<1A|2:1> | --at=<x,y,w,h>) [--monitor=<n>]",
 				Examples: []string{
-					"agentic-os window move Ghostty --zone=1B",
+					"agentic-os window move Chrome --zone=1B",
 					"agentic-os window move Chrome --monitor=2 --zone=2:1",
 					"agentic-os window move Slack --at=0,25,1920,1055",
 				},
@@ -54,7 +54,7 @@ func init() {
 				Group: "window", Name: "wait",
 				Summary:  "Wait for a window to appear, then print it",
 				Args:     "<app> [--timeout=<ms>]",
-				Examples: []string{"agentic-os window wait Ghostty --timeout=5000"},
+				Examples: []string{"agentic-os window wait Chrome --timeout=5000"},
 				Run:      runWindowWait,
 			},
 			&cli.Command{

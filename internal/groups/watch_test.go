@@ -13,8 +13,8 @@ import (
 func testWindow() windowctl.Window {
 	return windowctl.Window{
 		ID:      "w-1",
-		App:     "Ghostty",
-		Title:   "watch — zsh",
+		App:     "Chrome",
+		Title:   "agentic-os — GitHub",
 		PID:     4242,
 		Monitor: 2,
 		Bounds:  windowctl.Rect{X: 0, Y: 25, W: 1920, H: 1055},
@@ -131,7 +131,7 @@ func TestEventsShareOneEnvelope(t *testing.T) {
 
 func TestWindowEventCarriesFocusIdentity(t *testing.T) {
 	event := windowEvent(time.Now(), testWindow())
-	if event.Event != "window" || event.App != "Ghostty" || event.Title != "watch — zsh" {
+	if event.Event != "window" || event.App != "Chrome" || event.Title != "agentic-os — GitHub" {
 		t.Fatalf("event = %+v", event)
 	}
 	if event.Monitor == nil || *event.Monitor != 2 {

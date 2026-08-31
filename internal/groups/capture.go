@@ -38,7 +38,7 @@ func init() {
 				"agentic-os screenshot",
 				"agentic-os capture screenshot region --copy",
 				"agentic-os capture screenshot --monitor=2",
-				"agentic-os capture screenshot --app=Ghostty --out=/tmp/term.png",
+				"agentic-os capture screenshot --app=Chrome --out=/tmp/term.png",
 				"agentic-os capture screenshot --region=0,0,800,600",
 			},
 			Run: runScreenshot,

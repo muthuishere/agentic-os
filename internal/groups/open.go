@@ -30,7 +30,7 @@ func init() {
 			Args:    "<app> [args...] [--wait[=<ms>]]",
 			Examples: []string{
 				`agentic-os launch "Visual Studio Code"`,
-				"agentic-os launch Ghostty --wait",
+				"agentic-os launch Chrome --wait",
 			},
 			Run: runLaunch,
 		})
@@ -47,39 +47,56 @@ func init() {
 }
 
 func runLaunch(c *cli.Ctx, args []string) error {
-	// `wait` is deliberately not a value flag: bare `--wait` means "use the
-	// default timeout", and an explicit one is given as `--wait=5000`.
-	set, err := parseArgs(args)
+	// Everything except our own --wait belongs to the application, flags
+	// included: `launch Chrome --new-window` must reach Chrome. Parsing the
+	// whole line would claim those flags for us and reject them as unknown, so
+	// only --wait is lifted out and the rest is passed through untouched.
+	rest, timeout, wait, err := takeWaitFlag(args)
 	if err != nil {
 		return err
 	}
-	if err := set.Reject("wait"); err != nil {
-		return err
-	}
-	if len(set.Rest) == 0 {
+	if len(rest) == 0 {
 		return fmt.Errorf("`launch` needs an application name")
 	}
 
-	app := set.Rest[0]
-	if err := launchApp(app, set.Rest[1:]); err != nil {
+	app := rest[0]
+	if err := launchApp(app, rest[1:]); err != nil {
 		return err
 	}
-	if !set.Has("wait") {
+	if !wait {
 		return nil
 	}
 
 	// Launching is asynchronous everywhere, so --wait is what makes `launch`
 	// composable: the next command can assume the window is really there.
-	timeout, err := set.Int("wait", 10000)
-	if err != nil {
-		return err
-	}
 	window, err := waitForMatch(windowctl.Match{App: app}, timeout)
 	if err != nil {
 		return err
 	}
 	c.Println(describeWindow(window))
 	return nil
+}
+
+// takeWaitFlag removes `--wait` or `--wait=<ms>` from args, returning what is
+// left along with the timeout and whether waiting was asked for.
+func takeWaitFlag(args []string) (rest []string, timeout int, wait bool, err error) {
+	timeout = 10000
+	for _, arg := range args {
+		switch {
+		case arg == "--wait":
+			wait = true
+		case strings.HasPrefix(arg, "--wait="):
+			value := strings.TrimPrefix(arg, "--wait=")
+			parsed, convErr := parseInt(value)
+			if convErr != nil || parsed <= 0 {
+				return nil, 0, false, fmt.Errorf("--wait wants milliseconds, got %q", value)
+			}
+			wait, timeout = true, parsed
+		default:
+			rest = append(rest, arg)
+		}
+	}
+	return rest, timeout, wait, nil
 }
 
 func runOpen(c *cli.Ctx, args []string) error {

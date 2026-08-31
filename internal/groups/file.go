@@ -398,6 +398,14 @@ func isProtectedPath(path string) bool {
 	if home, err := os.UserHomeDir(); err == nil && filepath.Clean(home) == cleaned {
 		return true
 	}
-	// A path with no separator below the root, such as /Users or C:\Windows.
-	return filepath.Dir(cleaned) == cleaned
+	// A direct child of a filesystem root is a system directory — /etc, /usr,
+	// /Users, C:\Windows. Deleting one is unrecoverable and never what a caller
+	// meant, and `file delete` is reachable by an agent over MCP, so the guard
+	// has to hold without a human reading the path first.
+	//
+	// The previous test here was `filepath.Dir(cleaned) == cleaned`, which is
+	// only ever true for the root itself and so was already covered two lines
+	// above: every system directory fell through unguarded.
+	parent := filepath.Dir(cleaned)
+	return filepath.Dir(parent) == parent
 }
