@@ -44,7 +44,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "adapters", Name: "path",
-				Summary: "Print the directory adapters are read from",
+				Summary:  "Print the directory adapters are read from",
+				Examples: []string{"aos adapters path"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					c.Println(cli.AdapterDir(c.Env))
 					return nil

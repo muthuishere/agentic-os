@@ -38,8 +38,9 @@ func init() {
 			},
 			&cli.Command{
 				Group: "power", Name: "on-ac",
-				Summary: "Exit 0 when running on AC power, 1 otherwise",
-				Hidden:  true,
+				Summary:  "Exit 0 when running on AC power, 1 otherwise",
+				Examples: []string{"aos power on-ac && echo running on mains"},
+				Hidden:   true,
 				Run: func(c *cli.Ctx, _ []string) error {
 					state, err := readPower()
 					if err != nil {
@@ -63,7 +64,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "battery", Name: "present",
-				Summary: "Exit 0 when a battery is present, 1 otherwise",
+				Summary:  "Exit 0 when a battery is present, 1 otherwise",
+				Examples: []string{"aos battery present && echo has a battery"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					state, err := readPower()
 					if err != nil {
@@ -77,7 +79,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "battery", Name: "percent",
-				Summary: "Print the charge percentage as a bare number",
+				Summary:  "Print the charge percentage as a bare number",
+				Examples: []string{"aos battery percent    # 87"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					state, err := readPower()
 					if err != nil {

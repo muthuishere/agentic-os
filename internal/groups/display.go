@@ -21,14 +21,16 @@ func init() {
 			},
 			&cli.Command{
 				Group: "display", Name: "active",
-				Summary: "Print the ID of the monitor the pointer is on",
+				Summary:  "Print the ID of the monitor the pointer is on",
+				Examples: []string{"aos capture screenshot --monitor=$(aos display active)"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					return printMonitorID(c, func(m windowctl.Monitor) bool { return m.Active })
 				},
 			},
 			&cli.Command{
 				Group: "display", Name: "focused",
-				Summary: "Print the ID of the monitor holding the frontmost window",
+				Summary:  "Print the ID of the monitor holding the frontmost window",
+				Examples: []string{"aos window move Chrome --monitor=$(aos display focused)"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					return printMonitorID(c, func(m windowctl.Monitor) bool { return m.Focused })
 				},

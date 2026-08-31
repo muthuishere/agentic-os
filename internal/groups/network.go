@@ -24,7 +24,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "network", Name: "ip",
-				Summary: "Print the local address of the active interface",
+				Summary:  "Print the local address of the active interface",
+				Examples: []string{"aos network ip         # 192.168.1.20"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					state, err := readNetwork()
 					if err != nil {
@@ -39,7 +40,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "network", Name: "wifi",
-				Summary: "Print the Wi-Fi network currently joined",
+				Summary:  "Print the Wi-Fi network currently joined",
+				Examples: []string{"aos network wifi"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					state, err := readNetwork()
 					if err != nil {

@@ -27,7 +27,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "font", Name: "dirs",
-				Summary: "Print the directories fonts are read from",
+				Summary:  "Print the directories fonts are read from",
+				Examples: []string{"aos font dirs"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					for _, dir := range fontDirs() {
 						c.Println(dir)

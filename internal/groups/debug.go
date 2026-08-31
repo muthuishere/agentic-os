@@ -36,15 +36,17 @@ func init() {
 			},
 			&cli.Command{
 				Group: "debug", Name: "tools",
-				Summary: "Report which helper tools are installed",
-				Run:     runDebugTools,
+				Summary:  "Report which helper tools are installed",
+				Examples: []string{"aos debug tools"},
+				Run:      runDebugTools,
 			},
 		)
 
 		r.Describe("version", "Version information")
 		r.Add(&cli.Command{
-			Group:   "version",
-			Summary: "Print the aos version",
+			Group:    "version",
+			Summary:  "Print the aos version",
+			Examples: []string{"aos version"},
 			Run: func(c *cli.Ctx, _ []string) error {
 				c.Println(c.Version)
 				return nil

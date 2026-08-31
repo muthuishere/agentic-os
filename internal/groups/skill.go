@@ -48,7 +48,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "skill", Name: "path",
-				Summary: "Print where `install --skills` would write",
+				Summary:  "Print where `install --skills` would write",
+				Examples: []string{"aos skill path"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					hosts, err := skill.Hosts(c.Env)
 					if err != nil {

@@ -63,7 +63,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "obs", Name: "path",
-				Summary: "Print where telemetry is written",
+				Summary:  "Print where telemetry is written",
+				Examples: []string{"aos obs path"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					if obs.Disabled(c.Env) {
 						c.Println("telemetry is off (AGENTIC_OS_TELEMETRY)")

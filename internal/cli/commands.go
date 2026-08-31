@@ -91,6 +91,12 @@ func runCommandsCheck(c *Ctx, asJSON bool) error {
 		if cmd.Summary == "" {
 			problems = append(problems, fmt.Sprintf("%s: missing summary", cmd.Route()))
 		}
+		// A command with no example is not self-explanatory, and this surface is
+		// read by agents as much as by people. Enforcing it here is what keeps
+		// it true as commands are added.
+		if len(cmd.Examples) == 0 && cmd.Binary == "" {
+			problems = append(problems, fmt.Sprintf("%s: missing an example", cmd.Route()))
+		}
 		if cmd.Run == nil && cmd.Binary == "" {
 			problems = append(problems, fmt.Sprintf("%s: no implementation", cmd.Route()))
 		}

@@ -59,7 +59,8 @@ func init() {
 
 		r.Add(&cli.Command{
 			Group: "pkg", Name: "manager",
-			Summary: "Print which package manager this machine uses",
+			Summary:  "Print which package manager this machine uses",
+			Examples: []string{"aos pkg manager        # homebrew"},
 			Run: func(c *cli.Ctx, _ []string) error {
 				manager := detectPackageManager()
 				if manager == nil {

@@ -35,7 +35,8 @@ func init() {
 			},
 			&cli.Command{
 				Group: "mouse", Name: "position",
-				Summary: "Print the pointer position as `x y`",
+				Summary:  "Print the pointer position as `x y`",
+				Examples: []string{"aos mouse position     # 784 539"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					x, y, err := windowctl.CursorPosition()
 					if err != nil {
