@@ -2,8 +2,15 @@ package groups
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/subtle"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"net"
+	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"os/signal"
 	"strings"
@@ -24,7 +31,7 @@ func init() {
 			&cli.Command{
 				Group: "serve", Name: "mcp",
 				Summary: "Serve every command as an MCP tool over streamable HTTP",
-				Args:    "[--addr=<host:port>] [--groups=<a,b>] [--gui=on|off|auto] [--quiet]",
+				Args:    "[--addr=<host:port>] [--token=<k>] [--groups=<a,b>] [--gui=on|off|auto] [--quiet]",
 				Examples: []string{
 					"aos serve mcp",
 					"aos serve mcp --addr=127.0.0.1:9000 --groups=window,capture,exec",
@@ -244,11 +251,15 @@ func runServeTools(c *cli.Ctx, args []string) error {
 }
 
 func runServeMCP(c *cli.Ctx, args []string) error {
-	set, err := parseArgs(args, "addr", "groups", "gui")
+	set, err := parseArgs(args, "addr", "groups", "gui", "token")
 	if err != nil {
 		return err
 	}
-	if err := set.Reject("addr", "groups", "gui", "quiet"); err != nil {
+	if err := set.Reject("addr", "groups", "gui", "quiet", "token"); err != nil {
+		return err
+	}
+	token, err := resolveServeToken(c, set)
+	if err != nil {
 		return err
 	}
 	gui, err := parseGUIMode(set.String("gui", ""))
@@ -276,7 +287,13 @@ func runServeMCP(c *cli.Ctx, args []string) error {
 	}
 
 	quiet := set.Has("quiet")
-	handle, err := toolkit.Serve(addr, toolnexus.ServeOptions{
+	// Bind the tool server to a private loopback port and put an authenticating
+	// proxy on the address people actually connect to. Loopback alone is not a
+	// permission: every process on the machine, and anything that can make a
+	// browser issue a request, shares it. The MCP surface drives windows, input
+	// and the filesystem, so it needs to be gated by something a caller has to
+	// hold.
+	handle, err := toolkit.Serve("127.0.0.1:0", toolnexus.ServeOptions{
 		MCP: &toolnexus.MCPServeConfig{Name: "aos", Version: c.Version},
 		OnCall: func(event toolnexus.OnCallEvent) {
 			if quiet {
@@ -294,14 +311,86 @@ func runServeMCP(c *cli.Ctx, args []string) error {
 	}
 	defer handle.Stop()
 
-	c.Printf("aos mcp  %s/mcp\n", handle.URL)
+	gate, err := serveGuarded(addr, handle.URL, token)
+	if err != nil {
+		return err
+	}
+	defer gate.Close()
+
+	c.Printf("aos mcp  http://%s/mcp\n", gate.Addr().String())
+	c.Printf("token           %s\n", token)
 	c.Printf("tools           %d\n", len(tools))
 	if !cli.HasDisplay(c.Env, c.GOOS) && gui != guiOn {
 		c.Printf("gui             excluded — no display on this machine\n")
 	}
-	c.Printf("connect         claude mcp add --transport http aos %s/mcp\n", handle.URL)
+	c.Printf("connect         claude mcp add --transport http aos http://%s/mcp \\\n", gate.Addr().String())
+	c.Printf("                  --header \"Authorization: Bearer %s\"\n", token)
 
 	<-ctx.Done()
 	c.Warnf("\nstopping\n")
 	return nil
+}
+
+// serveTokenEnv names the variable that pins the token across restarts, so a
+// client configured once does not have to be reconfigured on every start.
+const serveTokenEnv = "AGENTIC_OS_MCP_TOKEN"
+
+// resolveServeToken picks the token: an explicit flag, then the environment,
+// then a fresh random one for this run.
+func resolveServeToken(c *cli.Ctx, set *argSet) (string, error) {
+	if token := set.String("token", ""); token != "" {
+		if len(token) < 16 {
+			return "", fmt.Errorf("--token must be at least 16 characters; it is the only thing gating this machine")
+		}
+		return token, nil
+	}
+	if token := strings.TrimSpace(c.Env(serveTokenEnv)); token != "" {
+		if len(token) < 16 {
+			return "", fmt.Errorf("%s must be at least 16 characters", serveTokenEnv)
+		}
+		return token, nil
+	}
+	buf := make([]byte, 16)
+	if _, err := rand.Read(buf); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(buf), nil
+}
+
+// serveGuarded fronts the tool server with a listener that requires the token.
+//
+// The token may arrive as a bearer header, which is what an MCP client sends,
+// or as ?t= for a client that cannot set headers at all.
+func serveGuarded(addr, upstream, token string) (net.Listener, error) {
+	target, err := url.Parse(upstream)
+	if err != nil {
+		return nil, err
+	}
+	proxy := httputil.NewSingleHostReverseProxy(target)
+
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		return nil, fmt.Errorf("cannot bind %s: %w", addr, err)
+	}
+
+	server := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !tokenMatches(r, token) {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+		// The upstream never sees the credential; it is ours, not its.
+		r.Header.Del("Authorization")
+		proxy.ServeHTTP(w, r)
+	})}
+	go func() { _ = server.Serve(listener) }()
+	return listener, nil
+}
+
+func tokenMatches(r *http.Request, token string) bool {
+	if header := r.Header.Get("Authorization"); header != "" {
+		if subtle.ConstantTimeCompare([]byte(strings.TrimPrefix(header, "Bearer ")), []byte(token)) == 1 {
+			return true
+		}
+	}
+	return subtle.ConstantTimeCompare([]byte(r.URL.Query().Get("t")), []byte(token)) == 1
 }

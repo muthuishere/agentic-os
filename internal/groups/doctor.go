@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/msg"
 	"github.com/muthuishere/agentic-os/internal/obs"
 	"github.com/muthuishere/agentic-os/internal/sys"
 	"github.com/muthuishere/windowctl"
@@ -71,7 +70,6 @@ func runDoctor(c *cli.Ctx, args []string) error {
 		checkScreenshot(c),
 		checkClipboard(c),
 		checkPackageManager(c),
-		checkMessenger(c),
 		checkPlugins(c),
 	}
 
@@ -273,17 +271,6 @@ func checkPackageManager(c *cli.Ctx) checkResult {
 			"install one (homebrew, winget, apt, pacman) for the `pkg` commands"}
 	}
 	return checkResult{"packages", statusOK, manager.Name, ""}
-}
-
-func checkMessenger(c *cli.Ctx) checkResult {
-	client := msg.New(c.Env)
-	health, err := client.HealthWithin(3 * time.Second)
-	if err != nil {
-		return checkResult{"messenger", statusWarn, "hub not reachable at " + client.BaseURL,
-			"start it with `messenger serve &`, or ignore this if you do not use `msg`"}
-	}
-	return checkResult{"messenger", statusOK,
-		fmt.Sprintf("%s, %d channels", health.Service, len(health.Channels)), ""}
 }
 
 func checkPlugins(c *cli.Ctx) checkResult {

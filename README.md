@@ -31,11 +31,27 @@ $ aos system info
 $ aos window move Chrome --zone=1B
 $ aos capture screenshot --app=Chrome --out=/tmp/shot.png
 $ aos pkg install ripgrep          # brew / winget / pacman / apt, same verb
-$ aos msg send --channel=ops "build passed"
+$ aos obs audit --since=24h            # what an agent did on this machine
 $ aos serve mcp                    # now every command above is an agent tool
 ```
 
 ## Install
+
+No Go? The script installs it first, then builds, then installs the agent skill.
+Everything lands in your home directory; nothing needs root.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.sh | sh
+```
+
+Reading a script before piping it into a shell is the right instinct:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.sh -o install.sh
+less install.sh && sh install.sh
+```
+
+With Go already installed:
 
 ```sh
 go install github.com/muthuishere/agentic-os/cmd/aos@latest
@@ -55,9 +71,18 @@ from anywhere.
 ## Agents connect over MCP
 
 ```sh
-aos serve mcp                      # streamable HTTP at 127.0.0.1:14320/mcp
-claude mcp add --transport http aos http://127.0.0.1:14320/mcp
+aos serve mcp
+# aos mcp  http://127.0.0.1:14320/mcp
+# token    9c23b0efb0a002fe536a579adfd7cdb1
+# connect  claude mcp add --transport http aos http://127.0.0.1:14320/mcp \
+#            --header "Authorization: Bearer 9c23b0efb0a002fe536a579adfd7cdb1"
 ```
+
+Loopback is not a permission — every process on the machine shares it, and this
+surface drives windows, input and the filesystem. The server mints a token per
+run and refuses anything without it, as a bearer header or `?t=`. Set
+`AGENTIC_OS_MCP_TOKEN` (or `--token`) to pin one so a client configured once
+survives a restart.
 
 Every non-hidden, non-blocking command on this platform becomes one MCP tool
 (`window_move`, `capture_screenshot`, `exec_capture`, …) carrying the same

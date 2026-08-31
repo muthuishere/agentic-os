@@ -58,7 +58,7 @@ there is no logged-in session and the desktop commands cannot work at all.
 | files | `file read P --lines=10:40` · `file write P text` · `file list D --json` · `file stat P` · `file delete P --recursive` |
 | run something | `exec capture -- <cmd>` (JSON: stdout, stderr, exit) · `exec run` (streams) · `exec shell "a \| b"` |
 | packages | `pkg install X` · `search` · `list` · `upgrade` — one verb set over brew, winget, scoop, choco, apt, pacman, yay, dnf |
-| messages | `msg send --channel=ops "text"` · `msg inbox` · `msg listen` |
+| messages | `msg send --channel=X "text"` · `msg inbox` — needs a local messenger hub; skip unless one is running |
 | keep it running | `service create NAME -- <cmd> --autostart --now` · `start` · `status` · `stop` · `remove` · `list` |
 | tell the human | `subtitle show "what I am doing" --seconds=10` — a caption that never steals focus |
 | let them watch | `remote share --monitor=2` — prints a LAN URL; the person opens it on a phone |
@@ -100,9 +100,11 @@ input: `aos permission request`.
 ## Serving it to another agent
 
 ```bash
-aos serve mcp                     # 127.0.0.1:14320/mcp, loopback only
-claude mcp add --transport http aos http://127.0.0.1:14320/mcp
+aos serve mcp        # prints the URL and a per-run token; both are needed
 ```
+
+The server refuses any request without the token, as a bearer header or `?t=`.
+Loopback is not a permission. `AGENTIC_OS_MCP_TOKEN` pins one across restarts.
 
 GUI tools are exposed only when the machine has a display (`--gui=on|off|auto`),
 because offering a tool that cannot run is worse than not offering it.
