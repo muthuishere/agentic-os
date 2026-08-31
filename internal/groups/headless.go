@@ -29,7 +29,7 @@ func init() {
 			&cli.Command{
 				Group: "headless", Name: "status",
 				Summary:  "Report whether a display is available, and where it came from",
-				Examples: []string{"agentic-os headless status"},
+				Examples: []string{"aos headless status"},
 				Run:      runHeadlessStatus,
 			},
 			&cli.Command{
@@ -38,8 +38,8 @@ func init() {
 				Args:      "[--display=:99] [--size=<WxH>] [--wm]",
 				Platforms: []string{"linux"},
 				Examples: []string{
-					"agentic-os headless start",
-					"agentic-os headless start --display=:101 --size=1920x1080 --wm",
+					"aos headless start",
+					"aos headless start --display=:101 --size=1920x1080 --wm",
 				},
 				Run: runHeadlessStart,
 			},
@@ -47,14 +47,14 @@ func init() {
 				Group: "headless", Name: "stop",
 				Summary:   "Stop the virtual display this machine started",
 				Platforms: []string{"linux"},
-				Examples:  []string{"agentic-os headless stop"},
+				Examples:  []string{"aos headless stop"},
 				Run:       runHeadlessStop,
 			},
 			&cli.Command{
 				Group: "headless", Name: "run",
 				Summary:  "Run a command against the managed virtual display",
 				Args:     "<command> [args...]",
-				Examples: []string{"agentic-os headless run agentic-os window list"},
+				Examples: []string{"aos headless run aos window list"},
 				Run:      runHeadlessRun,
 			},
 		)
@@ -171,7 +171,7 @@ func runHeadlessStatus(c *cli.Ctx, _ []string) error {
 	c.Println("battery, font, debug, serve. Everything an agent needs on a server.")
 	if c.GOOS == "linux" {
 		c.Println()
-		c.Println("For the rest, start a virtual display: agentic-os headless start")
+		c.Println("For the rest, start a virtual display: aos headless start")
 	}
 	return &cli.ExitError{Code: 1}
 }
@@ -184,7 +184,7 @@ func runHeadlessRun(c *cli.Ctx, args []string) error {
 
 	state, running := readState()
 	if !running {
-		return &cli.ExitError{Code: 1, Message: "no managed display; run `agentic-os headless start` first"}
+		return &cli.ExitError{Code: 1, Message: "no managed display; run `aos headless start` first"}
 	}
 	// Pass the display through the environment rather than rewriting the
 	// command, so anything that reads DISPLAY — ours or not — picks it up.

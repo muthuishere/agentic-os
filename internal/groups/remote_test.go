@@ -143,7 +143,7 @@ func TestResolveRemoteOptionsEnvKeyBeatsConfig(t *testing.T) {
 
 // windowctl's own env var must not be honoured here: the two tools are
 // configured separately, so a key exported for the windowctl CLI cannot
-// silently become the key for an agentic-os share.
+// silently become the key for an aos share.
 func TestResolveRemoteOptionsIgnoresWindowctlEnv(t *testing.T) {
 	opts, generated, err := resolveRemoteOptions(argsOf(t), remoteConfig{},
 		envWith(map[string]string{"WINDOWCTL_REMOTE_KEY": "windowctl-key-long-enough"}))

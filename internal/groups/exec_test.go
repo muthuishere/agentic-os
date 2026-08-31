@@ -104,7 +104,7 @@ func TestExecCaptureReportsACommandThatNeverStarted(t *testing.T) {
 	}
 }
 
-// `--` is how a caller stops agentic-os from claiming flags meant for the
+// `--` is how a caller stops aos from claiming flags meant for the
 // child: `exec capture -- ls -la` must run `ls -la`, not complain about `-la`.
 func TestExecStripsTheLeadingSeparator(t *testing.T) {
 	if got := stripSeparator([]string{"--", "ls", "-la"}); len(got) != 2 || got[0] != "ls" {

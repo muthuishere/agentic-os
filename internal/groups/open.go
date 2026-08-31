@@ -17,8 +17,8 @@ func init() {
 			Summary: "Open a file, folder, or URL with the system default handler",
 			Args:    "<path-or-url>",
 			Examples: []string{
-				"agentic-os open https://claude.ai",
-				"agentic-os open .",
+				"aos open https://claude.ai",
+				"aos open .",
 			},
 			Run: runOpen,
 		})
@@ -29,8 +29,8 @@ func init() {
 			Summary: "Launch an application, optionally waiting for its window",
 			Args:    "<app> [args...] [--wait[=<ms>]]",
 			Examples: []string{
-				`agentic-os launch "Visual Studio Code"`,
-				"agentic-os launch Chrome --wait",
+				`aos launch "Visual Studio Code"`,
+				"aos launch Chrome --wait",
 			},
 			Run: runLaunch,
 		})
@@ -40,7 +40,7 @@ func init() {
 			Group: "webapp", Name: "open",
 			Summary:  "Open a URL in a chromeless app window",
 			Args:     "<url>",
-			Examples: []string{"agentic-os webapp open https://app.slack.com"},
+			Examples: []string{"aos webapp open https://app.slack.com"},
 			Run:      runWebapp,
 		})
 	})

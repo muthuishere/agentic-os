@@ -16,7 +16,7 @@ func init() {
 				Group: "display", Name: "list",
 				Summary:  "List attached monitors with geometry and focus state",
 				Aliases:  []string{"monitors"},
-				Examples: []string{"agentic-os display list"},
+				Examples: []string{"aos display list"},
 				Run:      runDisplayList,
 			},
 			&cli.Command{

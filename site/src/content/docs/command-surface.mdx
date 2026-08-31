@@ -1,0 +1,78 @@
+---
+title: The command surface
+description: 96 commands across 34 groups, how routes resolve, and how to ask the binary what this machine can actually run.
+---
+
+96 commands across 34 groups. The full list is on
+[every command](/agentic-os/reference/commands/), generated from the binary. This
+page is the shape of it.
+
+## The groups
+
+| | |
+|---|---|
+| **Desktop** | `window` · `display` · `mouse` · `key` · `permission` |
+| **Machine** | `system` · `power` · `battery` · `network` · `audio` · `font` · `pkg` · `debug` |
+| **Content** | `capture` · `clipboard` · `file` · `exec` · `open` · `launch` · `webapp` · `subtitle` |
+| **Comms** | `msg` — send, poll and follow the local messenger hub |
+| **Remote** | `remote` — hand this screen and its input to a browser on the LAN |
+| **Watch** | `watch` — long-running monitors that print one JSON line per change |
+| **Agents** | `serve` (MCP) · `service` (keep it running) · `headless` (run without a screen) |
+| **Itself** | `doctor` · `commands` · `obs` · `adapters` · `skill` · `install` · `uninstall` · `version` |
+
+## Routes are as many words as they need
+
+A route resolves by longest prefix, and everything after it is the command's own
+arguments. `audio output set default` is one route; `window move Chrome
+--zone=1B` is the route `window move` plus its args.
+
+## Asking the binary, not the docs
+
+```sh
+agentic-os commands            # what this machine can run
+agentic-os commands --all      # every registered command, including other platforms
+agentic-os commands --json     # machine-readable index
+agentic-os commands --check    # registry lint; non-zero when something is off
+```
+
+```console
+$ agentic-os commands | head -6
+  adapters example    Print a starter adapter, ready to save and edit
+  adapters list       List the adapters this machine has loaded
+  adapters path       Print the directory adapters are read from
+  audio mute          Print or change the output mute state
+  audio volume        Print the output volume, or set it
+  battery percent     Print the charge percentage as a bare number
+```
+
+On a screenless machine, plain `commands` lists only what will run. `--all`
+shows everything and marks with `g` the commands waiting on a display. Each
+entry in `--json` carries `needs_display`, `platforms`, `requires_sudo` and
+`source` (`builtin`, `adapter` or `plugin`).
+
+That index is what this site's [command
+reference](/agentic-os/reference/commands/) is built from, and what
+`serve mcp` builds its tool list from. One registry, three consumers.
+
+## Commands that do not exist everywhere
+
+A command that genuinely cannot exist on a platform declares it. It still shows
+in help, marked, and exits 2 with a clear message rather than pretending not to
+exist. `headless start` and `headless stop` are the only two today: they are
+Linux-only, because macOS and Windows have no Xvfb equivalent.
+
+## Blocking commands
+
+`watch clipboard`, `watch window` and `remote share` run until interrupted.
+Being blocking, they are deliberately absent from the MCP tool list — an agent
+reads them by running the CLI and consuming the stream, and a screen-share can
+only be started by a person.
+
+```console
+$ agentic-os watch clipboard
+{"event":"clipboard","at":"…","seq":1,"length":34,"digest":"7a37ded45b5e"}
+```
+
+The first sample is only a baseline, so `--max=1` means "the next change" —
+which is what makes a watcher scriptable. `--content` includes the text, opt-in,
+because clipboards hold passwords.

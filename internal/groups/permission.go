@@ -12,7 +12,7 @@ func init() {
 			&cli.Command{
 				Group: "permission", Name: "check",
 				Summary:  "Report whether accessibility and screen capture are granted",
-				Examples: []string{"agentic-os permission check"},
+				Examples: []string{"aos permission check"},
 				Run:      runPermissionCheck,
 			},
 			&cli.Command{
@@ -20,8 +20,8 @@ func init() {
 				Summary: "Ask the OS for the permissions that are missing",
 				Args:    "[accessibility|screen]",
 				Examples: []string{
-					"agentic-os permission request",
-					"agentic-os permission request screen",
+					"aos permission request",
+					"aos permission request screen",
 				},
 				Run: runPermissionRequest,
 			},

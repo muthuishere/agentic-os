@@ -20,8 +20,8 @@ func init() {
 				Summary: "List open windows",
 				Args:    "[--app=<name>] [--title=<substring>] [--json]",
 				Examples: []string{
-					"agentic-os window list",
-					"agentic-os window list --app=Chrome",
+					"aos window list",
+					"aos window list --app=Chrome",
 				},
 				Run: runWindowList,
 			},
@@ -29,7 +29,7 @@ func init() {
 				Group: "window", Name: "focus",
 				Summary:  "Bring a window to the front",
 				Args:     "<app> | --app=<name> | --title=<substring>",
-				Examples: []string{"agentic-os window focus Chrome"},
+				Examples: []string{"aos window focus Chrome"},
 				Run:      runWindowFocus,
 			},
 			&cli.Command{
@@ -37,9 +37,9 @@ func init() {
 				Summary: "Move a window to a zone, a split, or absolute bounds",
 				Args:    "<app> (--zone=<1A|2:1> | --at=<x,y,w,h>) [--monitor=<n>]",
 				Examples: []string{
-					"agentic-os window move Chrome --zone=1B",
-					"agentic-os window move Chrome --monitor=2 --zone=2:1",
-					"agentic-os window move Slack --at=0,25,1920,1055",
+					"aos window move Chrome --zone=1B",
+					"aos window move Chrome --monitor=2 --zone=2:1",
+					"aos window move Slack --at=0,25,1920,1055",
 				},
 				Run: runWindowMove,
 			},
@@ -47,14 +47,14 @@ func init() {
 				Group: "window", Name: "resize",
 				Summary:  "Resize a window in place",
 				Args:     "<app> --w=<width> --h=<height>",
-				Examples: []string{"agentic-os window resize Chrome --w=900 --h=700"},
+				Examples: []string{"aos window resize Chrome --w=900 --h=700"},
 				Run:      runWindowResize,
 			},
 			&cli.Command{
 				Group: "window", Name: "wait",
 				Summary:  "Wait for a window to appear, then print it",
 				Args:     "<app> [--timeout=<ms>]",
-				Examples: []string{"agentic-os window wait Chrome --timeout=5000"},
+				Examples: []string{"aos window wait Chrome --timeout=5000"},
 				Run:      runWindowWait,
 			},
 			&cli.Command{
@@ -62,7 +62,7 @@ func init() {
 				Summary: "Apply a saved layout of many windows in one pass",
 				Args:    "<layout.json>",
 				Examples: []string{
-					"agentic-os window arrange ~/.config/agentic-os/layouts/work.json",
+					"aos window arrange ~/.config/agentic-os/layouts/work.json",
 				},
 				Run: runWindowArrange,
 			},
@@ -146,7 +146,7 @@ func findWindow(match windowctl.Match) (windowctl.Window, bool) {
 //
 // Not every platform reports an application name: on X11 the window list comes
 // from `wmctrl -lpG`, which has no WM_CLASS column, so the App field carries the
-// client's hostname instead. A bare `agentic-os window focus xterm` therefore
+// client's hostname instead. A bare `aos window focus xterm` therefore
 // has to fall back to matching the title, or it would work on macOS and never
 // on Linux.
 func resolveMatch(match windowctl.Match) (windowctl.Match, error) {

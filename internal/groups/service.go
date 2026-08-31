@@ -13,7 +13,7 @@ import (
 	"github.com/muthuishere/agentic-os/internal/cli"
 )
 
-// servicePrefix namespaces every service agentic-os installs.
+// servicePrefix namespaces every service aos installs.
 //
 // This is the safety property of the whole group: `service list` enumerates the
 // platform's service store and keeps only labels carrying this prefix, and every
@@ -31,7 +31,7 @@ const (
 	serviceNotInstalled serviceState = "not-installed"
 )
 
-// serviceSpec is a service as agentic-os describes it, before any platform
+// serviceSpec is a service as aos describes it, before any platform
 // turns it into a plist, a unit file, or a scheduled task.
 type serviceSpec struct {
 	Name      string   // short name the user typed, prefix stripped
@@ -58,8 +58,8 @@ func init() {
 				Summary: "Install a command as a service",
 				Args:    "<name> [--autostart] [--now] -- <command> [args...]",
 				Examples: []string{
-					"agentic-os service create mcp --autostart --now -- agentic-os serve mcp",
-					"agentic-os service create nap -- /bin/sleep 60",
+					"aos service create mcp --autostart --now -- aos serve mcp",
+					"aos service create nap -- /bin/sleep 60",
 				},
 				Run: runServiceCreate,
 			},
@@ -67,34 +67,34 @@ func init() {
 				Group: "service", Name: "remove",
 				Summary:  "Stop a service and delete its definition",
 				Args:     "<name>",
-				Examples: []string{"agentic-os service remove mcp"},
+				Examples: []string{"aos service remove mcp"},
 				Run:      runServiceRemove,
 			},
 			&cli.Command{
 				Group: "service", Name: "start",
 				Summary:  "Start an installed service",
 				Args:     "<name>",
-				Examples: []string{"agentic-os service start mcp"},
+				Examples: []string{"aos service start mcp"},
 				Run:      runServiceStart,
 			},
 			&cli.Command{
 				Group: "service", Name: "stop",
 				Summary:  "Stop a running service",
 				Args:     "<name>",
-				Examples: []string{"agentic-os service stop mcp"},
+				Examples: []string{"aos service stop mcp"},
 				Run:      runServiceStop,
 			},
 			&cli.Command{
 				Group: "service", Name: "status",
 				Summary:  "Report whether a service is running; exits non-zero when it is not",
 				Args:     "<name>",
-				Examples: []string{"agentic-os service status mcp"},
+				Examples: []string{"aos service status mcp"},
 				Run:      runServiceStatus,
 			},
 			&cli.Command{
 				Group: "service", Name: "list",
-				Summary:  "List the services agentic-os manages",
-				Examples: []string{"agentic-os service list"},
+				Summary:  "List the services aos manages",
+				Examples: []string{"aos service list"},
 				Run:      runServiceList,
 			},
 		)
@@ -144,7 +144,7 @@ func serviceShortName(label string) (string, bool) {
 }
 
 // splitServiceCommand cuts argv at the first `--`, which is how a caller stops
-// agentic-os from claiming flags that belong to the service's own command.
+// aos from claiming flags that belong to the service's own command.
 // With no separator everything is ours to parse, so a stray `--flag` surfaces
 // as an unknown flag instead of being silently swallowed into the service.
 func splitServiceCommand(args []string) (head, command []string) {
@@ -330,7 +330,7 @@ func runServiceStatus(c *cli.Ctx, args []string) error {
 		c.Printf("detail  %s\n", info.Detail)
 	}
 	// Exiting non-zero for anything but "running" is what makes this compose in
-	// a health check: `agentic-os service status mcp || agentic-os service start mcp`.
+	// a health check: `aos service status mcp || aos service start mcp`.
 	if info.State != serviceRunning {
 		return &cli.ExitError{Code: 1}
 	}
@@ -399,7 +399,7 @@ func serviceTarget(args []string, verb string) (string, error) {
 }
 
 // renderLaunchdPlist builds a launchd user agent. KeepAlive stays off: a
-// service agentic-os stopped should stay stopped, and a respawning job would
+// service aos stopped should stay stopped, and a respawning job would
 // make `stop` a lie.
 func renderLaunchdPlist(spec serviceSpec) string {
 	var b strings.Builder
@@ -429,7 +429,7 @@ func renderLaunchdPlist(spec serviceSpec) string {
 func renderSystemdUnit(spec serviceSpec) string {
 	var b strings.Builder
 	b.WriteString("[Unit]\n")
-	b.WriteString("Description=agentic-os service " + spec.Name + "\n\n")
+	b.WriteString("Description=aos service " + spec.Name + "\n\n")
 	b.WriteString("[Service]\n")
 	b.WriteString("Type=simple\n")
 	b.WriteString("ExecStart=" + systemdCommand(spec.Command) + "\n")

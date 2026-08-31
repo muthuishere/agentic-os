@@ -17,15 +17,15 @@ func init() {
 				Summary: "Copy stdin, or the given words, to the clipboard",
 				Args:    "[text...]",
 				Examples: []string{
-					"echo hello | agentic-os clipboard copy",
-					`agentic-os clipboard copy "some text"`,
+					"echo hello | aos clipboard copy",
+					`aos clipboard copy "some text"`,
 				},
 				Run: runClipboardCopy,
 			},
 			&cli.Command{
 				Group: "clipboard", Name: "paste",
 				Summary:  "Print the clipboard to stdout",
-				Examples: []string{"agentic-os clipboard paste > note.txt"},
+				Examples: []string{"aos clipboard paste > note.txt"},
 				Run:      runClipboardPaste,
 			},
 		)

@@ -43,8 +43,8 @@ func init() {
 			Summary: "Diagnose this installation and say how to fix what is broken",
 			Args:    "[--json]",
 			Examples: []string{
-				"agentic-os doctor",
-				"agentic-os doctor --json",
+				"aos doctor",
+				"aos doctor --json",
 			},
 			Run: runDoctor,
 		})
@@ -132,7 +132,7 @@ func checkRegistry(c *cli.Ctx) checkResult {
 	if problems := c.Registry.Warnings(); len(problems) > 0 {
 		return checkResult{"registry", statusFail,
 			fmt.Sprintf("%d registration problems", len(problems)),
-			"run `agentic-os commands --check` for the list"}
+			"run `aos commands --check` for the list"}
 	}
 	return checkResult{"registry", statusOK,
 		fmt.Sprintf("%d of %d commands available on %s", available, total, c.GOOS), ""}
@@ -165,7 +165,7 @@ func checkDisplay(c *cli.Ctx) checkResult {
 	}
 	remedy := "this is normal on a server; GUI commands are hidden"
 	if c.GOOS == "linux" {
-		remedy = "run `agentic-os headless start` for a virtual display"
+		remedy = "run `aos headless start` for a virtual display"
 	}
 	return checkResult{"display", statusWarn, "none; GUI commands are unavailable", remedy}
 }
@@ -180,13 +180,13 @@ func checkPermissions(c *cli.Ctx) checkResult {
 		return checkResult{"permissions", statusOK, "accessibility and screen capture granted", ""}
 	case !accessibility && !screen:
 		return checkResult{"permissions", statusFail, "accessibility and screen capture denied",
-			"run `agentic-os permission request`"}
+			"run `aos permission request`"}
 	case !accessibility:
 		return checkResult{"permissions", statusFail, "accessibility denied; window and input commands will fail",
-			"run `agentic-os permission request accessibility`"}
+			"run `aos permission request accessibility`"}
 	default:
 		return checkResult{"permissions", statusFail, "screen capture denied; screenshots will be blank",
-			"run `agentic-os permission request screen`"}
+			"run `aos permission request screen`"}
 	}
 }
 
@@ -201,7 +201,7 @@ func checkWindowBackend(c *cli.Ctx) checkResult {
 		if missing := missingTools("wmctrl", "xdotool", "xrandr"); len(missing) > 0 {
 			return checkResult{"windows", statusFail,
 				"missing: " + strings.Join(missing, ", "),
-				"install them: `agentic-os pkg install " + strings.Join(missing, " ") + "`"}
+				"install them: `aos pkg install " + strings.Join(missing, " ") + "`"}
 		}
 	}
 	windows, err := windowctl.ListWindows(windowctl.Filter{})
@@ -234,9 +234,9 @@ func checkScreenshot(c *cli.Ctx) checkResult {
 
 func screenshotRemedy(goos string) string {
 	if goos == "darwin" {
-		return "grant Screen Recording: `agentic-os permission request screen`"
+		return "grant Screen Recording: `aos permission request screen`"
 	}
-	return "install a capture tool: `agentic-os pkg install scrot`"
+	return "install a capture tool: `aos pkg install scrot`"
 }
 
 // checkClipboard round-trips a value, which is the only way to know the
@@ -261,7 +261,7 @@ func checkClipboard(c *cli.Ctx) checkResult {
 
 func clipboardRemedy(goos string) string {
 	if goos == "linux" {
-		return "install a clipboard tool: `agentic-os pkg install wl-clipboard` or xclip"
+		return "install a clipboard tool: `aos pkg install wl-clipboard` or xclip"
 	}
 	return ""
 }

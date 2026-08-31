@@ -19,7 +19,7 @@ func init() {
 			&cli.Command{
 				Group: "network", Name: "status",
 				Summary:  "Print the active interface, address, and Wi-Fi network",
-				Examples: []string{"agentic-os network status"},
+				Examples: []string{"aos network status"},
 				Run:      runNetworkStatus,
 			},
 			&cli.Command{

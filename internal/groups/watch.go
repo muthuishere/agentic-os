@@ -26,8 +26,8 @@ func init() {
 				Blocking: true,
 				Args:     "[--interval=<500ms>] [--max=<n>] [--content]",
 				Examples: []string{
-					"agentic-os watch clipboard",
-					"agentic-os watch clipboard --max=1 --content",
+					"aos watch clipboard",
+					"aos watch clipboard --max=1 --content",
 				},
 				Run: runWatchClipboard,
 			},
@@ -37,8 +37,8 @@ func init() {
 				Blocking: true,
 				Args:     "[--interval=<500ms>] [--max=<n>]",
 				Examples: []string{
-					"agentic-os watch window",
-					"agentic-os watch window --max=1",
+					"aos watch window",
+					"aos watch window --max=1",
 				},
 				Run: runWatchWindow,
 			},
@@ -264,7 +264,7 @@ func watchLoop(c *cli.Ctx, interval time.Duration, max int, poll func(time.Time)
 			// A window that is briefly unfocused, or a clipboard holding
 			// something the platform tool cannot read as text, is not a reason
 			// to end a long-running watcher; report and try the next tick.
-			c.Warnf("agentic-os: %v\n", err)
+			c.Warnf("aos: %v\n", err)
 		} else if seen.changed(key) {
 			seq++
 			event.Seq = seq

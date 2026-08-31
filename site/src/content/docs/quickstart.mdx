@@ -1,0 +1,87 @@
+---
+title: Quickstart
+description: Install agentic-os, check the machine, run a command, and hand the whole surface to an agent over MCP.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+<Steps>
+
+1. **Install.**
+
+   ```sh
+   go install github.com/muthuishere/agentic-os/cmd/agentic-os@latest
+   ```
+
+   One static binary, no runtime and no package manager of its own. The macOS
+   window backend is CoreGraphics through cgo, so a Mac build needs
+   `CGO_ENABLED=1` — the default when building natively. Linux and Windows are
+   pure Go and cross-compile from anywhere.
+
+2. **Ask the machine what works.**
+
+   ```console
+   $ agentic-os doctor
+   ok   registry     94 of 96 commands available on darwin
+   ok   telemetry    recording to /Users/you/.local/state/agentic-os/telemetry
+   ok   display      available; GUI commands will run
+   ok   permissions  accessibility and screen capture granted
+   ok   windows      16 windows visible
+   ok   screenshot   captured 2895667 bytes
+   ok   clipboard    round trip succeeded
+   ok   packages     homebrew
+   ok   messenger    messenger, 10 channels
+   ok   plugins      0 external commands across 38 directories
+   ```
+
+   `doctor` does not check whether binaries are on `PATH`. It round-trips the
+   clipboard, captures a real screenshot and inspects the bytes, asks the window
+   backend for a list, and pings the messenger hub. Anything not `ok` prints what
+   to run to fix it.
+
+3. **Run something.**
+
+   ```console
+   $ agentic-os system info
+   arch        arm64
+   cpu         Apple M5 Pro
+   host        your-machine.local
+   os          macOS
+   os_version  26.4
+   platform    darwin
+   ```
+
+   ```sh
+   agentic-os window move Chrome --zone=1B
+   agentic-os capture screenshot --app=Chrome --out=/tmp/shot.png
+   agentic-os pkg install ripgrep
+   ```
+
+4. **Hand it to an agent.**
+
+   ```sh
+   agentic-os serve mcp     # streamable HTTP at 127.0.0.1:14320/mcp
+   claude mcp add --transport http agentic-os http://127.0.0.1:14320/mcp
+   ```
+
+   Every non-hidden, non-blocking command available on this machine is now one
+   MCP tool. See [using it from an agent](/agentic-os/mcp/).
+
+5. **Teach the agent how to use it.**
+
+   ```sh
+   agentic-os install --skills
+   ```
+
+   This writes the agent skill bundled *inside the binary* to `~/.claude/skills/`
+   and `~/.agents/skills/`, so the instructions an agent reads can never describe
+   a different version than the one installed. `skill show` prints it without
+   installing; `uninstall --skills` removes it.
+
+</Steps>
+
+## Where to go next
+
+- [The command surface](/agentic-os/command-surface/) — what the 34 groups cover.
+- [Every command](/agentic-os/reference/commands/) — the full reference, generated from the binary.
+- [Safety model](/agentic-os/safety/) — what it refuses, and why.

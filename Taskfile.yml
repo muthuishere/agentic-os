@@ -1,8 +1,8 @@
 version: '3'
 
 vars:
-  BINARY: agentic-os
-  PKG: ./cmd/agentic-os
+  BINARY: aos
+  PKG: ./cmd/aos
   VERSION:
     sh: git describe --tags --always --dirty 2>/dev/null || echo dev
 
@@ -52,6 +52,17 @@ tasks:
     desc: Diagnose this machine
     cmds:
       - go run {{.PKG}} doctor
+
+  link:
+    desc: Install and symlink onto PATH at ~/muthu/pathextra
+    deps: [install]
+    cmds:
+      # Symlink the installed binary, not dist/: dist is gitignored and cleaned,
+      # so a link into it breaks the moment someone runs a fresh build.
+      - |
+        gobin="$(go env GOBIN)"; [ -z "$gobin" ] && gobin="$(go env GOPATH)/bin"
+        ln -sf "$gobin/{{.BINARY}}" ~/muthu/pathextra/{{.BINARY}}
+        printf '%s -> %s\n' "$(command -v {{.BINARY}})" "$gobin/{{.BINARY}}"
 
   install:
     desc: Install into GOBIN

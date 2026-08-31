@@ -24,7 +24,7 @@ func TestDiscoverPluginsReadsMetadata(t *testing.T) {
 	writePlugin(t, dir, "agentic-os-demo-do-thing", `#!/bin/sh
 # agentic-os:summary=Do the thing
 # agentic-os:args=<target>
-# agentic-os:examples=agentic-os demo do thing a | agentic-os demo do thing b
+# agentic-os:examples=aos demo do thing a | aos demo do thing b
 # agentic-os:platforms=darwin | linux
 # agentic-os:sudo=true
 echo hi

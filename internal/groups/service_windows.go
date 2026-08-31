@@ -14,7 +14,7 @@ import (
 // trigger this group wants — so schtasks is the backend.
 
 // taskName is the scheduled task's path. The namespace prefix is what keeps
-// `list` and `remove` confined to tasks agentic-os created.
+// `list` and `remove` confined to tasks aos created.
 func taskName(label string) string { return `\` + label }
 
 func schtasks(args ...string) (string, error) {

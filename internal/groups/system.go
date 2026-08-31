@@ -14,7 +14,7 @@ func init() {
 				Group: "system", Name: "lock",
 				Summary:  "Lock the screen",
 				Aliases:  []string{"lock"},
-				Examples: []string{"agentic-os system lock"},
+				Examples: []string{"aos system lock"},
 				Run:      func(c *cli.Ctx, _ []string) error { return systemLock() },
 			},
 			&cli.Command{
@@ -42,7 +42,7 @@ func init() {
 			&cli.Command{
 				Group: "system", Name: "info",
 				Summary:  "Print OS, host, and hardware facts",
-				Examples: []string{"agentic-os system info"},
+				Examples: []string{"aos system info"},
 				Run:      runSystemInfo,
 			},
 		)

@@ -55,7 +55,7 @@ func TestNewPrefersTheAgenticOSHubURL(t *testing.T) {
 		env  map[string]string
 		want string
 	}{
-		{"agentic-os variable wins", map[string]string{
+		{"aos variable wins", map[string]string{
 			"AGENTIC_OS_MESSENGER_URL": "http://127.0.0.1:1",
 			"MESSENGER_URL":            "http://127.0.0.1:2",
 		}, "http://127.0.0.1:1"},

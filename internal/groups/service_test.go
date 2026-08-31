@@ -47,7 +47,7 @@ func TestSplitServiceCommand(t *testing.T) {
 	if strings.Join(head, " ") != "mcp --now" {
 		t.Fatalf("head = %v", head)
 	}
-	if strings.Join(command, " ") != "agentic-os serve mcp --addr=:1" {
+	if strings.Join(command, " ") != "aos serve mcp --addr=:1" {
 		t.Fatalf("command = %v", command)
 	}
 
@@ -105,7 +105,7 @@ func TestRenderLaunchdPlist(t *testing.T) {
 func TestRenderSystemdUnit(t *testing.T) {
 	unit := renderSystemdUnit(testSpec())
 	for _, want := range []string{
-		"Description=agentic-os service nap",
+		"Description=aos service nap",
 		"Type=simple",
 		`ExecStart="/bin/sleep" "60" "say \"hi\" & bye"`,
 		"WorkingDirectory=/tmp",

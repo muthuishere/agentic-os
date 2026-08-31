@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// TestGroupHelpFlag pins a bug that affected every group: `agentic-os <group>
+// TestGroupHelpFlag pins a bug that affected every group: `aos <group>
 // --help` is documented and was broken, reporting the help flag as an unknown
 // command and then suggesting the command that had just failed. Only the bare
 // group name worked.

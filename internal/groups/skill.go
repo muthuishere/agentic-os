@@ -18,7 +18,7 @@ func init() {
 			Group:    "install",
 			Summary:  "Install the bundled agent skill",
 			Args:     "--skills [--json]",
-			Examples: []string{"agentic-os install --skills"},
+			Examples: []string{"aos install --skills"},
 			Run:      runInstall,
 		})
 
@@ -27,7 +27,7 @@ func init() {
 			Group:    "uninstall",
 			Summary:  "Remove the installed agent skill",
 			Args:     "--skills [--json]",
-			Examples: []string{"agentic-os uninstall --skills"},
+			Examples: []string{"aos uninstall --skills"},
 			Run:      runUninstall,
 		})
 
@@ -36,7 +36,7 @@ func init() {
 			&cli.Command{
 				Group: "skill", Name: "show",
 				Summary:  "Print the bundled skill without installing it",
-				Examples: []string{"agentic-os skill show"},
+				Examples: []string{"aos skill show"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					content, err := skill.Content()
 					if err != nil {
@@ -75,7 +75,7 @@ func runInstall(c *cli.Ctx, args []string) error {
 	// Requiring --skills keeps the verb honest: `install` on its own should not
 	// guess what to install, and there will be more than one thing eventually.
 	if !set.Has("skills") {
-		return fmt.Errorf("say what to install: `agentic-os install --skills`")
+		return fmt.Errorf("say what to install: `aos install --skills`")
 	}
 
 	results, err := skill.Install(c.Env)
@@ -94,7 +94,7 @@ func runUninstall(c *cli.Ctx, args []string) error {
 		return err
 	}
 	if !set.Has("skills") {
-		return fmt.Errorf("say what to remove: `agentic-os uninstall --skills`")
+		return fmt.Errorf("say what to remove: `aos uninstall --skills`")
 	}
 
 	results, err := skill.Uninstall(c.Env)

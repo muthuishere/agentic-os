@@ -34,8 +34,8 @@ func init() {
 				NeedsDisplay: true,
 				Args:         "[--monitor=<n>] [--port=<n>] [--fps=<n>] [--key=<k>]",
 				Examples: []string{
-					"agentic-os remote share",
-					"agentic-os remote share --monitor=2 --fps=8",
+					"aos remote share",
+					"aos remote share --monitor=2 --fps=8",
 				},
 				Run: runRemoteShare,
 			},
@@ -43,7 +43,7 @@ func init() {
 				Group: "remote", Name: "url",
 				Summary:      "Print the URL of the share running on this machine",
 				NeedsDisplay: true,
-				Examples:     []string{"agentic-os remote url"},
+				Examples:     []string{"aos remote url"},
 				Run:          runRemoteURL,
 			},
 		)
@@ -58,7 +58,7 @@ func init() {
 // Defaults live here, in agentic-os's own config dir, rather than in
 // windowctl's environment: the two tools are configured separately on purpose,
 // so a key exported for the windowctl CLI does not silently become the key for
-// a share an agentic-os user started.
+// a share an aos user started.
 type remoteConfig struct {
 	Key     *string  `json:"key,omitempty"`
 	Port    *int     `json:"port,omitempty"`
@@ -219,7 +219,7 @@ func runRemoteShare(c *cli.Ctx, args []string) error {
 		StartedAt:   time.Now().Format(time.RFC3339),
 	}
 	if err := writeRemoteState(c.Env, state); err != nil {
-		c.Warnf("agentic-os: could not record the share for `remote url`: %v\n", err)
+		c.Warnf("aos: could not record the share for `remote url`: %v\n", err)
 	}
 	defer clearRemoteState(c.Env)
 
@@ -239,7 +239,7 @@ func runRemoteShare(c *cli.Ctx, args []string) error {
 	defer stop()
 	<-ctx.Done()
 
-	c.Println("\nagentic-os: link revoked.")
+	c.Println("\naos: link revoked.")
 	return nil
 }
 
@@ -249,7 +249,7 @@ func runRemoteURL(c *cli.Ctx, args []string) error {
 	}
 	state, live := readRemoteState(c.Env)
 	if !live {
-		return &cli.ExitError{Code: 1, Message: "no share is running; start one with `agentic-os remote share`"}
+		return &cli.ExitError{Code: 1, Message: "no share is running; start one with `aos remote share`"}
 	}
 	c.Println(state.URL)
 	c.Printf("%s\n", state.LoopbackURL)

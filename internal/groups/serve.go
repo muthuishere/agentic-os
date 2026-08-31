@@ -26,9 +26,9 @@ func init() {
 				Summary: "Serve every command as an MCP tool over streamable HTTP",
 				Args:    "[--addr=<host:port>] [--groups=<a,b>] [--gui=on|off|auto] [--quiet]",
 				Examples: []string{
-					"agentic-os serve mcp",
-					"agentic-os serve mcp --addr=127.0.0.1:9000 --groups=window,capture,exec",
-					"agentic-os serve mcp --gui=off   # screenless tools only",
+					"aos serve mcp",
+					"aos serve mcp --addr=127.0.0.1:9000 --groups=window,capture,exec",
+					"aos serve mcp --gui=off   # screenless tools only",
 				},
 				Run: runServeMCP,
 			},
@@ -36,7 +36,7 @@ func init() {
 				Group: "serve", Name: "tools",
 				Summary:  "Print the MCP tool catalogue this machine would expose",
 				Args:     "[--groups=<a,b>]",
-				Examples: []string{"agentic-os serve tools --groups=window"},
+				Examples: []string{"aos serve tools --groups=window"},
 				Run:      runServeTools,
 			},
 		)
@@ -85,7 +85,7 @@ func buildTools(c *cli.Ctx, only map[string]bool, gui guiMode) []toolnexus.Tool 
 					"args": map[string]any{
 						"type":        "array",
 						"items":       map[string]any{"type": "string"},
-						"description": "Arguments, exactly as typed after `agentic-os " + route + "`.",
+						"description": "Arguments, exactly as typed after `aos " + route + "`.",
 					},
 					"stdin": map[string]any{
 						"type":        "string",
@@ -107,7 +107,7 @@ func describeTool(cmd *cli.Command) string {
 	var b strings.Builder
 	b.WriteString(cmd.Summary)
 	if cmd.Args != "" {
-		fmt.Fprintf(&b, "\n\nUsage: agentic-os %s %s", cmd.Route(), cmd.Args)
+		fmt.Fprintf(&b, "\n\nUsage: aos %s %s", cmd.Route(), cmd.Args)
 	}
 	if len(cmd.Examples) > 0 {
 		b.WriteString("\n\nExamples:\n  " + strings.Join(cmd.Examples, "\n  "))
@@ -268,7 +268,7 @@ func runServeMCP(c *cli.Ctx, args []string) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	// Builtins are toolnexus's own shell/file tools; agentic-os already exposes
+	// Builtins are toolnexus's own shell/file tools; aos already exposes
 	// its own, so leaving them on would offer an agent two ways to do one thing.
 	toolkit, err := toolnexus.CreateToolkit(ctx, toolnexus.Options{
 		ExtraTools: tools,
@@ -297,12 +297,12 @@ func runServeMCP(c *cli.Ctx, args []string) error {
 	}
 	defer handle.Stop()
 
-	c.Printf("agentic-os mcp  %s/mcp\n", handle.URL)
+	c.Printf("aos mcp  %s/mcp\n", handle.URL)
 	c.Printf("tools           %d\n", len(tools))
 	if !cli.HasDisplay(c.Env, c.GOOS) && gui != guiOn {
 		c.Printf("gui             excluded — no display on this machine\n")
 	}
-	c.Printf("connect         claude mcp add --transport http agentic-os %s/mcp\n", handle.URL)
+	c.Printf("connect         claude mcp add --transport http aos %s/mcp\n", handle.URL)
 
 	<-ctx.Done()
 	c.Warnf("\nstopping\n")

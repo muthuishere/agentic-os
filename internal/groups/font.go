@@ -22,7 +22,7 @@ func init() {
 				Group: "font", Name: "list",
 				Summary:  "List installed font families",
 				Args:     "[filter]",
-				Examples: []string{"agentic-os font list", "agentic-os font list mono"},
+				Examples: []string{"aos font list", "aos font list mono"},
 				Run:      runFontList,
 			},
 			&cli.Command{

@@ -3,7 +3,7 @@
 //
 // Bundling rather than publishing separately means the skill can never describe
 // a version of the CLI that is not the one installed: `go install` and
-// `agentic-os skill install` always agree.
+// `aos skill install` always agree.
 package skill
 
 import (

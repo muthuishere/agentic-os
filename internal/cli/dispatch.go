@@ -79,7 +79,7 @@ func dispatch(c *Ctx, args []string) int {
 		return 0
 	case "commands":
 		if err := runCommands(c, args[1:]); err != nil {
-			c.Warnf("agentic-os: %v\n", err)
+			c.Warnf("aos: %v\n", err)
 			return 1
 		}
 		return 0
@@ -92,11 +92,11 @@ func dispatch(c *Ctx, args []string) int {
 			PrintGroupHelp(c.Stdout, groupHelp.Group, c.GOOS, HasDisplay(c.Env, c.GOOS))
 			return 0
 		}
-		c.Warnf("agentic-os: %v\n", err)
+		c.Warnf("aos: %v\n", err)
 		return 1
 	}
 
-	// `agentic-os <group> --help` when the group also has a default command.
+	// `aos <group> --help` when the group also has a default command.
 	if len(rest) == 1 && isHelpFlag(rest[0]) {
 		if cmd.Name == "" {
 			if g := c.Registry.Group(cmd.Group); g != nil && len(visibleCommands(g)) > 1 {
@@ -109,13 +109,13 @@ func dispatch(c *Ctx, args []string) int {
 	}
 
 	if !cmd.Supports(c.GOOS) {
-		c.Warnf("agentic-os: %v\n", &ErrUnsupported{Route: cmd.Route(), GOOS: c.GOOS, On: cmd.Platforms})
+		c.Warnf("aos: %v\n", &ErrUnsupported{Route: cmd.Route(), GOOS: c.GOOS, On: cmd.Platforms})
 		return 2
 	}
 
 	if cmd.NeedsDisplay && !HasDisplay(c.Env, c.GOOS) {
-		c.Warnf("agentic-os: %q needs a display, and this machine has none\n", cmd.Route())
-		c.Warnf("Start one with `agentic-os headless start`, or check `agentic-os headless status`.\n")
+		c.Warnf("aos: %q needs a display, and this machine has none\n", cmd.Route())
+		c.Warnf("Start one with `aos headless start`, or check `aos headless status`.\n")
 		return 2
 	}
 
@@ -123,7 +123,7 @@ func dispatch(c *Ctx, args []string) int {
 		return runExternal(c, cmd, rest)
 	}
 	if cmd.Run == nil {
-		c.Warnf("agentic-os: %q is registered but not implemented yet\n", cmd.Route())
+		c.Warnf("aos: %q is registered but not implemented yet\n", cmd.Route())
 		return 3
 	}
 
@@ -131,11 +131,11 @@ func dispatch(c *Ctx, args []string) int {
 		var exit *ExitError
 		if errors.As(err, &exit) {
 			if exit.Message != "" {
-				c.Warnf("agentic-os: %s\n", exit.Message)
+				c.Warnf("aos: %s\n", exit.Message)
 			}
 			return exit.Code
 		}
-		c.Warnf("agentic-os: %v\n", err)
+		c.Warnf("aos: %v\n", err)
 		return 1
 	}
 	return 0

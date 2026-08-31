@@ -40,7 +40,7 @@ func runHeadlessStart(c *cli.Ctx, args []string) error {
 		return err
 	}
 	if !sys.Has("Xvfb") {
-		return &cli.ExitError{Code: 1, Message: "Xvfb is not installed; `agentic-os pkg install xvfb`"}
+		return &cli.ExitError{Code: 1, Message: "Xvfb is not installed; `aos pkg install xvfb`"}
 	}
 	if state, running := readState(); running {
 		return &cli.ExitError{Code: 1,
@@ -96,7 +96,7 @@ func runHeadlessStart(c *cli.Ctx, args []string) error {
 	} else if set.Has("wm") {
 		c.Warnf("no window manager found; install one of: %v\n", windowManagers)
 	}
-	c.Printf("use      export DISPLAY=%s   (or `agentic-os headless run <cmd>`)\n", state.Display)
+	c.Printf("use      export DISPLAY=%s   (or `aos headless run <cmd>`)\n", state.Display)
 	return nil
 }
 

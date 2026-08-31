@@ -113,7 +113,7 @@ func TestRunHelpFlags(t *testing.T) {
 	if code := Run(c, []string{"audio", "volume", "--help"}); code != 0 {
 		t.Fatalf("want exit 0, got %d", code)
 	}
-	if !strings.Contains(out.String(), "agentic-os audio volume") {
+	if !strings.Contains(out.String(), "aos audio volume") {
 		t.Fatalf("help did not name the command: %q", out.String())
 	}
 }

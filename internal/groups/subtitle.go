@@ -32,9 +32,9 @@ func init() {
 				Summary: "Show large text over everything for a few seconds",
 				Args:    "<text...> [--seconds=<n>] [--position=bottom|top|center] [--size=<px>] [--wait]",
 				Examples: []string{
-					`agentic-os subtitle show "installing dependencies"`,
-					`agentic-os subtitle show "running the migration" --seconds=30 --position=top`,
-					`agentic-os subtitle show "step 1 of 3" --seconds=4 --wait`,
+					`aos subtitle show "installing dependencies"`,
+					`aos subtitle show "running the migration" --seconds=30 --position=top`,
+					`aos subtitle show "step 1 of 3" --seconds=4 --wait`,
 					"# prints which backend was used: an overlay, or a notification it fell back to",
 				},
 				Run: runSubtitleShow,
@@ -42,7 +42,7 @@ func init() {
 			&cli.Command{
 				Group: "subtitle", Name: "test",
 				Summary:  "Show a short sample, to check subtitles work on this machine",
-				Examples: []string{"agentic-os subtitle test"},
+				Examples: []string{"aos subtitle test"},
 				Run:      runSubtitleTest,
 			},
 		)
@@ -106,5 +106,5 @@ func runSubtitleShow(c *cli.Ctx, args []string) error {
 // runSubtitleTest goes through the same parsing as `show`, so what it proves is
 // the path a real caption takes rather than a shortcut around it.
 func runSubtitleTest(c *cli.Ctx, _ []string) error {
-	return runSubtitleShow(c, []string{"agentic-os subtitle works", "--seconds=3"})
+	return runSubtitleShow(c, []string{"aos subtitle works", "--seconds=3"})
 }

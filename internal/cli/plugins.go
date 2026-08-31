@@ -14,8 +14,13 @@ import (
 // looking for metadata, so discovery stays cheap over hundreds of files.
 const metadataScanLimit = 80
 
-// Prefix is the file-name prefix an external command must carry to be found.
-const Prefix = "agentic-os-"
+// Prefixes are the file-name prefixes an external command may carry. The
+// command is `aos`, so that is what a plugin author reaches for; the longer
+// project name is accepted too, since both are obvious guesses.
+var Prefixes = []string{"aos-", "agentic-os-"}
+
+// Prefix is the canonical prefix, used in documentation and examples.
+var Prefix = Prefixes[0]
 
 // metaKey is the comment tag external commands use to describe themselves,
 // e.g. `# agentic-os:summary=Apply a theme`.
@@ -62,14 +67,15 @@ func DiscoverPlugins(r *Registry, env func(string) string) {
 				continue
 			}
 			name := entry.Name()
-			if !strings.HasPrefix(name, Prefix) {
+			stem, ok := trimPluginPrefix(name)
+			if !ok {
 				continue
 			}
 			path := filepath.Join(dir, name)
 			if !isExecutable(path) {
 				continue
 			}
-			cmd := parsePlugin(path, strings.TrimPrefix(name, Prefix))
+			cmd := parsePlugin(path, stem)
 			if cmd == nil {
 				continue
 			}
@@ -79,6 +85,16 @@ func DiscoverPlugins(r *Registry, env func(string) string) {
 			r.Add(cmd)
 		}
 	}
+}
+
+// trimPluginPrefix removes whichever accepted prefix a file carries.
+func trimPluginPrefix(name string) (string, bool) {
+	for _, prefix := range Prefixes {
+		if strings.HasPrefix(name, prefix) {
+			return strings.TrimPrefix(name, prefix), true
+		}
+	}
+	return "", false
 }
 
 // parsePlugin turns a file name and its metadata header into a Command.
@@ -199,7 +215,7 @@ func runExternal(c *Ctx, cmd *Command, args []string) int {
 		if errors.As(err, &exit) {
 			return exit.ExitCode()
 		}
-		c.Warnf("agentic-os: %s: %v\n", cmd.Route(), err)
+		c.Warnf("aos: %s: %v\n", cmd.Route(), err)
 		return 1
 	}
 	return 0

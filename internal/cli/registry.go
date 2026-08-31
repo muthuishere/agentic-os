@@ -13,7 +13,7 @@ type Runner func(c *Ctx, args []string) error
 // Command is one leaf of the CLI tree.
 //
 // A Command with an empty Name is the group's default command, invoked as
-// `agentic-os <group>` with no subcommand (mirrors omarchy's `omarchy-<group>`
+// `aos <group>` with no subcommand (mirrors omarchy's `omarchy-<group>`
 // binary sitting alongside its `omarchy-<group>-<name>` siblings).
 type Command struct {
 	Group    string
@@ -191,10 +191,10 @@ func (r *Registry) Resolve(args []string) (*Command, []string, error) {
 		if len(args) == 1 || (len(args) == 2 && isHelpFlag(args[1])) {
 			return nil, nil, &GroupHelpError{Group: g}
 		}
-		return nil, nil, fmt.Errorf("unknown command %q in group %q\nTry: agentic-os %s --help",
+		return nil, nil, fmt.Errorf("unknown command %q in group %q\nTry: aos %s --help",
 			strings.Join(args[1:], " "), args[0], args[0])
 	}
-	return nil, nil, fmt.Errorf("unknown command %q\nTry: agentic-os --help", strings.Join(args, " "))
+	return nil, nil, fmt.Errorf("unknown command %q\nTry: aos --help", strings.Join(args, " "))
 }
 
 // GroupHelpError signals that the user typed a bare group name and wants its help.

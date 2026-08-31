@@ -1,0 +1,87 @@
+---
+title: Using it from an agent (MCP)
+description: Serve the whole command registry as MCP tools over streamable HTTP, scope what an agent sees, and keep the server running as a per-user service.
+---
+
+```sh
+agentic-os serve mcp     # streamable HTTP at 127.0.0.1:14320/mcp
+```
+
+```sh
+claude mcp add --transport http agentic-os http://127.0.0.1:14320/mcp
+```
+
+Every non-hidden, non-blocking command available on this machine becomes one MCP
+tool, carrying the same summary, usage and examples the CLI documents.
+
+## Preview the catalogue first
+
+```console
+$ agentic-os serve tools
+adapters_example             Print a starter adapter, ready to save and edit
+adapters_list                List the adapters this machine has loaded
+audio_volume                 Print the output volume, or set it
+capture_screenshot           Take a screenshot
+clipboard_paste              Print the clipboard to stdout
+display_list                 List attached monitors with geometry and focus state
+exec_capture                 Run a command and print stdout, stderr, and exit code as JSON
+file_read                    Print a file, optionally a line range
+window_move                  Move a window to a zone, a split, or coordinates
+```
+
+The tool name is the route with underscores. `window move` is `window_move`;
+`agentic-os window move Chrome --zone=1B` and a `window_move` call with
+`{"app":"Chrome","zone":"1B"}` do the same work, through the same `Runner`.
+There is no second implementation behind the protocol.
+
+## Give an agent less than everything
+
+```sh
+agentic-os serve mcp --groups=window,capture,exec   # a subset
+agentic-os serve mcp --gui=off                      # only the screenless tools
+```
+
+`--gui` defaults to `auto`: GUI tools appear only when the machine actually has
+a display. Offering an agent a tool that cannot run is worse than not offering
+it — it will try, fail, and try again.
+
+## It binds loopback
+
+Serving this registry is remote control of the machine, so reaching it from
+elsewhere should be deliberate: an SSH tunnel, or an explicit `--addr`.
+
+## Keeping it running
+
+A server an agent connects to should not depend on a terminal staying open:
+
+```sh
+agentic-os service create mcp --autostart --now -- agentic-os serve mcp
+agentic-os service status mcp     # exits non-zero unless it is running
+agentic-os service list
+agentic-os service remove mcp
+```
+
+A launchd user agent on macOS, a `systemd --user` unit on Linux, a Scheduled
+Task on Windows — per-user throughout, so nothing here asks for admin or sudo.
+
+## The protocol layer is not hand-rolled
+
+MCP serving is [toolnexus](https://github.com/muthuishere/toolnexus)'s
+`Toolkit.Serve`, so the protocol work is conformance-tested rather than
+reimplemented here. Windows, monitors, input and screenshots come from
+[windowctl](https://github.com/muthuishere/windowctl). agentic-os is the front
+door.
+
+## What an agent should read
+
+```sh
+agentic-os install --skills
+```
+
+writes the agent skill bundled inside the binary to `~/.claude/skills/` and
+`~/.agents/skills/`. Because it ships *in* the binary, the instructions an agent
+reads cannot describe a different version than the one installed.
+
+This site also publishes [`/agentic-os/llms.txt`](/agentic-os/llms.txt) and
+`llms-full.txt`, which is the same documentation in the form an agent prefers to
+read it.

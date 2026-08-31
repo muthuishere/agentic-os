@@ -1,0 +1,66 @@
+/* agentic-os docs theme — the same warm off-white / ink / single-orange
+   language as the landing canvas, so the site reads as one thing. */
+
+:root {
+	--sl-font: 'Inter Variable', 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+		'Segoe UI', Roboto, sans-serif;
+	--sl-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+	--sl-content-width: 52rem;
+}
+
+/* Dark (default) */
+:root {
+	--sl-color-accent-low: #4a3413;
+	--sl-color-accent: #e08a1e;
+	--sl-color-accent-high: #f2c489;
+
+	--sl-color-white: #f4f3ef;
+	--sl-color-gray-1: #e6e2d9;
+	--sl-color-gray-2: #c4bfb4;
+	--sl-color-gray-3: #8a857c;
+	--sl-color-gray-4: #57534b;
+	--sl-color-gray-5: #2b2926;
+	--sl-color-gray-6: #1f1e1b;
+	--sl-color-black: #161512;
+
+	--sl-color-bg: #161512;
+	--sl-color-bg-nav: #1b1a17;
+	--sl-color-bg-sidebar: #1b1a17;
+	--sl-color-bg-inline-code: #262420;
+	--sl-color-hairline: #2b2926;
+	--sl-color-hairline-light: #2b2926;
+	--sl-color-text-accent: #e8a44f;
+}
+
+/* Light — the canvas palette, verbatim */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #f7e6cb;
+	--sl-color-accent: #b96f13;
+	--sl-color-accent-high: #6b400a;
+
+	--sl-color-white: #1c1b19;
+	--sl-color-gray-1: #2b2926;
+	--sl-color-gray-2: #3d3a35;
+	--sl-color-gray-3: #6f6a61;
+	--sl-color-gray-4: #8a857c;
+	--sl-color-gray-5: #d6d2c8;
+	--sl-color-gray-6: #ebe8e1;
+	--sl-color-gray-7: #f4f3ef;
+	--sl-color-black: #fbfaf8;
+
+	--sl-color-bg: #f4f3ef;
+	--sl-color-bg-nav: #fbfaf8;
+	--sl-color-bg-sidebar: #fbfaf8;
+	--sl-color-bg-inline-code: #ebe8e1;
+	--sl-color-hairline: #d6d2c8;
+	--sl-color-hairline-light: #e2ddd2;
+	--sl-color-text-accent: #b96f13;
+}
+
+/* Tables in the command surface page carry a lot of routes — keep them tight. */
+.sl-markdown-content table {
+	font-size: 0.9rem;
+}
+.sl-markdown-content table code {
+	white-space: nowrap;
+}

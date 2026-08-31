@@ -17,9 +17,9 @@ func init() {
 				Summary: "Print the output volume, or set it",
 				Args:    "[<0-100>|+<n>|-<n>]",
 				Examples: []string{
-					"agentic-os audio volume",
-					"agentic-os audio volume 40",
-					"agentic-os audio volume +5",
+					"aos audio volume",
+					"aos audio volume 40",
+					"aos audio volume +5",
 				},
 				Run: runAudioVolume,
 			},
@@ -27,7 +27,7 @@ func init() {
 				Group: "audio", Name: "mute",
 				Summary:  "Print or change the output mute state",
 				Args:     "[on|off|toggle]",
-				Examples: []string{"agentic-os audio mute toggle"},
+				Examples: []string{"aos audio mute toggle"},
 				Run:      runAudioMute,
 			},
 		)

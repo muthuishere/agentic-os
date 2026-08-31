@@ -1,0 +1,142 @@
+---
+// The landing page sits outside the Starlight layout on purpose: the diagram is
+// the first thing, full viewport, with no chrome in front of it.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>agentic-os — one surface, two callers, three platforms</title>
+		<meta
+			name="description"
+			content="A computer-use MCP server that is also a CLI a person can type. 96 commands across 34 groups, on macOS, Windows and Linux."
+		/>
+		<link rel="icon" href={`${base}/favicon.svg`} />
+	</head>
+	<body>
+		<canvas id="c"></canvas>
+		<div id="fps"></div>
+		<a id="scroll" href="#start">↓</a>
+
+		<section id="start">
+			<h1>agentic-os</h1>
+			<p class="lede">
+				A computer-use MCP server that is also a CLI a person can type. Every command is an MCP
+				tool, and every MCP tool runs the identical code path you get at a prompt.
+			</p>
+
+			<pre><code>go install github.com/muthuishere/agentic-os/cmd/agentic-os@latest
+agentic-os doctor
+agentic-os serve mcp</code></pre>
+
+			<p class="links">
+				<a class="primary" href={`${base}/what-it-is/`}>Read the docs</a>
+				<a href={`${base}/what-it-is-not/`}>What it&rsquo;s not</a>
+				<a href={`${base}/reference/commands/`}>Every command</a>
+				<a href="https://github.com/muthuishere/agentic-os">GitHub</a>
+			</p>
+
+			<p class="foot">
+				96 commands · 34 groups · macOS, Windows and Linux, including a headless Linux server.
+			</p>
+		</section>
+
+		<style is:global>
+			html,
+			body {
+				margin: 0;
+				background: #f4f3ef;
+				color: #1c1b19;
+				font: 16px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial,
+					sans-serif;
+			}
+			canvas#c {
+				display: block;
+				width: 100vw;
+				height: 100vh;
+			}
+			#fps {
+				position: fixed;
+				right: 10px;
+				bottom: 8px;
+				font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+				color: #b9b5ab;
+				letter-spacing: 0.04em;
+				user-select: none;
+			}
+			#scroll {
+				position: absolute;
+				top: calc(100vh - 46px);
+				left: 50%;
+				transform: translateX(-50%);
+				width: 30px;
+				height: 30px;
+				line-height: 30px;
+				text-align: center;
+				color: #8a857c;
+				text-decoration: none;
+				border: 1px solid #d6d2c8;
+				border-radius: 50%;
+				background: #fff;
+			}
+			#start {
+				max-width: 720px;
+				margin: 0 auto;
+				padding: 88px 24px 120px;
+				border-top: 1px solid #d6d2c8;
+			}
+			#start h1 {
+				font-size: 34px;
+				margin: 0 0 12px;
+				letter-spacing: -0.01em;
+			}
+			.lede {
+				color: #57534b;
+				font-size: 18px;
+				margin: 0 0 28px;
+			}
+			#start pre {
+				background: #151412;
+				color: #e6e2d9;
+				padding: 18px 20px;
+				border-radius: 10px;
+				overflow-x: auto;
+				font: 13.5px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+			}
+			.links {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				margin: 28px 0 0;
+			}
+			.links a {
+				border: 1px solid #d6d2c8;
+				background: #fff;
+				color: #1c1b19;
+				border-radius: 8px;
+				padding: 9px 16px;
+				text-decoration: none;
+				font-size: 14.5px;
+			}
+			.links a.primary {
+				background: #e08a1e;
+				border-color: #e08a1e;
+				color: #fff;
+			}
+			.foot {
+				margin-top: 34px;
+				color: #8a857c;
+				font-size: 13.5px;
+			}
+			@media (prefers-reduced-motion: reduce) {
+				#fps {
+					display: none;
+				}
+			}
+		</style>
+
+		<script is:inline src={`${base}/canvas.js`}></script>
+	</body>
+</html>

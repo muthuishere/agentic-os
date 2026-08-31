@@ -25,7 +25,7 @@ type Result struct {
 // which stream a message came out on.
 func (r Result) Combined() string { return r.Stdout + r.Stderr }
 
-// Runner executes agentic-os on one target.
+// Runner executes aos on one target.
 type Runner struct {
 	target Target
 	deploy sync.Once

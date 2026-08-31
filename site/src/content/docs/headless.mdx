@@ -1,0 +1,60 @@
+---
+title: Headless machines
+description: Most of agentic-os needs no display at all; on Linux, headless start provides one when something does.
+---
+
+Most of the surface needs no screen. On a server, in CI, or in a container,
+`exec`, `file`, `msg`, `pkg`, `network`, `system`, `power`, `battery`, `font`,
+`debug` and `serve` work exactly as they do on a laptop.
+
+## What the machine says about itself
+
+```console
+$ agentic-os headless status
+platform     darwin
+virtual      not available on this platform
+note         desktop commands need a logged-in session here
+
+display      yes — window, mouse, key, capture, and display commands will work
+```
+
+## The desktop commands refuse, rather than fail deep
+
+```console
+$ agentic-os window list
+agentic-os: "window list" needs a display, and this machine has none
+Start one with `agentic-os headless start`, or check `agentic-os headless status`.
+```
+
+## On Linux, give it a display
+
+```sh
+agentic-os headless start --size=1920x1080 --wm   # Xvfb + a lightweight WM
+agentic-os window list                            # the display is adopted automatically
+agentic-os headless stop
+```
+
+`headless start` waits for the window manager to claim the screen before it
+returns, so the next command works instead of losing a race with it. Later runs
+of `agentic-os` adopt the managed display on their own — there is no
+`export DISPLAY` step. An environment that already names a display always wins,
+so this never redirects a real session.
+
+macOS and Windows have no Xvfb equivalent. There, the desktop commands need a
+real logged-in session, and `headless status` says exactly that.
+
+## Knowing in advance what will work
+
+```sh
+agentic-os headless status       # is there a display, and where did it come from
+agentic-os commands              # screenless machines list only what will run
+agentic-os commands --all        # `g` marks a command waiting on a display
+agentic-os commands --json       # each entry carries "needs_display"
+agentic-os serve mcp --gui=off   # expose only the screenless tools
+```
+
+## It is tested this way
+
+The end-to-end suite drives the built binaries on real machines, and on a
+machine configured `hasDisplay: false` it asserts the *refusal* — `window list`
+must exit 2 saying it needs a display — rather than skipping quietly.

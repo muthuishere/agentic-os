@@ -24,8 +24,8 @@ Every command is also an MCP tool, so what you type by hand is what an agent get
 current:
 
 ```bash
-agentic-os commands            # what this machine can run right now
-agentic-os commands --json     # the same, parseable, with needs_display + platforms
+aos commands            # what this machine can run right now
+aos commands --json     # the same, parseable, with needs_display + platforms
 agentic-os <group> --help      # a group's commands
 agentic-os <group> <cmd> --help
 ```
@@ -41,7 +41,7 @@ If a command is not in `commands`, it does not exist here. Do not invent flags �
 - **2** — refused before doing anything: the command needs a display this machine
   lacks, or is not supported on this platform. The message says which.
 
-Exit 2 on Linux is fixable: `agentic-os headless start --wm` provides a virtual
+Exit 2 on Linux is fixable: `aos headless start --wm` provides a virtual
 display, and later commands adopt it automatically. On macOS and Windows it means
 there is no logged-in session and the desktop commands cannot work at all.
 
@@ -90,17 +90,17 @@ that rect is how image coordinates become click coordinates: global = origin + p
 ## Checking the machine
 
 ```bash
-agentic-os doctor          # clipboard round trip, real screenshot, window backend,
+aos doctor          # clipboard round trip, real screenshot, window backend,
                            # permissions, package manager — each with a fix
 ```
 
 On macOS, denied permissions are the usual cause of blank screenshots or failing
-input: `agentic-os permission request`.
+input: `aos permission request`.
 
 ## Serving it to another agent
 
 ```bash
-agentic-os serve mcp                     # 127.0.0.1:14320/mcp, loopback only
+aos serve mcp                     # 127.0.0.1:14320/mcp, loopback only
 claude mcp add --transport http agentic-os http://127.0.0.1:14320/mcp
 ```
 
@@ -112,7 +112,7 @@ because offering a tool that cannot run is worse than not offering it.
 Two ways, both discovered automatically and both exposed over MCP:
 
 - **Adapter** — JSON in `~/.config/agentic-os/adapters/`, wrapping a command line.
-  `agentic-os adapters example --write` writes a starter.
+  `aos adapters example --write` writes a starter.
 - **Plugin** — any executable named `agentic-os-<group>-<name>` on PATH, describing
   itself in `# agentic-os:summary=` comment headers.
 
@@ -121,9 +121,9 @@ Neither can shadow a built-in command.
 ## What was asked of this machine
 
 ```bash
-agentic-os obs stats       # calls, failures, p50/p95 per route
-agentic-os obs tail        # the most recent work
-agentic-os obs export      # OTLP JSON
+aos obs stats       # calls, failures, p50/p95 per route
+aos obs tail        # the most recent work
+aos obs export      # OTLP JSON
 ```
 
 Spans record the route, exit code, duration and the *count* of arguments — never

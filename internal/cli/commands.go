@@ -22,7 +22,7 @@ type commandJSON struct {
 	Binary    string   `json:"binary,omitempty"`
 }
 
-// runCommands implements `agentic-os commands [--all] [--json] [--check]`.
+// runCommands implements `aos commands [--all] [--json] [--check]`.
 func runCommands(c *Ctx, args []string) error {
 	var all, asJSON, check bool
 	for _, arg := range args {
@@ -138,7 +138,7 @@ func toJSON(cmd *Command, goos string) commandJSON {
 		source = "external"
 	}
 	return commandJSON{
-		Route:     "agentic-os " + cmd.Route(),
+		Route:     "aos " + cmd.Route(),
 		Group:     cmd.Group,
 		Name:      cmd.Name,
 		Summary:   cmd.Summary,

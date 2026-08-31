@@ -19,13 +19,13 @@ var Common = []string{
 
 // PrintRootHelp renders the front page: usage, common commands, all groups.
 func PrintRootHelp(w io.Writer, r *Registry) {
-	fmt.Fprintln(w, "agentic-os command center")
+	fmt.Fprintln(w, "aos command center")
 	fmt.Fprintln(w)
 	fmt.Fprintln(w, "Usage:")
-	fmt.Fprintln(w, "  agentic-os <command> [args...]")
-	fmt.Fprintln(w, "  agentic-os commands [--all] [--json] [--check]")
-	fmt.Fprintln(w, "  agentic-os <group> --help")
-	fmt.Fprintln(w, "  agentic-os <group> <command> --help")
+	fmt.Fprintln(w, "  aos <command> [args...]")
+	fmt.Fprintln(w, "  aos commands [--all] [--json] [--check]")
+	fmt.Fprintln(w, "  aos <group> --help")
+	fmt.Fprintln(w, "  aos <group> <command> --help")
 	fmt.Fprintln(w)
 
 	var common []*Command
@@ -44,7 +44,7 @@ func PrintRootHelp(w io.Writer, r *Registry) {
 			}
 		}
 		for _, cmd := range common {
-			fmt.Fprintf(w, "  agentic-os %-*s  %s\n", width, cmd.Route(), cmd.Summary)
+			fmt.Fprintf(w, "  aos %-*s  %s\n", width, cmd.Route(), cmd.Summary)
 		}
 		fmt.Fprintln(w)
 	}
@@ -63,7 +63,7 @@ func PrintRootHelp(w io.Writer, r *Registry) {
 		}
 		fmt.Fprintln(w)
 	}
-	fmt.Fprintln(w, "Run `agentic-os commands --all` to list every command, including")
+	fmt.Fprintln(w, "Run `aos commands --all` to list every command, including")
 	fmt.Fprintln(w, "the ones this platform cannot run.")
 }
 
@@ -104,7 +104,7 @@ func PrintGroupHelp(w io.Writer, g *Group, goos string, display bool) {
 
 // PrintCommandHelp renders one command's own page.
 func PrintCommandHelp(w io.Writer, cmd *Command, goos string, display bool) {
-	fmt.Fprintf(w, "agentic-os %s — %s\n", cmd.Route(), cmd.Summary)
+	fmt.Fprintf(w, "aos %s — %s\n", cmd.Route(), cmd.Summary)
 	fmt.Fprintln(w)
 	fmt.Fprintln(w, "Usage:")
 	fmt.Fprintf(w, "  %s\n", usageLine(cmd))
@@ -126,7 +126,7 @@ func PrintCommandHelp(w io.Writer, cmd *Command, goos string, display bool) {
 			fmt.Fprintln(w, "Needs a display; this machine has one.")
 		} else {
 			fmt.Fprintln(w, "Needs a display, and this machine has none.")
-			fmt.Fprintln(w, "Start one with `agentic-os headless start`.")
+			fmt.Fprintln(w, "Start one with `aos headless start`.")
 		}
 	}
 	if len(cmd.Aliases) > 0 {
@@ -143,7 +143,7 @@ func PrintCommandHelp(w io.Writer, cmd *Command, goos string, display bool) {
 }
 
 func usageLine(cmd *Command) string {
-	line := "agentic-os " + cmd.Route()
+	line := "aos " + cmd.Route()
 	if cmd.Args != "" {
 		line += " " + cmd.Args
 	}

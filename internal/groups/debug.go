@@ -31,7 +31,7 @@ func init() {
 			&cli.Command{
 				Group:    "debug",
 				Summary:  "Print a diagnostic dump: platform, tools, plugin dirs",
-				Examples: []string{"agentic-os debug"},
+				Examples: []string{"aos debug"},
 				Run:      runDebug,
 			},
 			&cli.Command{
@@ -44,7 +44,7 @@ func init() {
 		r.Describe("version", "Version information")
 		r.Add(&cli.Command{
 			Group:   "version",
-			Summary: "Print the agentic-os version",
+			Summary: "Print the aos version",
 			Run: func(c *cli.Ctx, _ []string) error {
 				c.Println(c.Version)
 				return nil
@@ -54,7 +54,7 @@ func init() {
 }
 
 func runDebug(c *cli.Ctx, _ []string) error {
-	c.Printf("agentic-os  %s\n", c.Version)
+	c.Printf("aos  %s\n", c.Version)
 	c.Printf("go          %s\n", runtime.Version())
 	c.Printf("platform    %s/%s\n", runtime.GOOS, runtime.GOARCH)
 

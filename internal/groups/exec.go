@@ -32,7 +32,7 @@ func init() {
 				Summary: "Run a command with its output streamed to this terminal",
 				Args:    "<command> [args...]",
 				Examples: []string{
-					"agentic-os exec run git status",
+					"aos exec run git status",
 				},
 				Run: runExecRun,
 			},
@@ -41,8 +41,8 @@ func init() {
 				Summary: "Run a command and print stdout, stderr, and exit code as JSON",
 				Args:    "<command> [args...]",
 				Examples: []string{
-					"agentic-os exec capture git status",
-					"agentic-os exec capture -- ls -la",
+					"aos exec capture git status",
+					"aos exec capture -- ls -la",
 				},
 				Run: runExecCapture,
 			},
@@ -51,7 +51,7 @@ func init() {
 				Summary: "Run a command line through the platform shell",
 				Args:    "<script>",
 				Examples: []string{
-					`agentic-os exec shell "git log --oneline | head -5"`,
+					`aos exec shell "git log --oneline | head -5"`,
 				},
 				Run: runExecShell,
 			},

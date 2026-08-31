@@ -12,7 +12,7 @@ import (
 )
 
 // ConfigDir is where a user's own additions live: adapters, plugin binaries,
-// and anything else agentic-os reads but does not ship.
+// and anything else aos reads but does not ship.
 func ConfigDir(env func(string) string) string {
 	if dir := strings.TrimSpace(env("AGENTIC_OS_CONFIG_DIR")); dir != "" {
 		return dir

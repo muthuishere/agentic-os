@@ -23,8 +23,8 @@ func init() {
 				Summary: "Summarise recorded work: calls, failures, and latency per route",
 				Args:    "[--since=<duration>] [--source=<cli|mcp>] [--json]",
 				Examples: []string{
-					"agentic-os obs stats",
-					"agentic-os obs stats --since=24h --source=mcp",
+					"aos obs stats",
+					"aos obs stats --since=24h --source=mcp",
 				},
 				Run: runObsStats,
 			},
@@ -32,14 +32,14 @@ func init() {
 				Group: "obs", Name: "tail",
 				Summary:  "Print the most recent spans, newest last",
 				Args:     "[--limit=<n>] [--since=<duration>]",
-				Examples: []string{"agentic-os obs tail --limit=20"},
+				Examples: []string{"aos obs tail --limit=20"},
 				Run:      runObsTail,
 			},
 			&cli.Command{
 				Group: "obs", Name: "export",
 				Summary:  "Emit recorded spans as OTLP JSON, ready for a collector",
 				Args:     "[--since=<duration>]",
-				Examples: []string{"agentic-os obs export --since=1h > spans.json"},
+				Examples: []string{"aos obs export --since=1h > spans.json"},
 				Run:      runObsExport,
 			},
 			&cli.Command{

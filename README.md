@@ -27,19 +27,19 @@ And it runs where there is no screen at all: most of the surface needs no
 display, and on Linux `headless start` provides one when something does.
 
 ```console
-$ agentic-os system info
-$ agentic-os window move Chrome --zone=1B
-$ agentic-os capture screenshot --app=Chrome --out=/tmp/shot.png
-$ agentic-os pkg install ripgrep          # brew / winget / pacman / apt, same verb
-$ agentic-os msg send --channel=ops "build passed"
-$ agentic-os serve mcp                    # now every command above is an agent tool
+$ aos system info
+$ aos window move Chrome --zone=1B
+$ aos capture screenshot --app=Chrome --out=/tmp/shot.png
+$ aos pkg install ripgrep          # brew / winget / pacman / apt, same verb
+$ aos msg send --channel=ops "build passed"
+$ aos serve mcp                    # now every command above is an agent tool
 ```
 
 ## Install
 
 ```sh
-go install github.com/muthuishere/agentic-os/cmd/agentic-os@latest
-agentic-os install --skills # teach Claude Code and other agents to use it
+go install github.com/muthuishere/agentic-os/cmd/aos@latest
+aos install --skills # teach Claude Code and other agents to use it
 ```
 
 `install --skills` writes the agent skill bundled inside the binary to
@@ -55,7 +55,7 @@ from anywhere.
 ## Agents connect over MCP
 
 ```sh
-agentic-os serve mcp                      # streamable HTTP at 127.0.0.1:14320/mcp
+aos serve mcp                      # streamable HTTP at 127.0.0.1:14320/mcp
 claude mcp add --transport http agentic-os http://127.0.0.1:14320/mcp
 ```
 
@@ -65,8 +65,8 @@ summary, usage, and examples the CLI documents. There is no second
 implementation: a tool call runs the identical `Runner` the terminal does.
 
 ```sh
-agentic-os serve tools                    # preview the catalogue
-agentic-os serve mcp --groups=window,capture,exec   # expose a subset
+aos serve tools                    # preview the catalogue
+aos serve mcp --groups=window,capture,exec   # expose a subset
 ```
 
 The MCP layer is [toolnexus](https://github.com/muthuishere/toolnexus)'s
@@ -82,10 +82,10 @@ any command — `serve mcp` above all — can be handed to the machine's own ser
 manager:
 
 ```sh
-agentic-os service create mcp --autostart --now -- agentic-os serve mcp
-agentic-os service status mcp     # exits non-zero unless it is running
-agentic-os service list
-agentic-os service remove mcp
+aos service create mcp --autostart --now -- aos serve mcp
+aos service status mcp     # exits non-zero unless it is running
+aos service list
+aos service remove mcp
 ```
 
 That is a launchd user agent on macOS, a `systemd --user` unit on Linux, and a
@@ -104,22 +104,22 @@ The desktop commands do need a display, and they say so rather than failing deep
 inside a display-server call:
 
 ```console
-$ agentic-os window list
+$ aos window list
 agentic-os: "window list" needs a display, and this machine has none
-Start one with `agentic-os headless start`, or check `agentic-os headless status`.
+Start one with `aos headless start`, or check `aos headless status`.
 ```
 
 On Linux, give it one:
 
 ```sh
-agentic-os headless start --size=1920x1080 --wm   # Xvfb + a lightweight WM
-agentic-os window list                            # the display is adopted automatically
-agentic-os headless stop
+aos headless start --size=1920x1080 --wm   # Xvfb + a lightweight WM
+aos window list                            # the display is adopted automatically
+aos headless stop
 ```
 
 `headless start` waits for the window manager to claim the screen before
 returning, so the next command works instead of losing a race with it. Later runs
-of `agentic-os` adopt the managed display on their own — no `export DISPLAY`. An
+of `aos` adopt the managed display on their own — no `export DISPLAY`. An
 environment that already names a display always wins, so this never redirects a
 real session.
 
@@ -131,11 +131,11 @@ real logged-in session, and `headless status` says so.
 Every command declares whether it needs a display, and the whole CLI respects it:
 
 ```sh
-agentic-os headless status       # is there a display, and where did it come from
-agentic-os commands              # screenless machines list only what will run
-agentic-os commands --all        # `g` marks a command waiting on a display
-agentic-os commands --json       # each entry carries "needs_display"
-agentic-os serve mcp --gui=off   # expose only the screenless tools
+aos headless status       # is there a display, and where did it come from
+aos commands              # screenless machines list only what will run
+aos commands --all        # `g` marks a command waiting on a display
+aos commands --json       # each entry carries "needs_display"
+aos serve mcp --gui=off   # expose only the screenless tools
 ```
 
 `serve` defaults to `--gui=auto`: GUI tools appear only when this machine
@@ -165,9 +165,9 @@ depends on — agentic-os is the front door.
 event, so an agent can pipe one and act on each line.
 
 ```sh
-agentic-os watch clipboard              # {"event":"clipboard","at":…,"seq":1,"length":34,"digest":"7a37ded45b5e"}
-agentic-os watch clipboard --content    # include the text — opt-in, clipboards hold passwords
-agentic-os watch window --max=1         # wait for the next focus change, then exit
+aos watch clipboard              # {"event":"clipboard","at":…,"seq":1,"length":34,"digest":"7a37ded45b5e"}
+aos watch clipboard --content    # include the text — opt-in, clipboards hold passwords
+aos watch window --max=1         # wait for the next focus change, then exit
 ```
 
 The first sample is only a baseline, so `--max=1` means "the next change", which
@@ -210,9 +210,9 @@ Most additions are a command line someone already runs. Drop a JSON file in
 ```
 
 ```sh
-agentic-os adapters example --write   # a working starter file
-agentic-os adapters list              # what this machine has loaded
-agentic-os adapters path
+aos adapters example --write   # a working starter file
+aos adapters list              # what this machine has loaded
+aos adapters path
 ```
 
 `run` goes through the platform shell with the user's arguments appended and
@@ -245,17 +245,17 @@ implementation transparently replaces a script.
 ## Introspection
 
 ```sh
-agentic-os commands            # what this machine can run
-agentic-os commands --all      # every registered command, including other platforms
-agentic-os commands --json     # machine-readable index
-agentic-os commands --check    # registry lint; non-zero when something is off
+aos commands            # what this machine can run
+aos commands --all      # every registered command, including other platforms
+aos commands --json     # machine-readable index
+aos commands --check    # registry lint; non-zero when something is off
 agentic-os debug               # platform, tool availability, plugin dirs
 ```
 
 ## Is it working?
 
 ```sh
-agentic-os doctor          # functional checks, each with a fix
+aos doctor          # functional checks, each with a fix
 ```
 
 `doctor` does not check whether binaries are on PATH — it round-trips the
@@ -270,10 +270,10 @@ OpenTelemetry-shaped span. Nothing is sent anywhere; the record simply exists,
 in the right shape, for the day you want it.
 
 ```sh
-agentic-os obs stats                 # calls, failures, p50/p95 per route
-agentic-os obs tail --limit=20       # the most recent work
-agentic-os obs export --since=1h     # OTLP JSON, ready for a collector
-agentic-os obs path                  # where it is written
+aos obs stats                 # calls, failures, p50/p95 per route
+aos obs tail --limit=20       # the most recent work
+aos obs export --since=1h     # OTLP JSON, ready for a collector
+aos obs path                  # where it is written
 ```
 
 Spans record the route, source (`cli` or `mcp`), exit code and duration — and

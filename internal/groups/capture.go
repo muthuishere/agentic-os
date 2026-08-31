@@ -35,11 +35,11 @@ func init() {
 			Args:    "[fullscreen|region|window] [--monitor=<n>] [--region=<x,y,w,h>] [--app=<name>] [--copy] [--out=<path>]",
 			Aliases: []string{"screenshot"},
 			Examples: []string{
-				"agentic-os screenshot",
-				"agentic-os capture screenshot region --copy",
-				"agentic-os capture screenshot --monitor=2",
-				"agentic-os capture screenshot --app=Chrome --out=/tmp/term.png",
-				"agentic-os capture screenshot --region=0,0,800,600",
+				"aos screenshot",
+				"aos capture screenshot region --copy",
+				"aos capture screenshot --monitor=2",
+				"aos capture screenshot --app=Chrome --out=/tmp/term.png",
+				"aos capture screenshot --region=0,0,800,600",
 			},
 			Run: runScreenshot,
 		})

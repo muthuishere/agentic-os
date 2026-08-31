@@ -50,7 +50,7 @@ func init() {
 				Group: "pkg", Name: name,
 				Summary:  verb.summary,
 				Args:     verb.args,
-				Examples: []string{"agentic-os pkg " + name + " " + verb.args},
+				Examples: []string{"aos pkg " + name + " " + verb.args},
 				Run: func(c *cli.Ctx, args []string) error {
 					return runPkgVerb(c, name, argv, needsArgs, args)
 				},

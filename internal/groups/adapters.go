@@ -18,7 +18,7 @@ const starterAdapter = `{
       "name": "hello",
       "summary": "Say hello, to prove adapters work",
       "args": "[name]",
-      "examples": ["agentic-os my hello world"],
+      "examples": ["aos my hello world"],
       "run": "echo hello"
     },
     {
@@ -39,7 +39,7 @@ func init() {
 				Group: "adapters", Name: "list",
 				Summary:  "List the adapters this machine has loaded",
 				Args:     "[--json]",
-				Examples: []string{"agentic-os adapters list"},
+				Examples: []string{"aos adapters list"},
 				Run:      runAdaptersList,
 			},
 			&cli.Command{
@@ -55,8 +55,8 @@ func init() {
 				Summary: "Print a starter adapter, ready to save and edit",
 				Args:    "[--write]",
 				Examples: []string{
-					"agentic-os adapters example",
-					"agentic-os adapters example --write",
+					"aos adapters example",
+					"aos adapters example --write",
 				},
 				Run: runAdaptersExample,
 			},
@@ -83,7 +83,7 @@ func runAdaptersList(c *cli.Ctx, args []string) error {
 	}
 	if len(adapters) == 0 {
 		c.Printf("no adapters in %s\n", cli.AdapterDir(c.Env))
-		c.Println("run `agentic-os adapters example --write` to start one")
+		c.Println("run `aos adapters example --write` to start one")
 		return nil
 	}
 	for _, adapter := range adapters {

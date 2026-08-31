@@ -1,4 +1,4 @@
-// Command agentic-os is a cross-platform command center for the machine you are
+// Command aos is a cross-platform command center for the machine you are
 // on — the omarchy CLI's shape, running natively on macOS, Windows, and Linux.
 package main
 

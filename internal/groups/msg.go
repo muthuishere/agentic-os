@@ -20,7 +20,7 @@ func init() {
 			&cli.Command{
 				Group: "msg", Name: "health",
 				Summary:  "Report whether the messenger hub is up, and its channels",
-				Examples: []string{"agentic-os msg health"},
+				Examples: []string{"aos msg health"},
 				Run:      runMsgHealth,
 			},
 			&cli.Command{
@@ -28,9 +28,9 @@ func init() {
 				Summary: "Send a message on a channel",
 				Args:    "--channel=<name> <text...> [--to=<thread>] [--reply-to=<id|last>] [--file=<path>]",
 				Examples: []string{
-					`agentic-os msg send --channel=ops "build passed"`,
-					`agentic-os msg send --channel=ops "on it" --reply-to=last`,
-					`agentic-os msg send --channel=ops --file=report.pdf "this month"`,
+					`aos msg send --channel=ops "build passed"`,
+					`aos msg send --channel=ops "on it" --reply-to=last`,
+					`aos msg send --channel=ops --file=report.pdf "this month"`,
 				},
 				Run: runMsgSend,
 			},
@@ -39,8 +39,8 @@ func init() {
 				Summary: "Poll the hub once and print new envelopes",
 				Args:    "[--since=<cursor>] [--channel=<name>]",
 				Examples: []string{
-					"agentic-os msg inbox",
-					"agentic-os msg inbox --since=7",
+					"aos msg inbox",
+					"aos msg inbox --since=7",
 				},
 				Run: runMsgInbox,
 			},
@@ -50,8 +50,8 @@ func init() {
 				Blocking: true,
 				Args:     "[--since=<cursor>] [--channel=<name>] [--interval=<ms>]",
 				Examples: []string{
-					"agentic-os msg listen",
-					"agentic-os msg listen --channel=ops --interval=1000",
+					"aos msg listen",
+					"aos msg listen --channel=ops --interval=1000",
 				},
 				Run: runMsgListen,
 			},
@@ -186,7 +186,7 @@ func runMsgListen(c *cli.Ctx, args []string) error {
 			}
 			// A hub restart should not end a long-running listener; report and
 			// keep trying on the next tick.
-			c.Warnf("agentic-os: %v\n", err)
+			c.Warnf("aos: %v\n", err)
 		} else {
 			printEnvelopes(c, inbox.Messages, channel)
 			cursor = inbox.Next

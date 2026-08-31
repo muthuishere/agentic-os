@@ -22,7 +22,7 @@ func init() {
 			&cli.Command{
 				Group: "power", Name: "status",
 				Summary:  "Print the current power source (ac or battery)",
-				Examples: []string{"agentic-os power status"},
+				Examples: []string{"aos power status"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					state, err := readPower()
 					if err != nil {
@@ -58,7 +58,7 @@ func init() {
 			&cli.Command{
 				Group: "battery", Name: "status",
 				Summary:  "Print battery charge and charging state",
-				Examples: []string{"agentic-os battery status"},
+				Examples: []string{"aos battery status"},
 				Run:      runBatteryStatus,
 			},
 			&cli.Command{

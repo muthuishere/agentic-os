@@ -23,7 +23,7 @@ func serveRegistry() *cli.Registry {
 	noop := func(*cli.Ctx, []string) error { return nil }
 	r.Add(
 		&cli.Command{Group: "file", Name: "read", Summary: "Read a file", Args: "<path>",
-			Examples: []string{"agentic-os file read go.mod"}, Run: noop},
+			Examples: []string{"aos file read go.mod"}, Run: noop},
 		&cli.Command{Group: "msg", Name: "send", Summary: "Send a message", Run: noop},
 		&cli.Command{Group: "msg", Name: "listen", Summary: "Follow the hub", Blocking: true, Run: noop},
 		&cli.Command{Group: "window", Name: "list", Summary: "List windows", NeedsDisplay: true, Run: noop},
@@ -157,14 +157,14 @@ func TestDescribeToolCarriesUsageAndExamples(t *testing.T) {
 	cmd := &cli.Command{
 		Group: "file", Name: "read", Summary: "Print a file",
 		Args:     "<path> [--lines=<from>:<to>]",
-		Examples: []string{"agentic-os file read go.mod"},
+		Examples: []string{"aos file read go.mod"},
 		Sudo:     true,
 	}
 	got := describeTool(cmd)
 	for _, want := range []string{
 		"Print a file",
-		"Usage: agentic-os file read <path> [--lines=<from>:<to>]",
-		"agentic-os file read go.mod",
+		"Usage: aos file read <path> [--lines=<from>:<to>]",
+		"aos file read go.mod",
 		"Requires elevated privileges.",
 	} {
 		if !strings.Contains(got, want) {
