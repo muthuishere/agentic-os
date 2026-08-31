@@ -51,6 +51,25 @@ hand-rolled. It binds loopback by default — serving this registry is remote
 control of the machine, so reaching it from elsewhere should be a deliberate act
 (an SSH tunnel, or an explicit `--addr`).
 
+## Keeping it running
+
+A server an agent connects to should not depend on a terminal staying open, so
+any command — `serve mcp` above all — can be handed to the machine's own service
+manager:
+
+```sh
+agentic-os service create mcp --autostart --now -- agentic-os serve mcp
+agentic-os service status mcp     # exits non-zero unless it is running
+agentic-os service list
+agentic-os service remove mcp
+```
+
+That is a launchd user agent on macOS, a `systemd --user` unit on Linux, and a
+Scheduled Task on Windows — per-user throughout, so nothing here asks for admin
+or sudo. Every service agentic-os creates is namespaced `agentic-os.<name>`, and
+`list` and `remove` only ever see that namespace: this CLI cannot delete a
+service it did not create.
+
 ## Headless machines
 
 Most of agentic-os needs no screen at all. On a server, in CI, or in a container,
@@ -108,7 +127,7 @@ not offering it — it will try, fail, and try again.
 | **Content** | `capture`, `clipboard`, `file`, `exec`, `open`, `launch`, `webapp`, `subtitle` |
 | **Comms** | `msg` — send, poll, and follow the local messenger hub |
 | **Watch** | `watch` — long-running monitors (clipboard, focused window) that print one JSON line per change |
-| **Agents** | `serve` — expose all of the above over MCP; `headless` — run the desktop commands with no screen |
+| **Agents** | `serve` — expose all of the above over MCP; `service` — keep any of it running as a per-user OS service; `headless` — run the desktop commands with no screen |
 
 Window, monitor, screenshot, and input work is
 [windowctl](https://github.com/muthuishere/windowctl), which already solved it on
