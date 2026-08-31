@@ -29,6 +29,7 @@ var guiGroups = map[string]bool{
 	"mouse":      true,
 	"open":       true,
 	"permission": true,
+	"subtitle":   true,
 	// The whole watch group is GUI, not just `watch window`: a clipboard
 	// watcher on a headless machine would spin for the life of the process,
 	// warning every tick, which is far worse than one clear refusal.
