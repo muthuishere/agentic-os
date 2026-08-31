@@ -38,7 +38,8 @@ tasks:
     cmds:
       - gofmt -l . | (! grep .)
       - go vet ./...
-      - go test ./...
+      # -short skips the end-to-end suite, which needs the other machines up.
+      - go test -short ./...
       - go run {{.PKG}} commands --check
 
   e2e:

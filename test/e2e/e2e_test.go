@@ -7,6 +7,13 @@ import (
 )
 
 func TestMachines(t *testing.T) {
+	// The suite drives real machines over SSH and agentbus, so it is slow and
+	// depends on those being up. `go test -short` (what `task check` runs) skips
+	// it; `task e2e` runs it deliberately.
+	if testing.Short() {
+		t.Skip("end-to-end suite skipped in short mode; run `task e2e`")
+	}
+
 	config, err := LoadConfig()
 	if err != nil {
 		t.Fatalf("load %s: %v", ConfigPath(), err)
