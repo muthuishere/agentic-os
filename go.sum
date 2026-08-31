@@ -18,6 +18,8 @@ github.com/muthuishere/toolnexus/golang v0.16.0 h1:Mrl/9RiYgaWkzZai/PY/XZ9pCqJJC
 github.com/muthuishere/toolnexus/golang v0.16.0/go.mod h1:pZkMvKsq6vVF2UjUpZTeudgLjxavoPE9QRDHNt4hJQw=
 github.com/muthuishere/windowctl v0.5.2-0.20260831183154-38e0399355c5 h1:LmqR3xv5IjxWJAWd3HXk9gOpPaGZ1+w3/8TdHdlwnYU=
 github.com/muthuishere/windowctl v0.5.2-0.20260831183154-38e0399355c5/go.mod h1:LlDTUcVgHvC4wxmTj+ZWQ9uXhmCx0Wn84cZy7g8HaJE=
+github.com/muthuishere/windowctl v0.5.2-0.20260831195041-c2fa1d2dcd6e h1:+RtX4aRrKDj1M/flMPLccU2zWjj3TjaR61VuKp7MjZY=
+github.com/muthuishere/windowctl v0.5.2-0.20260831195041-c2fa1d2dcd6e/go.mod h1:LlDTUcVgHvC4wxmTj+ZWQ9uXhmCx0Wn84cZy7g8HaJE=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=

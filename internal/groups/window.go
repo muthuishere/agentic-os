@@ -38,7 +38,7 @@ func init() {
 				Args:    "<app> (--zone=<1A|2:1> | --at=<x,y,w,h>) [--monitor=<n>]",
 				Examples: []string{
 					"aos window move Chrome --zone=1B",
-					"aos window move Chrome --monitor=2 --zone=2:1",
+					"aos window move Chrome --monitor=2 --zone=1:3",
 					"aos window move Slack --at=0,25,1920,1055",
 				},
 				Run: runWindowMove,
@@ -56,6 +56,17 @@ func init() {
 				Args:     "<app> [--timeout=<ms>]",
 				Examples: []string{"aos window wait Chrome --timeout=5000"},
 				Run:      runWindowWait,
+			},
+			&cli.Command{
+				Group: "window", Name: "zones",
+				Summary: "Show what each zone means on a real monitor",
+				Args:    "[--monitor=<n>] [--show]",
+				Examples: []string{
+					"aos window zones",
+					"aos window zones --monitor=2",
+					"aos window zones --show --app=Chrome",
+				},
+				Run: runWindowZones,
 			},
 			&cli.Command{
 				Group: "window", Name: "arrange",
@@ -226,8 +237,15 @@ func runWindowMove(c *cli.Ctx, args []string) error {
 		}
 		return windowctl.MoveCoords(match, monitor, bounds)
 	case monitor != nil:
-		// Monitor alone means "send it there and fill the screen".
-		return windowctl.MoveZone(match, monitor, "full")
+		// Monitor alone means "send it there and fill the screen", spelled 1:1
+		// because there is no "full" zone. Filling the screen always trips the
+		// clamp check — every OS reserves a menu bar or taskbar — and the caller
+		// asked for a monitor, not for exact bounds, so that is not a failure.
+		if err := windowctl.MoveZone(match, monitor, "1:1"); err != nil &&
+			!strings.Contains(err.Error(), "OS clamped") {
+			return err
+		}
+		return nil
 	}
 	return fmt.Errorf("say where: --zone=<1A|2:1>, --at=<x,y,w,h>, or --monitor=<n>")
 }
@@ -356,6 +374,83 @@ func runWindowArrange(c *cli.Ctx, args []string) error {
 	}
 	if failed > 0 {
 		return &cli.ExitError{Code: 1, Message: fmt.Sprintf("%d of %d entries failed", failed, len(entries))}
+	}
+	return nil
+}
+
+// namedZones are the halves and quarters, plus the whole screen as 1:1.
+var namedZones = []string{"1:1", "1A", "1B", "2A", "2B", "2C", "2D"}
+
+// exampleSplits stand in for the unbounded N:M form: N parts, the M-th of them.
+var exampleSplits = []string{"1:2", "2:2", "1:3", "2:3", "3:3"}
+
+// runWindowZones prints each zone's real rectangle on a real monitor, because
+// "1A" means nothing until you see that it is the left half of *this* screen.
+// With --show it walks a window through them, which is the only way to actually
+// feel the difference.
+func runWindowZones(c *cli.Ctx, args []string) error {
+	set, err := parseArgs(args, "monitor", "app", "title")
+	if err != nil {
+		return err
+	}
+	if err := set.Reject("monitor", "app", "title", "show"); err != nil {
+		return err
+	}
+	monitorID, err := set.IntPtr("monitor")
+	if err != nil {
+		return err
+	}
+
+	monitors, err := windowctl.ListMonitors()
+	if err != nil {
+		return err
+	}
+	if len(monitors) == 0 {
+		return fmt.Errorf("no monitors detected")
+	}
+	target := monitors[0]
+	for _, m := range monitors {
+		if (monitorID != nil && m.ID == *monitorID) || (monitorID == nil && m.Focused) {
+			target = m
+		}
+	}
+
+	c.Printf("monitor %d  %dx%d%s%s\n\n", target.ID,
+		target.Width, target.Height, signed(target.X), signed(target.Y))
+
+	for _, name := range append(append([]string{}, namedZones...), exampleSplits...) {
+		zone, err := windowctl.ParseZone(name)
+		if err != nil {
+			continue
+		}
+		r := zone.Rect(target)
+		c.Printf("  %-6s %dx%d%s%s\n", name, r.W, r.H, signed(r.X), signed(r.Y))
+	}
+	c.Println()
+	c.Println("  M:N   the M-th of N: 1:3 is the left third, 2:3 the middle, 3:3 the right")
+	c.Println("        the other order works too, so 3:1 and 1:3 are the same zone")
+
+	if !set.Has("show") {
+		c.Println()
+		c.Println("Add --show --app=<name> to walk a window through them.")
+		return nil
+	}
+
+	match, err := matchFrom(set)
+	if err != nil {
+		return err
+	}
+	resolved, err := resolveMatch(match)
+	if err != nil {
+		return err
+	}
+	for _, name := range namedZones {
+		if err := windowctl.MoveZone(resolved, &target.ID, name); err != nil {
+			c.Warnf("%s: %v\n", name, err)
+			continue
+		}
+		c.Printf("  showing %s\n", name)
+		time.Sleep(700 * time.Millisecond)
 	}
 	return nil
 }

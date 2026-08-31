@@ -26,7 +26,6 @@ func TestDiscoverPluginsReadsMetadata(t *testing.T) {
 # agentic-os:args=<target>
 # agentic-os:examples=aos demo do thing a | aos demo do thing b
 # agentic-os:platforms=darwin | linux
-# agentic-os:sudo=true
 echo hi
 `)
 	r := NewRegistry()
@@ -47,8 +46,8 @@ echo hi
 	if len(cmd.Examples) != 2 {
 		t.Fatalf("want 2 examples, got %v", cmd.Examples)
 	}
-	if !cmd.Sudo || cmd.Supports("windows") {
-		t.Fatalf("sudo/platform metadata not applied: %+v", cmd)
+	if cmd.Supports("windows") {
+		t.Fatalf("platform metadata not applied: %+v", cmd)
 	}
 }
 

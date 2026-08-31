@@ -23,7 +23,6 @@ type Command struct {
 	Examples []string
 	Aliases  []string // extra top-level routes, e.g. "screenshot"
 	Hidden   bool
-	Sudo     bool
 	// Blocking marks a command that runs until interrupted. It is fine at a
 	// terminal but has no sensible end for a request/response caller, so the
 	// MCP surface leaves it out.

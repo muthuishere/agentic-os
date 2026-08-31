@@ -108,10 +108,6 @@ func PrintCommandHelp(w io.Writer, cmd *Command, goos string, display bool) {
 	fmt.Fprintln(w)
 	fmt.Fprintln(w, "Usage:")
 	fmt.Fprintf(w, "  %s\n", usageLine(cmd))
-	if cmd.Sudo {
-		fmt.Fprintln(w)
-		fmt.Fprintln(w, "Requires elevated privileges.")
-	}
 	if !cmd.Supports(goos) {
 		fmt.Fprintln(w)
 		if len(cmd.Platforms) == 0 {

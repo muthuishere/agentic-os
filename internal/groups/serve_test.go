@@ -158,14 +158,12 @@ func TestDescribeToolCarriesUsageAndExamples(t *testing.T) {
 		Group: "file", Name: "read", Summary: "Print a file",
 		Args:     "<path> [--lines=<from>:<to>]",
 		Examples: []string{"aos file read go.mod"},
-		Sudo:     true,
 	}
 	got := describeTool(cmd)
 	for _, want := range []string{
 		"Print a file",
 		"Usage: aos file read <path> [--lines=<from>:<to>]",
 		"aos file read go.mod",
-		"Requires elevated privileges.",
 	} {
 		if !strings.Contains(got, want) {
 			t.Errorf("description is missing %q:\n%s", want, got)

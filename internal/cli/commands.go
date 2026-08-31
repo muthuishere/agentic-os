@@ -17,7 +17,6 @@ type commandJSON struct {
 	Available bool     `json:"available"`
 	NeedsGUI  bool     `json:"needs_display"`
 	Hidden    bool     `json:"hidden"`
-	Sudo      bool     `json:"requires_sudo"`
 	Source    string   `json:"source"`
 	Binary    string   `json:"binary,omitempty"`
 }
@@ -149,7 +148,6 @@ func toJSON(cmd *Command, goos string) commandJSON {
 		Available: cmd.Supports(goos),
 		NeedsGUI:  cmd.NeedsDisplay,
 		Hidden:    cmd.Hidden,
-		Sudo:      cmd.Sudo,
 		Source:    source,
 		Binary:    cmd.Binary,
 	}

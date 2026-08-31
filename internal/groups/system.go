@@ -25,13 +25,11 @@ func init() {
 			&cli.Command{
 				Group: "system", Name: "restart",
 				Summary: "Restart the machine",
-				Sudo:    true,
 				Run:     func(c *cli.Ctx, _ []string) error { return systemRestart() },
 			},
 			&cli.Command{
 				Group: "system", Name: "shutdown",
 				Summary: "Power the machine off",
-				Sudo:    true,
 				Run:     func(c *cli.Ctx, _ []string) error { return systemShutdown() },
 			},
 			&cli.Command{

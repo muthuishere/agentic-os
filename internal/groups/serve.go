@@ -112,9 +112,6 @@ func describeTool(cmd *cli.Command) string {
 	if len(cmd.Examples) > 0 {
 		b.WriteString("\n\nExamples:\n  " + strings.Join(cmd.Examples, "\n  "))
 	}
-	if cmd.Sudo {
-		b.WriteString("\n\nRequires elevated privileges.")
-	}
 	return b.String()
 }
 

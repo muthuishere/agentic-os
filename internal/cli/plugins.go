@@ -134,8 +134,6 @@ func applyMetadata(cmd *Command, meta map[string]string) {
 			cmd.Group, cmd.Name = group, name
 		case "hidden":
 			cmd.Hidden = isTrue(value)
-		case "sudo":
-			cmd.Sudo = isTrue(value)
 		}
 	}
 	if cmd.Summary == "" {
