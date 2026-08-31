@@ -258,7 +258,7 @@ function drawSurface(){
   text("one Runner, one code path", cx, ry+21, {size:12.5, weight:700, color:"#8a5a12", align:"center"});
   text("no second implementation", cx, ry+38, {size:11, color:"#a07a3a", align:"center"});
 
-  const gates = ["needs a display? refused, with a reason",
+  const gates = ["no display? refused, with a reason",
                  "delete a root or $HOME? refused",
                  "serve is token-gated, on loopback"];
   gates.forEach((g,i)=>{
