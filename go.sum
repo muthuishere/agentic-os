@@ -16,8 +16,8 @@ github.com/mark3labs/mcp-go v0.48.0 h1:o+MXuGW/HCeR2ny5LcAcZQn2bo6I2xaZMEHnpRG+d
 github.com/mark3labs/mcp-go v0.48.0/go.mod h1:JKTC7R2LLVagkEWK7Kwu7DbmA6iIvnNAod6yrHiQMag=
 github.com/muthuishere/toolnexus/golang v0.16.0 h1:Mrl/9RiYgaWkzZai/PY/XZ9pCqJJC06DmWnvtkShNIA=
 github.com/muthuishere/toolnexus/golang v0.16.0/go.mod h1:pZkMvKsq6vVF2UjUpZTeudgLjxavoPE9QRDHNt4hJQw=
-github.com/muthuishere/windowctl v0.5.2-0.20260726140644-2d0973ff7831 h1:CIZM8EXyvUD97y0alxkghmRtY4mDY9JfnK43ujOq+tU=
-github.com/muthuishere/windowctl v0.5.2-0.20260726140644-2d0973ff7831/go.mod h1:LlDTUcVgHvC4wxmTj+ZWQ9uXhmCx0Wn84cZy7g8HaJE=
+github.com/muthuishere/windowctl v0.5.2-0.20260830163759-c0332a189cb3 h1:VFHoPymI/ECPWbg1OeLOzZnsh5ICS88uZ9MUIOonOAA=
+github.com/muthuishere/windowctl v0.5.2-0.20260830163759-c0332a189cb3/go.mod h1:LlDTUcVgHvC4wxmTj+ZWQ9uXhmCx0Wn84cZy7g8HaJE=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=
