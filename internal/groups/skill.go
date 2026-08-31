@@ -15,14 +15,11 @@ func init() {
 		// `install` has room for whatever else becomes installable.
 		r.Describe("install", "Install what this binary carries")
 		r.Add(&cli.Command{
-			Group:   "install",
-			Summary: "Install the bundled agent skill",
-			Args:    "--skills [--agents] [--json]",
-			Examples: []string{
-				"agentic-os install --skills",
-				"agentic-os install --skills --agents",
-			},
-			Run: runInstall,
+			Group:    "install",
+			Summary:  "Install the bundled agent skill",
+			Args:     "--skills [--json]",
+			Examples: []string{"agentic-os install --skills"},
+			Run:      runInstall,
 		})
 
 		r.Describe("uninstall", "Remove what this binary installed")
@@ -53,7 +50,7 @@ func init() {
 				Group: "skill", Name: "path",
 				Summary: "Print where `install --skills` would write",
 				Run: func(c *cli.Ctx, _ []string) error {
-					hosts, err := skill.Hosts(c.Env, true)
+					hosts, err := skill.Hosts(c.Env)
 					if err != nil {
 						return err
 					}
@@ -72,7 +69,7 @@ func runInstall(c *cli.Ctx, args []string) error {
 	if err != nil {
 		return err
 	}
-	if err := set.Reject("skills", "agents", "json"); err != nil {
+	if err := set.Reject("skills", "json"); err != nil {
 		return err
 	}
 	// Requiring --skills keeps the verb honest: `install` on its own should not
@@ -81,7 +78,7 @@ func runInstall(c *cli.Ctx, args []string) error {
 		return fmt.Errorf("say what to install: `agentic-os install --skills`")
 	}
 
-	results, err := skill.Install(c.Env, set.Has("agents"))
+	results, err := skill.Install(c.Env)
 	if err != nil {
 		return err
 	}
@@ -93,7 +90,7 @@ func runUninstall(c *cli.Ctx, args []string) error {
 	if err != nil {
 		return err
 	}
-	if err := set.Reject("skills", "agents", "json"); err != nil {
+	if err := set.Reject("skills", "json"); err != nil {
 		return err
 	}
 	if !set.Has("skills") {
