@@ -184,7 +184,11 @@ func (r *Registry) Resolve(args []string) (*Command, []string, error) {
 		return cmd, args[1:], nil
 	}
 	if g := r.groups[args[0]]; g != nil {
-		if len(args) == 1 {
+		// A bare group name, or a group name followed by a help flag, both mean
+		// "document this group". Only the first was handled, so `agentic-os
+		// window --help` reported the help flag as an unknown command and then
+		// suggested the very command that had just failed.
+		if len(args) == 1 || (len(args) == 2 && isHelpFlag(args[1])) {
 			return nil, nil, &GroupHelpError{Group: g}
 		}
 		return nil, nil, fmt.Errorf("unknown command %q in group %q\nTry: agentic-os %s --help",

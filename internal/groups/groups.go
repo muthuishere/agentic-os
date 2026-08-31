@@ -29,8 +29,12 @@ var guiGroups = map[string]bool{
 	"mouse":      true,
 	"open":       true,
 	"permission": true,
-	"webapp":     true,
-	"window":     true,
+	// The whole watch group is GUI, not just `watch window`: a clipboard
+	// watcher on a headless machine would spin for the life of the process,
+	// warning every tick, which is far worse than one clear refusal.
+	"watch":  true,
+	"webapp": true,
+	"window": true,
 }
 
 // guiRoutes are the individual commands in otherwise screenless groups that
