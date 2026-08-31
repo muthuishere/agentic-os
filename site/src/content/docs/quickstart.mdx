@@ -21,8 +21,8 @@ import { Steps } from '@astrojs/starlight/components';
 2. **Ask the machine what works.**
 
    ```console
-   $ agentic-os doctor
-   ok   registry     94 of 96 commands available on darwin
+   $ aos doctor
+   ok   registry     96 of 98 commands available on darwin
    ok   telemetry    recording to /Users/you/.local/state/agentic-os/telemetry
    ok   display      available; GUI commands will run
    ok   permissions  accessibility and screen capture granted
@@ -42,7 +42,7 @@ import { Steps } from '@astrojs/starlight/components';
 3. **Run something.**
 
    ```console
-   $ agentic-os system info
+   $ aos system info
    arch        arm64
    cpu         Apple M5 Pro
    host        your-machine.local
@@ -52,16 +52,16 @@ import { Steps } from '@astrojs/starlight/components';
    ```
 
    ```sh
-   agentic-os window move Chrome --zone=1B
-   agentic-os capture screenshot --app=Chrome --out=/tmp/shot.png
-   agentic-os pkg install ripgrep
+   aos window move Chrome --zone=1B
+   aos capture screenshot --app=Chrome --out=/tmp/shot.png
+   aos pkg install ripgrep
    ```
 
 4. **Hand it to an agent.**
 
    ```sh
-   agentic-os serve mcp     # streamable HTTP at 127.0.0.1:14320/mcp
-   claude mcp add --transport http agentic-os http://127.0.0.1:14320/mcp
+   aos serve mcp     # streamable HTTP at 127.0.0.1:14320/mcp
+   claude mcp add --transport http aos http://127.0.0.1:14320/mcp
    ```
 
    Every non-hidden, non-blocking command available on this machine is now one
@@ -70,7 +70,7 @@ import { Steps } from '@astrojs/starlight/components';
 5. **Teach the agent how to use it.**
 
    ```sh
-   agentic-os install --skills
+   aos install --skills
    ```
 
    This writes the agent skill bundled *inside the binary* to `~/.claude/skills/`
@@ -82,6 +82,6 @@ import { Steps } from '@astrojs/starlight/components';
 
 ## Where to go next
 
-- [The command surface](/agentic-os/command-surface/) — what the 34 groups cover.
+- [The command surface](/agentic-os/command-surface/) — what the groups cover.
 - [Every command](/agentic-os/reference/commands/) — the full reference, generated from the binary.
 - [Safety model](/agentic-os/safety/) — what it refuses, and why.

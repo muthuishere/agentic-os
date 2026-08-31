@@ -10,7 +10,7 @@ Most of the surface needs no screen. On a server, in CI, or in a container,
 ## What the machine says about itself
 
 ```console
-$ agentic-os headless status
+$ aos headless status
 platform     darwin
 virtual      not available on this platform
 note         desktop commands need a logged-in session here
@@ -21,22 +21,22 @@ display      yes — window, mouse, key, capture, and display commands will work
 ## The desktop commands refuse, rather than fail deep
 
 ```console
-$ agentic-os window list
-agentic-os: "window list" needs a display, and this machine has none
-Start one with `agentic-os headless start`, or check `agentic-os headless status`.
+$ aos window list
+aos: "window list" needs a display, and this machine has none
+Start one with `aos headless start`, or check `aos headless status`.
 ```
 
 ## On Linux, give it a display
 
 ```sh
-agentic-os headless start --size=1920x1080 --wm   # Xvfb + a lightweight WM
-agentic-os window list                            # the display is adopted automatically
-agentic-os headless stop
+aos headless start --size=1920x1080 --wm   # Xvfb + a lightweight WM
+aos window list                            # the display is adopted automatically
+aos headless stop
 ```
 
 `headless start` waits for the window manager to claim the screen before it
 returns, so the next command works instead of losing a race with it. Later runs
-of `agentic-os` adopt the managed display on their own — there is no
+of `aos` adopt the managed display on their own — there is no
 `export DISPLAY` step. An environment that already names a display always wins,
 so this never redirects a real session.
 
@@ -46,11 +46,11 @@ real logged-in session, and `headless status` says exactly that.
 ## Knowing in advance what will work
 
 ```sh
-agentic-os headless status       # is there a display, and where did it come from
-agentic-os commands              # screenless machines list only what will run
-agentic-os commands --all        # `g` marks a command waiting on a display
-agentic-os commands --json       # each entry carries "needs_display"
-agentic-os serve mcp --gui=off   # expose only the screenless tools
+aos headless status       # is there a display, and where did it come from
+aos commands              # screenless machines list only what will run
+aos commands --all        # `g` marks a command waiting on a display
+aos commands --json       # each entry carries "needs_display"
+aos serve mcp --gui=off   # expose only the screenless tools
 ```
 
 ## It is tested this way

@@ -9,16 +9,35 @@
 // Wired into `npm run build` via the `prebuild` script.
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 const out = resolve(here, '..', 'src', 'content', 'docs', 'reference', 'commands.mdx');
+const dataOut = resolve(here, '..', 'src', 'data', 'registry.json');
+
+// Find the main package rather than hard-coding its name: the command has been
+// renamed once already, and a docs generator that breaks on a rename is a
+// generator that will quietly be replaced by a hand-written page.
+function mainPackage() {
+	const cmdDir = join(repoRoot, 'cmd');
+	const found = readdirSync(cmdDir, { withFileTypes: true })
+		.filter((d) => d.isDirectory() && existsSync(join(cmdDir, d.name, 'main.go')))
+		.map((d) => `./cmd/${d.name}`);
+	if (found.length !== 1) {
+		console.error(
+			`gen-commands: expected exactly one main package under cmd/, found ${found.length}` +
+				(found.length ? `: ${found.join(', ')}` : ''),
+		);
+		process.exit(1);
+	}
+	return found[0];
+}
 
 const CMD = 'go';
-const ARGS = ['run', './cmd/agentic-os', 'commands', '--json', '--all'];
+const ARGS = ['run', mainPackage(), 'commands', '--json', '--all'];
 
 let raw;
 try {
@@ -33,6 +52,9 @@ try {
 }
 
 const { commands } = JSON.parse(raw);
+// The route strings carry the binary's own name; take it from there rather
+// than assuming it.
+const bin = commands[0].route.split(' ')[0];
 const visible = commands.filter((c) => !c.hidden);
 
 const groups = new Map();
@@ -54,7 +76,7 @@ lines.push(
 lines.push('---');
 lines.push('');
 lines.push(
-	`This page is generated. \`site/scripts/gen-commands.mjs\` runs \`agentic-os commands --json --all\`` +
+	`This page is generated. \`site/scripts/gen-commands.mjs\` runs \`${bin} commands --json --all\`` +
 		' against the source tree and writes this file every time the site is built, so it cannot' +
 		' describe a command the binary does not have, or miss one it does.',
 );
@@ -74,7 +96,7 @@ lines.push('');
 lines.push('The same data, machine-readable, comes from the binary you installed:');
 lines.push('');
 lines.push('```sh');
-lines.push('agentic-os commands --json --all');
+lines.push(`${bin} commands --json --all`);
 lines.push('```');
 lines.push('');
 
@@ -108,6 +130,18 @@ for (const g of names) {
 
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, lines.join('\n'));
+
+// The same counts, for the pages and the landing canvas to quote, so no page
+// has to hard-code a number the registry can change out from under it.
+mkdirSync(dirname(dataOut), { recursive: true });
+writeFileSync(
+	dataOut,
+	JSON.stringify(
+		{ commands: commands.length, documented: visible.length, groups: names.length, binary: bin },
+		null,
+		2,
+	) + '\n',
+);
 console.log(
 	`gen-commands: wrote ${visible.length} of ${commands.length} commands in ${names.length} groups -> ${out}`,
 );

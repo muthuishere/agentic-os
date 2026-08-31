@@ -27,12 +27,12 @@ Drop a JSON file in `~/.config/agentic-os/adapters/` and it becomes a group:
 ```
 
 ```console
-$ agentic-os adapters example --write   # a working starter file
-$ agentic-os adapters path
+$ aos adapters example --write   # a working starter file
+$ aos adapters path
 /Users/you/.config/agentic-os/adapters
-$ agentic-os adapters list
+$ aos adapters list
 no adapters in /Users/you/.config/agentic-os/adapters
-run `agentic-os adapters example --write` to start one
+run `aos adapters example --write` to start one
 ```
 
 `run` goes through the platform shell with the user's arguments appended and
@@ -48,7 +48,7 @@ tool list. It describes itself with comment headers in its first 80 lines:
 #!/bin/sh
 # agentic-os:summary=Do the thing
 # agentic-os:args=<target>
-# agentic-os:examples=agentic-os demo do thing a | agentic-os demo do thing b
+# agentic-os:examples=aos demo do thing a | aos demo do thing b
 # agentic-os:platforms=darwin | linux
 # agentic-os:route=theme bg-switcher   # when a word contains a hyphen
 ```
@@ -62,17 +62,17 @@ of a route transparently replaces the script that used to serve it.
 A malformed adapter is reported, not ignored:
 
 ```sh
-agentic-os commands --check    # registry lint; non-zero when something is off
+aos commands --check    # registry lint; non-zero when something is off
 ```
 
 ## Seeing what a machine picked up
 
 ```console
-$ agentic-os debug
-agentic-os  dev
+$ aos debug
+aos  dev
 go          go1.26.3
 platform    darwin/arm64
-commands    94 available of 96 registered, in 34 groups
+commands    96 available of 98 registered, in 34 groups
 
 plugin dirs:
   /Users/you/.config/agentic-os/bin

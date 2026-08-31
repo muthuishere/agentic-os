@@ -1,7 +1,11 @@
 ---
 // The landing page sits outside the Starlight layout on purpose: the diagram is
 // the first thing, full viewport, with no chrome in front of it.
+import registry from '../data/registry.json';
+
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const surface = `${registry.commands} commands · ${registry.groups} groups`;
+const bin = registry.binary;
 ---
 
 <html lang="en">
@@ -11,7 +15,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		<title>agentic-os — one surface, two callers, three platforms</title>
 		<meta
 			name="description"
-			content="A computer-use MCP server that is also a CLI a person can type. 96 commands across 34 groups, on macOS, Windows and Linux."
+			content={`A computer-use MCP server that is also a CLI a person can type. ${registry.commands} commands across ${registry.groups} groups, on macOS, Windows and Linux.`}
 		/>
 		<link rel="icon" href={`${base}/favicon.svg`} />
 	</head>
@@ -27,9 +31,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				tool, and every MCP tool runs the identical code path you get at a prompt.
 			</p>
 
-			<pre><code>go install github.com/muthuishere/agentic-os/cmd/agentic-os@latest
-agentic-os doctor
-agentic-os serve mcp</code></pre>
+			<pre><code>{`go install github.com/muthuishere/agentic-os/cmd/${bin}@latest
+${bin} doctor
+${bin} serve mcp`}</code></pre>
 
 			<p class="links">
 				<a class="primary" href={`${base}/what-it-is/`}>Read the docs</a>
@@ -39,7 +43,7 @@ agentic-os serve mcp</code></pre>
 			</p>
 
 			<p class="foot">
-				96 commands · 34 groups · macOS, Windows and Linux, including a headless Linux server.
+				{surface} · macOS, Windows and Linux, including a headless Linux server.
 			</p>
 		</section>
 
@@ -137,6 +141,7 @@ agentic-os serve mcp</code></pre>
 			}
 		</style>
 
+		<script is:inline set:html={`window.AOS_STATS=${JSON.stringify({ commands: registry.commands, groups: registry.groups })}`} />
 		<script is:inline src={`${base}/canvas.js`}></script>
 	</body>
 </html>

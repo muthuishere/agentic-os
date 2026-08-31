@@ -2,6 +2,13 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLlmsTxt from 'starlight-llms-txt';
+import { readFileSync } from 'node:fs';
+
+// Written by scripts/gen-commands.mjs, which runs the binary. Every count on
+// this site comes from here, so no page can quote a number the registry has
+// moved past. `npm run build` regenerates it before Astro starts.
+const registry = JSON.parse(readFileSync('./src/data/registry.json', 'utf8'));
+const surface = `${registry.commands} commands across ${registry.groups} groups`;
 
 // Project GitHub Pages: https://muthuishere.github.io/agentic-os
 // The landing page is src/pages/index.astro — a full-viewport canvas, outside
@@ -19,14 +26,14 @@ export default defineConfig({
 		starlight({
 			title: 'agentic-os',
 			description:
-				'A computer-use MCP server that is also a CLI a person can type. 96 commands across 34 groups, on macOS, Windows and Linux.',
+				`A computer-use MCP server that is also a CLI a person can type. ${surface}, on macOS, Windows and Linux.`,
 			// The audience for this product is substantially agents, so the
 			// llms.txt is load-bearing, not decoration.
 			plugins: [
 				starlightLlmsTxt({
 					projectName: 'agentic-os',
 					description:
-						'A computer-use MCP server that is also a CLI a person can type: 96 commands across 34 groups covering windows, input, screen capture, files, processes, packages, network, audio, clipboard, services and messaging, on macOS, Windows and Linux.',
+						`A computer-use MCP server that is also a CLI a person can type: ${surface} covering windows, input, screen capture, files, processes, packages, network, audio, clipboard, services and messaging, on macOS, Windows and Linux.`,
 					details:
 						'Every command is an MCP tool and every MCP tool runs the identical code path a person gets at a prompt, so what you test by hand is what the agent gets. Safety is structural: commands that need a screen are refused with a reason on a headless box, `file delete` will not touch a filesystem root or $HOME or a system directory, `serve` binds loopback, services are namespaced, and telemetry records argument counts rather than argument values. One verb set means the same thing everywhere (`pkg install` over brew/winget/scoop/choco/apt/pacman/yay/dnf). It extends without forking through JSON adapters and PATH executables, both of which become MCP tools and neither of which can shadow a built-in.',
 				}),

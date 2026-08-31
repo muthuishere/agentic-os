@@ -13,9 +13,9 @@ Every command declares `NeedsDisplay`. On a machine with no display it is
 refused before it runs, with the fix:
 
 ```console
-$ agentic-os window list
-agentic-os: "window list" needs a display, and this machine has none
-Start one with `agentic-os headless start`, or check `agentic-os headless status`.
+$ aos window list
+aos: "window list" needs a display, and this machine has none
+Start one with `aos headless start`, or check `aos headless status`.
 ```
 
 The alternative — failing three layers deep inside a display-server call — gives
@@ -27,11 +27,11 @@ machines](/agentic-os/headless/).
 Filesystem roots, `$HOME`, and system directories are refused outright:
 
 ```console
-$ agentic-os file delete /
-agentic-os: refusing to delete /
+$ aos file delete /
+aos: refusing to delete /
 
-$ agentic-os file delete $HOME
-agentic-os: refusing to delete /Users/muthuishere
+$ aos file delete $HOME
+aos: refusing to delete /Users/muthuishere
 ```
 
 This is not a confirmation prompt, because an agent will answer a prompt.
@@ -52,7 +52,7 @@ exactly as long as the process a human is looking at.
 
 ## Services are namespaced
 
-Every service `agentic-os` creates is named `agentic-os.<name>`, and `service
+Every service `aos` creates is named `agentic-os.<name>`, and `service
 list` and `service remove` only ever see that namespace. This CLI cannot delete
 a service it did not create. Everything is per-user — a launchd user agent on
 macOS, a `systemd --user` unit on Linux, a Scheduled Task on Windows — so
@@ -76,7 +76,7 @@ anywhere; see [observability](/agentic-os/observability/).
 ## `watch clipboard` hides the clipboard by default
 
 ```console
-$ agentic-os watch clipboard
+$ aos watch clipboard
 {"event":"clipboard","at":"…","seq":1,"length":34,"digest":"7a37ded45b5e"}
 ```
 
@@ -91,5 +91,5 @@ false sense of one is worse than none. If an agent should not be able to run
 arbitrary commands on a machine, do not expose the `exec` group:
 
 ```sh
-agentic-os serve mcp --groups=window,capture,display
+aos serve mcp --groups=window,capture,display
 ```

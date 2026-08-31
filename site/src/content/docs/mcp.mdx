@@ -4,11 +4,11 @@ description: Serve the whole command registry as MCP tools over streamable HTTP,
 ---
 
 ```sh
-agentic-os serve mcp     # streamable HTTP at 127.0.0.1:14320/mcp
+aos serve mcp     # streamable HTTP at 127.0.0.1:14320/mcp
 ```
 
 ```sh
-claude mcp add --transport http agentic-os http://127.0.0.1:14320/mcp
+claude mcp add --transport http aos http://127.0.0.1:14320/mcp
 ```
 
 Every non-hidden, non-blocking command available on this machine becomes one MCP
@@ -17,7 +17,7 @@ tool, carrying the same summary, usage and examples the CLI documents.
 ## Preview the catalogue first
 
 ```console
-$ agentic-os serve tools
+$ aos serve tools
 adapters_example             Print a starter adapter, ready to save and edit
 adapters_list                List the adapters this machine has loaded
 audio_volume                 Print the output volume, or set it
@@ -30,15 +30,15 @@ window_move                  Move a window to a zone, a split, or coordinates
 ```
 
 The tool name is the route with underscores. `window move` is `window_move`;
-`agentic-os window move Chrome --zone=1B` and a `window_move` call with
+`aos window move Chrome --zone=1B` and a `window_move` call with
 `{"app":"Chrome","zone":"1B"}` do the same work, through the same `Runner`.
 There is no second implementation behind the protocol.
 
 ## Give an agent less than everything
 
 ```sh
-agentic-os serve mcp --groups=window,capture,exec   # a subset
-agentic-os serve mcp --gui=off                      # only the screenless tools
+aos serve mcp --groups=window,capture,exec   # a subset
+aos serve mcp --gui=off                      # only the screenless tools
 ```
 
 `--gui` defaults to `auto`: GUI tools appear only when the machine actually has
@@ -55,10 +55,10 @@ elsewhere should be deliberate: an SSH tunnel, or an explicit `--addr`.
 A server an agent connects to should not depend on a terminal staying open:
 
 ```sh
-agentic-os service create mcp --autostart --now -- agentic-os serve mcp
-agentic-os service status mcp     # exits non-zero unless it is running
-agentic-os service list
-agentic-os service remove mcp
+aos service create mcp --autostart --now -- aos serve mcp
+aos service status mcp     # exits non-zero unless it is running
+aos service list
+aos service remove mcp
 ```
 
 A launchd user agent on macOS, a `systemd --user` unit on Linux, a Scheduled
@@ -75,7 +75,7 @@ door.
 ## What an agent should read
 
 ```sh
-agentic-os install --skills
+aos install --skills
 ```
 
 writes the agent skill bundled inside the binary to `~/.claude/skills/` and

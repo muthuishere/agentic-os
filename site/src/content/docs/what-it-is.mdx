@@ -1,11 +1,14 @@
 ---
 title: What it is
-description: A computer-use MCP server that is also a CLI a person can type — 96 commands across 34 groups, on macOS, Windows and Linux.
+description: A computer-use MCP server that is also a CLI a person can type, on macOS, Windows and Linux.
 ---
 
-**A computer-use MCP server that is also a CLI a person can type.** 96 commands
-across 34 groups: windows, input, screen capture, files, processes, packages,
-network, audio, clipboard, services, messaging.
+import registry from '../../data/registry.json';
+
+**A computer-use MCP server that is also a CLI a person can type.**
+{registry.commands} commands across {registry.groups} groups: windows, input,
+screen capture, files, processes, packages, network, audio, clipboard, services,
+messaging.
 
 ## One surface, two callers
 
@@ -15,7 +18,7 @@ tool call resolves the same route and invokes the same `Runner` the terminal
 does.
 
 ```sh
-agentic-os window move Chrome --zone=1B     # you, at a terminal
+aos window move Chrome --zone=1B     # you, at a terminal
 ```
 
 ```json
@@ -46,10 +49,10 @@ The refusals are part of the design, not a disclaimer in a README.
 - Telemetry records how many arguments a command got, never what they were.
 
 ```console
-$ agentic-os file delete /
-agentic-os: refusing to delete /
-$ agentic-os file delete $HOME
-agentic-os: refusing to delete /Users/muthuishere
+$ aos file delete /
+aos: refusing to delete /
+$ aos file delete $HOME
+aos: refusing to delete /Users/muthuishere
 ```
 
 The [safety model](/agentic-os/safety/) page has the rest.
@@ -57,9 +60,9 @@ The [safety model](/agentic-os/safety/) page has the rest.
 ## One verb set that means the same thing everywhere
 
 ```sh
-agentic-os pkg install ripgrep    # brew · winget · scoop · choco · apt · pacman · yay · dnf
-agentic-os window move Chrome --zone=1B
-agentic-os capture screenshot --app=Chrome --out=/tmp/shot.png
+aos pkg install ripgrep    # brew · winget · scoop · choco · apt · pacman · yay · dnf
+aos window move Chrome --zone=1B
+aos capture screenshot --app=Chrome --out=/tmp/shot.png
 ```
 
 `--app=Chrome` matches the same window on all three platforms. That took fixing

@@ -8,7 +8,7 @@ OpenTelemetry-shaped span. Nothing is sent anywhere. The record simply exists,
 in the right shape, for the day you want it.
 
 ```console
-$ agentic-os obs stats
+$ aos obs stats
 route                calls  errors    p50ms    p95ms    maxms
 commands                52       0        0        0        0
 file delete             43      18        0        0        0
@@ -19,15 +19,15 @@ window list             14       0       38       45       45
 ```
 
 ```console
-$ agentic-os obs tail --limit=3
+$ aos obs tail --limit=3
 01:05:30  ok   cli        15ms  network status
 01:05:35  err  cli         0ms  file delete
 01:05:36  err  cli         0ms  file delete
 ```
 
 ```sh
-agentic-os obs export --since=1h   # OTLP JSON, ready for a collector
-agentic-os obs path                # where it is written
+aos obs export --since=1h   # OTLP JSON, ready for a collector
+aos obs path                # where it is written
 ```
 
 ## What a span carries

@@ -1,9 +1,11 @@
 ---
 title: The command surface
-description: 96 commands across 34 groups, how routes resolve, and how to ask the binary what this machine can actually run.
+description: The whole command registry — what the groups cover, how routes resolve, and how to ask the binary what this machine can actually run.
 ---
 
-96 commands across 34 groups. The full list is on
+import registry from '../../data/registry.json';
+
+{registry.commands} commands across {registry.groups} groups. The full list is on
 [every command](/agentic-os/reference/commands/), generated from the binary. This
 page is the shape of it.
 
@@ -29,14 +31,14 @@ arguments. `audio output set default` is one route; `window move Chrome
 ## Asking the binary, not the docs
 
 ```sh
-agentic-os commands            # what this machine can run
-agentic-os commands --all      # every registered command, including other platforms
-agentic-os commands --json     # machine-readable index
-agentic-os commands --check    # registry lint; non-zero when something is off
+aos commands            # what this machine can run
+aos commands --all      # every registered command, including other platforms
+aos commands --json     # machine-readable index
+aos commands --check    # registry lint; non-zero when something is off
 ```
 
 ```console
-$ agentic-os commands | head -6
+$ aos commands | head -6
   adapters example    Print a starter adapter, ready to save and edit
   adapters list       List the adapters this machine has loaded
   adapters path       Print the directory adapters are read from
@@ -69,7 +71,7 @@ reads them by running the CLI and consuming the stream, and a screen-share can
 only be started by a person.
 
 ```console
-$ agentic-os watch clipboard
+$ aos watch clipboard
 {"event":"clipboard","at":"…","seq":1,"length":34,"digest":"7a37ded45b5e"}
 ```
 

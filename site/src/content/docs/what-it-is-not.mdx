@@ -11,7 +11,7 @@ be. Each of these clears up a specific confusion.
 There is no model in it. Nothing here decides anything, plans anything, or
 retries on its own. It is the hands, not the brain.
 
-Bring your own agent — Claude Code, your own loop, a script. `agentic-os serve
+Bring your own agent — Claude Code, your own loop, a script. `aos serve
 mcp` is where the two meet.
 
 ## Not a cloud service
@@ -22,7 +22,7 @@ type a command that sends something.
 Telemetry exists, and it is OTLP-shaped JSON in a local file:
 
 ```console
-$ agentic-os obs path
+$ aos obs path
 /Users/you/.local/state/agentic-os/telemetry
 ```
 
@@ -39,7 +39,7 @@ and no vision model reading a screenshot to find a button.
 server:
 
 ```console
-$ agentic-os window list
+$ aos window list
 * Finder            mon 3  1379x890+2235+134  pathextra
   Ghostty           mon 2  1900x940+0+30      Omarchy CLI cross-platform
   Google Chrome     mon 3  1920x1050+1920+30  muthuishere/agentic-os
@@ -83,7 +83,7 @@ Most of the surface needs no display at all. `exec`, `file`, `msg`, `pkg`,
 same on a server, in CI, or in a container. On Linux, `headless start` provides
 a display when something genuinely needs one.
 
-`agentic-os commands` on a screenless machine lists only what will actually run,
+`aos commands` on a screenless machine lists only what will actually run,
 and `serve mcp --gui=auto` (the default) offers an agent only the tools that can
 succeed. Offering a tool that cannot run is worse than not offering it.
 

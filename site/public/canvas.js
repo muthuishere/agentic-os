@@ -18,6 +18,11 @@ const DOT   = "#4a5cd0";          // travelling dot blue
 const SANS = '-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif';
 const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
 
+// Counts come from the generated registry snapshot, injected by the page. The
+// fallback is only there so the file is still readable on its own.
+const STATS = Object.assign({commands:96, groups:34}, window.AOS_STATS || {});
+const SURFACE = `${STATS.commands} commands · ${STATS.groups} groups`;
+
 const cv = document.getElementById("c"), ctx = cv.getContext("2d", {alpha:false});
 let SC = 1, OX = 0, OY = 0;
 
@@ -138,7 +143,7 @@ function edgeList(t){
     es.push({
       p0: V(surface.x+surface.w, surface.y + surface.h*(0.18 + 0.64*(i/(rows.length-1)))),
       p3: V(machine.x, r.y + r.h/2),
-      label: null, bend: 0, dots: 1, thin: true,
+      label: null, bend: 0, dots: 1, thin: true, phase: i/rows.length,
     });
   });
 
@@ -147,7 +152,7 @@ function edgeList(t){
     es.push({
       p0: V(machine.x+machine.w, machine.y + machine.h*(0.22 + 0.28*i)),
       p3: V(PX, p.y + PH/2),
-      label: i===1 ? "ONE BACKEND EACH" : null,
+      label: null,
       bend: i===0 ? -0.10 : (i===2 ? 0.10 : 0), dots: 1, lo: -22,
     });
   });
@@ -201,7 +206,7 @@ function drawSurface(t){
   const cx = surface.x + surface.w/2;
   text("03", surface.x+22, surface.y+42, {size:21, weight:300, color:"#b8b3a8", font:MONO});
   text("The command surface", cx, surface.y+92, {size:20, weight:700, align:"center"});
-  text("96 commands · 34 groups", cx, surface.y+116, {size:12.5, color:MUTED, align:"center"});
+  text(SURFACE, cx, surface.y+116, {size:12.5, color:MUTED, align:"center"});
 
   // the same call, said two ways — whichever caller is active right now
   const a = activeCaller(t);
@@ -288,7 +293,7 @@ function drawPlatforms(t){
     ctx.moveTo(tp.x-S(6), tp.y); ctx.lineTo(tp.x-S(2), tp.y+S(5)); ctx.lineTo(tp.x+S(6), tp.y-S(6));
     ctx.stroke(); ctx.lineCap="butt";
   });
-  text("VERIFIED ON ALL THREE", PX+PW, platforms[2].y+PH+28,
+  text("ONE BACKEND EACH · VERIFIED ON ALL THREE", PX+PW, platforms[2].y+PH+30,
     {size:9.5, color:MUTED, align:"right", weight:700, spacing:1.4});
 }
 
@@ -312,7 +317,7 @@ function drawEdges(t){
     const n = e.dots || 1;
     const dim = (e.hot === false) ? 0.28 : 1;
     for(let i=0;i<n;i++){
-      let u=((t*0.19 + i/n) % 1);
+      let u=((t*0.19 + i/n + (e.phase||0)) % 1);
       if(e.rev) u=1-u;
       const q=T(bez(p0,p1,p2,p3,u));
       const fade=Math.min(1, Math.sin(Math.PI*Math.min(u,1-u)*2.6)+0.35) * dim;
@@ -337,7 +342,7 @@ function drawTitle(){
     {size:16.5, color:"#57534b", align:"right"});
   text("One surface, two callers, three platforms.", VW-60, 201,
     {size:16.5, weight:700, align:"right"});
-  text("96 commands · 34 groups · macOS · Windows · Linux", VW-60, 230,
+  text(SURFACE + " · macOS · Windows · Linux", VW-60, 230,
     {size:12.5, color:ACC, align:"right", weight:700, spacing:.6});
 }
 
@@ -349,8 +354,8 @@ function drawStatusBar(t){
   ctx.fillStyle="#151412"; roundRect(p.x,p.y,S(w),S(h),S(10)); ctx.fill();
   ctx.restore();
 
-  const segs=[["agentic-os","#e6e2d9"],["|","#5a564e"],["96 commands","#7fd6a0"],
-              ["|","#5a564e"],["34 groups","#e6e2d9"],["|","#5a564e"],
+  const segs=[["agentic-os","#e6e2d9"],["|","#5a564e"],[STATS.commands+" commands","#7fd6a0"],
+              ["|","#5a564e"],[STATS.groups+" groups","#e6e2d9"],["|","#5a564e"],
               ["3 platforms","#e0a955"]];
   let cx=x+22;
   for(const [s,col] of segs){
