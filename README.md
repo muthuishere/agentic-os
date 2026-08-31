@@ -105,7 +105,7 @@ not offering it — it will try, fail, and try again.
 |---|---|
 | **Desktop** | `window` (list · focus · move to zone/split/coords · resize · wait · arrange a saved layout), `display`, `mouse`, `key`, `permission` |
 | **Machine** | `system` (lock · sleep · restart · shutdown · logout · info), `power`, `battery`, `network`, `audio`, `font`, `pkg`, `debug` |
-| **Content** | `capture`, `clipboard`, `file`, `exec`, `open`, `launch`, `webapp` |
+| **Content** | `capture`, `clipboard`, `file`, `exec`, `open`, `launch`, `webapp`, `subtitle` |
 | **Comms** | `msg` — send, poll, and follow the local messenger hub |
 | **Watch** | `watch` — long-running monitors (clipboard, focused window) that print one JSON line per change |
 | **Agents** | `serve` — expose all of the above over MCP; `headless` — run the desktop commands with no screen |
