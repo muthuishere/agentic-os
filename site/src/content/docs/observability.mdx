@@ -1,0 +1,50 @@
+---
+title: Observability
+description: Every invocation records one OTLP-shaped span in a local file — route, source, exit code, duration, and the count of arguments, never their contents.
+---
+
+Every invocation — typed at a terminal or called as an MCP tool — records one
+OpenTelemetry-shaped span. Nothing is sent anywhere. The record simply exists,
+in the right shape, for the day you want it.
+
+```console
+$ agentic-os obs stats
+route                calls  errors    p50ms    p95ms    maxms
+commands                52       0        0        0        0
+file delete             43      18        0        0        0
+capture screenshot      16       0      142      160      160
+system info             15       0       29       36       36
+doctor                  14       0      175      187      187
+window list             14       0       38       45       45
+```
+
+```console
+$ agentic-os obs tail --limit=3
+01:05:30  ok   cli        15ms  network status
+01:05:35  err  cli         0ms  file delete
+01:05:36  err  cli         0ms  file delete
+```
+
+```sh
+agentic-os obs export --since=1h   # OTLP JSON, ready for a collector
+agentic-os obs path                # where it is written
+```
+
+## What a span carries
+
+The route, the source (`cli` or `mcp`), the exit code, the duration, and the
+*count* of arguments — never their contents, which routinely carry paths,
+message bodies and clipboard text.
+
+The `source` field is why this is worth having: it is how you find out what an
+agent has actually been asking your machine to do, separately from what you
+typed yourself.
+
+## Turning it off, or moving it
+
+```sh
+AGENTIC_OS_TELEMETRY=off          # do not record
+AGENTIC_OS_TELEMETRY_DIR=/tmp/t   # record somewhere else
+```
+
+It is a file on your disk. Deleting it is a supported operation.

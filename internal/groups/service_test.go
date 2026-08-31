@@ -43,7 +43,7 @@ func TestServiceLabelRoundTripStaysInNamespace(t *testing.T) {
 }
 
 func TestSplitServiceCommand(t *testing.T) {
-	head, command := splitServiceCommand([]string{"mcp", "--now", "--", "agentic-os", "serve", "mcp", "--addr=:1"})
+	head, command := splitServiceCommand([]string{"mcp", "--now", "--", "aos", "serve", "mcp", "--addr=:1"})
 	if strings.Join(head, " ") != "mcp --now" {
 		t.Fatalf("head = %v", head)
 	}

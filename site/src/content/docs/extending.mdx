@@ -1,0 +1,83 @@
+---
+title: Extending it
+description: Add commands with a JSON adapter or a PATH executable — both become MCP tools, neither can shadow a built-in.
+---
+
+Two ways to add a command without forking. Both are gated on the same terms as a
+built-in — `platforms`, `needsDisplay`, `blocking` — and both automatically
+become MCP tools.
+
+## Adapters — when it is a command line you already run
+
+Drop a JSON file in `~/.config/agentic-os/adapters/` and it becomes a group:
+
+```json
+{
+  "group": "notes",
+  "description": "Personal notes",
+  "commands": [
+    {
+      "name": "today",
+      "summary": "Open today's note",
+      "run": "$EDITOR ~/notes/$(date +%F).md",
+      "platforms": ["darwin", "linux"]
+    }
+  ]
+}
+```
+
+```console
+$ agentic-os adapters example --write   # a working starter file
+$ agentic-os adapters path
+/Users/you/.config/agentic-os/adapters
+$ agentic-os adapters list
+no adapters in /Users/you/.config/agentic-os/adapters
+run `agentic-os adapters example --write` to start one
+```
+
+`run` goes through the platform shell with the user's arguments appended and
+quoted.
+
+## Plugins — when you need a program
+
+Any executable named `agentic-os-<group>-<name>` in `$AGENTIC_OS_BIN_DIR`,
+`~/.config/agentic-os/bin`, or on `PATH` joins the CLI, and therefore the MCP
+tool list. It describes itself with comment headers in its first 80 lines:
+
+```sh
+#!/bin/sh
+# agentic-os:summary=Do the thing
+# agentic-os:args=<target>
+# agentic-os:examples=agentic-os demo do thing a | agentic-os demo do thing b
+# agentic-os:platforms=darwin | linux
+# agentic-os:route=theme bg-switcher   # when a word contains a hyphen
+```
+
+## Neither can shadow a built-in
+
+A file in the config directory must not be able to change what a shipped command
+does, so a built-in always wins a route collision. Shipping a Go implementation
+of a route transparently replaces the script that used to serve it.
+
+A malformed adapter is reported, not ignored:
+
+```sh
+agentic-os commands --check    # registry lint; non-zero when something is off
+```
+
+## Seeing what a machine picked up
+
+```console
+$ agentic-os debug
+agentic-os  dev
+go          go1.26.3
+platform    darwin/arm64
+commands    94 available of 96 registered, in 34 groups
+
+plugin dirs:
+  /Users/you/.config/agentic-os/bin
+  …
+```
+
+`doctor` reports the count too: `ok plugins  0 external commands across 38
+directories`.
