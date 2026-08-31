@@ -1,12 +1,30 @@
 # agentic-os
 
-**One CLI for the machine you are sitting at — and the API other agents connect to.**
+**A computer-use MCP server that is also a CLI you can type — on macOS, Windows,
+and Linux.**
 
-It started as the [omarchy CLI](https://learn.omacom.io/2/the-omarchy-manual/115/omarchy-cli)'s
-shape (`<group> <command>`, discoverable help, a machine-readable command index,
-drop-in plugins) rebuilt in Go so it runs the same on **macOS, Windows, and Linux**.
-Then every command became an **MCP tool**, so any agent — Claude Code, Codex, or
-your own — can drive the machine through the exact code path you type at a prompt.
+Give an agent your machine: windows, input, screenshots, files, processes,
+packages, network, audio, messaging. Every command is an MCP tool, and every MCP
+tool is a command a person can run — one surface, one code path, so what you
+test by hand is exactly what the agent gets.
+
+Two things the [2026 survey of desktop-automation MCP servers](https://chatforest.com/guides/best-desktop-automation-mcp-servers/)
+found missing across 25+ of them, and what this is built around:
+
+**Safety is structural, not a disclaimer.** Commands that need a screen are
+refused with a reason on a headless box instead of failing somewhere deep.
+`file delete` will not touch a filesystem root, `$HOME`, or a system directory.
+`serve` binds loopback. Services are namespaced so removing one can never reach
+a system service. Telemetry records how many arguments a command got, never what
+they were.
+
+**One verb set that actually means the same thing everywhere.** `pkg install`
+over brew, winget, scoop, choco, apt, pacman, yay and dnf. `--app=Chrome`
+matching the same window on all three platforms — which took fixing Windows and
+working around Linux to make true.
+
+And it runs where there is no screen at all: most of the surface needs no
+display, and on Linux `headless start` provides one when something does.
 
 ```console
 $ agentic-os system info
@@ -129,9 +147,10 @@ not offering it — it will try, fail, and try again.
 | **Watch** | `watch` — long-running monitors (clipboard, focused window) that print one JSON line per change |
 | **Agents** | `serve` — expose all of the above over MCP; `service` — keep any of it running as a per-user OS service; `headless` — run the desktop commands with no screen |
 
-Window, monitor, screenshot, and input work is
-[windowctl](https://github.com/muthuishere/windowctl), which already solved it on
-all three platforms; agentic-os is the command surface over it.
+Windows, monitors, input and screenshots are handled by
+[windowctl](https://github.com/muthuishere/windowctl); MCP serving by
+[toolnexus](https://github.com/muthuishere/toolnexus). Both are libraries this
+depends on — agentic-os is the front door.
 
 ## Reacting to what happens
 
@@ -272,8 +291,11 @@ wrong answer. On a machine with `hasDisplay: false` the suite asserts the
 *refusal* — `window list` must exit 2 saying it needs a display — rather than
 skipping quietly.
 
-## Status
+## Where it came from
 
-`docs/porting.md` maps the omarchy 4.0.0.alpha surface group by group. Everything
-outside that map — `window`, `mouse`, `key`, `exec`, `file`, `msg`, `serve` — is
+The command shape — `<group> <command>` routes, discoverable help, a
+machine-readable index, drop-in plugins — is the
+[omarchy CLI](https://learn.omacom.io/2/the-omarchy-manual/115/omarchy-cli)'s,
+rebuilt in Go for three platforms instead of one. `docs/porting.md` maps the
+omarchy 4.0.0.alpha surface group by group. Everything outside that map — `window`, `mouse`, `key`, `exec`, `file`, `msg`, `serve` — is
 new here: the parts an agent needs that a desktop CLI never had.
