@@ -101,7 +101,7 @@ input: `aos permission request`.
 
 ```bash
 aos serve mcp                     # 127.0.0.1:14320/mcp, loopback only
-claude mcp add --transport http agentic-os http://127.0.0.1:14320/mcp
+claude mcp add --transport http aos http://127.0.0.1:14320/mcp
 ```
 
 GUI tools are exposed only when the machine has a display (`--gui=on|off|auto`),
@@ -121,9 +121,11 @@ Neither can shadow a built-in command.
 ## What was asked of this machine
 
 ```bash
-aos obs stats       # calls, failures, p50/p95 per route
-aos obs tail        # the most recent work
-aos obs export      # OTLP JSON
+aos obs audit --since=24h   # what was run, oldest first — the audit trail
+aos obs audit --source=mcp  # only what agents asked for
+aos obs summary             # is this being used, and by what
+aos obs stats               # p50/p95 and failure rate per route
+aos obs export              # OTLP JSON
 ```
 
 Spans record the route, exit code, duration and the *count* of arguments — never

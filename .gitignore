@@ -1,3 +1,8 @@
 dist/
 test/e2e/config.json
 .claude/worktrees/
+site/node_modules/
+site/dist/
+site/.astro/
+# generated from the binary by site/scripts/gen-commands.mjs
+site/src/content/docs/reference/commands.mdx

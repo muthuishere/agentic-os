@@ -56,7 +56,7 @@ from anywhere.
 
 ```sh
 aos serve mcp                      # streamable HTTP at 127.0.0.1:14320/mcp
-claude mcp add --transport http agentic-os http://127.0.0.1:14320/mcp
+claude mcp add --transport http aos http://127.0.0.1:14320/mcp
 ```
 
 Every non-hidden, non-blocking command on this platform becomes one MCP tool
@@ -90,13 +90,13 @@ aos service remove mcp
 
 That is a launchd user agent on macOS, a `systemd --user` unit on Linux, and a
 Scheduled Task on Windows — per-user throughout, so nothing here asks for admin
-or sudo. Every service agentic-os creates is namespaced `agentic-os.<name>`, and
+or sudo. Every service aos creates is namespaced `agentic-os.<name>`, and
 `list` and `remove` only ever see that namespace: this CLI cannot delete a
 service it did not create.
 
 ## Headless machines
 
-Most of agentic-os needs no screen at all. On a server, in CI, or in a container,
+Most of aos needs no screen at all. On a server, in CI, or in a container,
 `exec`, `file`, `msg`, `pkg`, `network`, `system`, `power`, `battery`, `font`,
 `debug`, and `serve` work exactly as they do on a laptop.
 
@@ -157,7 +157,7 @@ not offering it — it will try, fail, and try again.
 Windows, monitors, input and screenshots are handled by
 [windowctl](https://github.com/muthuishere/windowctl); MCP serving by
 [toolnexus](https://github.com/muthuishere/toolnexus). Both are libraries this
-depends on — agentic-os is the front door.
+depends on — aos is the front door.
 
 ## Reacting to what happens
 
@@ -179,7 +179,7 @@ absent from the MCP tool list — an agent reads them by running the CLI.
 | Layer | Where | What it does |
 |---|---|---|
 | Registry | `internal/cli` | Command tree, longest-prefix route resolution, help, `commands --json`, `Invoke` |
-| Plugins | `internal/cli/plugins.go` | Discovers external `agentic-os-<route>` executables |
+| Plugins | `internal/cli/plugins.go` | Discovers external `aos-<route>` executables |
 | Platform helpers | `internal/sys` | Bounded shell-outs, `osascript`, PowerShell |
 | Groups | `internal/groups` | One file per group, plus `_darwin.go` / `_windows.go` / `_linux.go` backends |
 
@@ -226,15 +226,15 @@ reported by `commands --check` rather than silently ignored.
 
 ### Plugins — when you need a program
 
-Any executable named `agentic-os-<group>-<name>` in `$AGENTIC_OS_BIN_DIR`,
+Any executable named `aos-<group>-<name>` in `$AGENTIC_OS_BIN_DIR`,
 `~/.config/agentic-os/bin`, or on `PATH` joins the CLI — and therefore the MCP
 tool list. It describes itself with comment headers in its first 80 lines:
 
 ```sh
 #!/bin/sh
-# agentic-os:summary=Do the thing
+# aos:summary=Do the thing
 # agentic-os:args=<target>
-# agentic-os:examples=agentic-os demo do thing a | agentic-os demo do thing b
+# agentic-os:examples=aos demo do thing a | aos demo do thing b
 # agentic-os:platforms=darwin | linux
 # agentic-os:route=theme bg-switcher   # when a word contains a hyphen
 ```
@@ -249,7 +249,7 @@ aos commands            # what this machine can run
 aos commands --all      # every registered command, including other platforms
 aos commands --json     # machine-readable index
 aos commands --check    # registry lint; non-zero when something is off
-agentic-os debug               # platform, tool availability, plugin dirs
+aos debug               # platform, tool availability, plugin dirs
 ```
 
 ## Is it working?
@@ -263,17 +263,31 @@ clipboard, captures a real screenshot and inspects the bytes, asks the window
 backend for a list, and pings the messenger hub. Anything not `ok` prints what
 to run to fix it.
 
-## What has this machine been asked to do?
+## Audit trail
 
 Every invocation — typed at a terminal or called as an MCP tool — records one
-OpenTelemetry-shaped span. Nothing is sent anywhere; the record simply exists,
-in the right shape, for the day you want it.
+OpenTelemetry-shaped span, locally. When you hand an agent your machine, the
+question you will eventually want answered is *what did it actually do*:
 
 ```sh
-aos obs stats                 # calls, failures, p50/p95 per route
-aos obs tail --limit=20       # the most recent work
-aos obs export --since=1h     # OTLP JSON, ready for a collector
-aos obs path                  # where it is written
+aos obs audit --since=24h        # everything, oldest first
+aos obs audit --source=mcp       # only what agents asked for
+aos obs audit --failed           # only what went wrong
+```
+
+```
+2026-09-01 01:10:28  mcp   window move                    41ms  ok
+2026-09-01 01:10:33  cli   file delete                     2ms  FAILED exit 1
+```
+
+And whether it is earning its place:
+
+```sh
+aos obs summary                  # calls, routes, cli vs mcp, most used
+aos obs stats                    # p50/p95 and failure rate per route
+aos obs tail --limit=20          # the last few
+aos obs export --since=1h        # OTLP JSON, ready for a collector
+aos obs path                     # where it is written
 ```
 
 Spans record the route, source (`cli` or `mcp`), exit code and duration — and
@@ -298,11 +312,38 @@ wrong answer. On a machine with `hasDisplay: false` the suite asserts the
 *refusal* — `window list` must exit 2 saying it needs a display — rather than
 skipping quietly.
 
-## Where it came from
+## Credit, and why this exists
 
-The command shape — `<group> <command>` routes, discoverable help, a
-machine-readable index, drop-in plugins — is the
-[omarchy CLI](https://learn.omacom.io/2/the-omarchy-manual/115/omarchy-cli)'s,
-rebuilt in Go for three platforms instead of one. `docs/porting.md` maps the
-omarchy 4.0.0.alpha surface group by group. Everything outside that map — `window`, `mouse`, `key`, `exec`, `file`, `msg`, `serve` — is
-new here: the parts an agent needs that a desktop CLI never had.
+The command shape is [omarchy](https://omarchy.org)'s — DHH's opinionated
+Arch + Hyprland desktop. Its CLI is the best system command centre I have used:
+`<group> <command>` routes, help that is actually discoverable, a
+machine-readable command index, and plugins that are just executables with a
+comment header. All of that is theirs, and it is worth studying directly.
+
+I am not on Arch. I work across macOS, Windows and a pile of Linux servers, and
+I wanted those ergonomics on all of them. **If I move to omarchy full time I
+will use omarchy's CLI — it is better on the machine it was built for, and it
+has years of taste in it that this does not.** Until then, this is how I get the
+same shape everywhere else, plus the parts an agent needs that a desktop CLI
+never had to care about.
+
+This is not a port. Roughly half of omarchy's surface is Arch- and
+Hyprland-specific and belongs exactly where it is.
+
+### What omarchy has that this does not
+
+`theme` (32 commands — the whole theming system, and the reason omarchy looks
+the way it does), `hyprland`, `plymouth`, `drive` and LUKS, `powerprofiles`,
+`hibernation`, `snapshot`, the omarchy `bar` / `plugin` / `shell`, its `menu`
+and `tui` launchers, `install` of 33 Arch packages, `mise`, `tailscale`,
+`branch`, `channel`, `migrate`. On a Linux box you can drop omarchy's own
+scripts in as `aos-*` plugins and they will show up here.
+
+### What this has that omarchy does not
+
+Windows and macOS at all. An MCP server, so an agent can drive the machine.
+JSON adapters. An audit trail and usage stats. `doctor`. A LAN screen share.
+Headless operation with a managed virtual display. Cross-platform services.
+
+`docs/porting.md` maps the omarchy 4.0.0.alpha surface group by group.
+

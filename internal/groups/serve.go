@@ -280,7 +280,7 @@ func runServeMCP(c *cli.Ctx, args []string) error {
 
 	quiet := set.Has("quiet")
 	handle, err := toolkit.Serve(addr, toolnexus.ServeOptions{
-		MCP: &toolnexus.MCPServeConfig{Name: "agentic-os", Version: c.Version},
+		MCP: &toolnexus.MCPServeConfig{Name: "aos", Version: c.Version},
 		OnCall: func(event toolnexus.OnCallEvent) {
 			if quiet {
 				return

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -41,6 +42,24 @@ func init() {
 				Args:     "[--since=<duration>]",
 				Examples: []string{"aos obs export --since=1h > spans.json"},
 				Run:      runObsExport,
+			},
+			&cli.Command{
+				Group: "obs", Name: "audit",
+				Summary: "Every command this machine was asked to run, oldest first",
+				Args:    "[--since=<duration>] [--source=<cli|mcp>] [--failed] [--json]",
+				Examples: []string{
+					"aos obs audit --since=24h",
+					"aos obs audit --source=mcp     # only what agents asked for",
+					"aos obs audit --failed",
+				},
+				Run: runObsAudit,
+			},
+			&cli.Command{
+				Group: "obs", Name: "summary",
+				Summary:  "How much this machine is actually used, and by what",
+				Args:     "[--since=<duration>] [--json]",
+				Examples: []string{"aos obs summary", "aos obs summary --since=7d"},
+				Run:      runObsSummary,
 			},
 			&cli.Command{
 				Group: "obs", Name: "path",
@@ -341,4 +360,159 @@ func runObsExport(c *cli.Ctx, args []string) error {
 	enc := json.NewEncoder(c.Stdout)
 	enc.SetIndent("", "  ")
 	return enc.Encode(payload)
+}
+
+// runObsAudit prints the trail in the order things happened.
+//
+// This is the answer to "what did an agent do on my machine". `obs stats`
+// aggregates and `obs tail` shows the last few; an audit needs the whole window,
+// oldest first, with the timestamp a person can correlate against something else.
+func runObsAudit(c *cli.Ctx, args []string) error {
+	set, err := parseArgs(args, "since", "source")
+	if err != nil {
+		return err
+	}
+	if err := set.Reject("since", "source", "failed", "json"); err != nil {
+		return err
+	}
+	since, err := parseSince(set)
+	if err != nil {
+		return err
+	}
+
+	spans, err := loadSpans(c, since, set.String("source", ""))
+	if err != nil {
+		return err
+	}
+	if set.Has("failed") {
+		var failures []obs.Span
+		for _, span := range spans {
+			if span.Status.Code == obs.StatusError {
+				failures = append(failures, span)
+			}
+		}
+		spans = failures
+	}
+	if len(spans) == 0 {
+		c.Println("nothing recorded in this window")
+		return nil
+	}
+
+	if set.Has("json") {
+		enc := json.NewEncoder(c.Stdout)
+		enc.SetIndent("", "  ")
+		return enc.Encode(spans)
+	}
+
+	for _, span := range spans {
+		result := "ok"
+		if span.Status.Code == obs.StatusError {
+			result = "FAILED exit " + strconv.FormatInt(attrInt(span, "agentic_os.exit_code"), 10)
+		}
+		c.Printf("%s  %-4s %-28s %6dms  %s\n",
+			time.Unix(0, span.StartNanos).Format("2006-01-02 15:04:05"),
+			attrString(span, "agentic_os.source"),
+			attrString(span, "agentic_os.route"),
+			attrInt(span, "agentic_os.duration_ms"),
+			result)
+	}
+	c.Warnf("%d entries\n", len(spans))
+	return nil
+}
+
+// usage is the adoption picture `obs summary` answers: is this earning its place,
+// and is anything actually driving it as an agent rather than by hand.
+type usage struct {
+	Calls          int            `json:"calls"`
+	Failed         int            `json:"failed"`
+	DistinctRoutes int            `json:"distinct_routes"`
+	BySource       map[string]int `json:"by_source"`
+	TopRoutes      []routeCount   `json:"top_routes"`
+	First          string         `json:"first,omitempty"`
+	Last           string         `json:"last,omitempty"`
+	DaysActive     int            `json:"days_active"`
+}
+
+type routeCount struct {
+	Route string `json:"route"`
+	Calls int    `json:"calls"`
+}
+
+func runObsSummary(c *cli.Ctx, args []string) error {
+	set, err := parseArgs(args, "since")
+	if err != nil {
+		return err
+	}
+	if err := set.Reject("since", "json"); err != nil {
+		return err
+	}
+	since, err := parseSince(set)
+	if err != nil {
+		return err
+	}
+
+	spans, err := loadSpans(c, since, "")
+	if err != nil {
+		return err
+	}
+	if len(spans) == 0 {
+		c.Println("nothing recorded in this window")
+		return nil
+	}
+
+	report := usage{BySource: map[string]int{}}
+	routes := map[string]int{}
+	days := map[string]bool{}
+	for _, span := range spans {
+		report.Calls++
+		if span.Status.Code == obs.StatusError {
+			report.Failed++
+		}
+		source := attrString(span, "agentic_os.source")
+		if source == "" {
+			source = "cli"
+		}
+		report.BySource[source]++
+		routes[attrString(span, "agentic_os.route")]++
+		days[time.Unix(0, span.StartNanos).Format("2006-01-02")] = true
+	}
+	report.DistinctRoutes = len(routes)
+	report.DaysActive = len(days)
+	report.First = time.Unix(0, spans[0].StartNanos).Format(time.RFC3339)
+	report.Last = time.Unix(0, spans[len(spans)-1].StartNanos).Format(time.RFC3339)
+
+	for route, count := range routes {
+		report.TopRoutes = append(report.TopRoutes, routeCount{route, count})
+	}
+	sort.Slice(report.TopRoutes, func(i, j int) bool {
+		if report.TopRoutes[i].Calls != report.TopRoutes[j].Calls {
+			return report.TopRoutes[i].Calls > report.TopRoutes[j].Calls
+		}
+		return report.TopRoutes[i].Route < report.TopRoutes[j].Route
+	})
+	if len(report.TopRoutes) > 10 {
+		report.TopRoutes = report.TopRoutes[:10]
+	}
+
+	if set.Has("json") {
+		enc := json.NewEncoder(c.Stdout)
+		enc.SetIndent("", "  ")
+		return enc.Encode(report)
+	}
+
+	c.Printf("calls        %d across %d routes, %d failed\n",
+		report.Calls, report.DistinctRoutes, report.Failed)
+	c.Printf("period       %s to %s (%d days with activity)\n",
+		report.First[:10], report.Last[:10], report.DaysActive)
+	for _, source := range []string{"cli", "mcp"} {
+		if count := report.BySource[source]; count > 0 {
+			c.Printf("%-12s %d\n", "by "+source, count)
+		}
+	}
+	c.Println()
+	c.Println("most used:")
+	for _, route := range report.TopRoutes {
+		c.Printf("  %-28s %d\n", route.Route, route.Calls)
+	}
+	return nil
 }
