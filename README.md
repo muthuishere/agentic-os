@@ -144,6 +144,7 @@ not offering it — it will try, fail, and try again.
 | **Machine** | `system` (lock · sleep · restart · shutdown · logout · info), `power`, `battery`, `network`, `audio`, `font`, `pkg`, `debug` |
 | **Content** | `capture`, `clipboard`, `file`, `exec`, `open`, `launch`, `webapp`, `subtitle` |
 | **Comms** | `msg` — send, poll, and follow the local messenger hub |
+| **Remote** | `remote` — hand this screen and its input to a browser on the LAN, for as long as the command runs |
 | **Watch** | `watch` — long-running monitors (clipboard, focused window) that print one JSON line per change |
 | **Agents** | `serve` — expose all of the above over MCP; `service` — keep any of it running as a per-user OS service; `headless` — run the desktop commands with no screen |
 
