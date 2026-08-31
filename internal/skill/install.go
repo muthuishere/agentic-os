@@ -13,6 +13,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/muthuishere/agentic-os/internal/sys"
 )
 
 //go:embed assets
@@ -36,9 +38,12 @@ type Result struct {
 	Action string `json:"action"` // installed, updated, removed, absent
 }
 
-// Hosts returns where the skill should go: Claude Code and the shared agents
-// directory, each overridable so a different layout does not need a code change.
-func Hosts(env func(string) string) ([]Host, error) {
+// Hosts returns where the skill should go.
+//
+// Claude Code always. The shared ~/.agents directory only when something reads
+// it — codex on PATH — or when the caller insists, so a machine with one agent
+// does not accumulate skill directories nothing looks at.
+func Hosts(env func(string) string, includeAgents bool) ([]Host, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return nil, err
@@ -49,15 +54,16 @@ func Hosts(env func(string) string) ([]Host, error) {
 		}
 		return filepath.Join(home, dir, "skills")
 	}
-	return []Host{
-		{Name: "claude", Root: root("CLAUDE_SKILLS_DIR", ".claude")},
-		{Name: "agents", Root: root("AGENTS_SKILLS_DIR", ".agents")},
-	}, nil
+	hosts := []Host{{Name: "claude", Root: root("CLAUDE_SKILLS_DIR", ".claude")}}
+	if includeAgents || sys.Has("codex") {
+		hosts = append(hosts, Host{Name: "agents", Root: root("AGENTS_SKILLS_DIR", ".agents")})
+	}
+	return hosts, nil
 }
 
 // Install writes the skill to every host, overwriting an older copy.
-func Install(env func(string) string) ([]Result, error) {
-	hosts, err := Hosts(env)
+func Install(env func(string) string, includeAgents bool) ([]Result, error) {
+	hosts, err := Hosts(env, includeAgents)
 	if err != nil {
 		return nil, err
 	}
@@ -77,10 +83,13 @@ func Install(env func(string) string) ([]Result, error) {
 	return results, nil
 }
 
-// Uninstall removes the skill. A host that never had it is reported as absent
-// rather than failing, so uninstall is safe to run twice.
+// A host that never had it is reported as absent rather than failing, so
+// uninstall is safe to run twice.
+// Uninstall removes the skill. It always considers every host, whether or not
+// the agents directory would be installed to today: a skill put there by an
+// earlier run must still be removable.
 func Uninstall(env func(string) string) ([]Result, error) {
-	hosts, err := Hosts(env)
+	hosts, err := Hosts(env, true)
 	if err != nil {
 		return nil, err
 	}

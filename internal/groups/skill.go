@@ -2,6 +2,7 @@ package groups
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/muthuishere/agentic-os/internal/cli"
 	"github.com/muthuishere/agentic-os/internal/skill"
@@ -9,24 +10,32 @@ import (
 
 func init() {
 	register(func(r *cli.Registry) {
-		r.Describe("skill", "Teach a coding agent to use this machine")
+		// `install --skills` rather than `skill install`: the same shape the
+		// other tools here use, so one habit works across all of them, and so
+		// `install` has room for whatever else becomes installable.
+		r.Describe("install", "Install what this binary carries")
+		r.Add(&cli.Command{
+			Group:   "install",
+			Summary: "Install the bundled agent skill",
+			Args:    "--skills [--agents] [--json]",
+			Examples: []string{
+				"agentic-os install --skills",
+				"agentic-os install --skills --agents",
+			},
+			Run: runInstall,
+		})
+
+		r.Describe("uninstall", "Remove what this binary installed")
+		r.Add(&cli.Command{
+			Group:    "uninstall",
+			Summary:  "Remove the installed agent skill",
+			Args:     "--skills [--json]",
+			Examples: []string{"agentic-os uninstall --skills"},
+			Run:      runUninstall,
+		})
+
+		r.Describe("skill", "The agent skill bundled in this binary")
 		r.Add(
-			&cli.Command{
-				Group: "skill", Name: "install",
-				Summary: "Install the bundled agent skill for Claude Code and other agents",
-				Args:    "[--json]",
-				Examples: []string{
-					"agentic-os skill install",
-				},
-				Run: runSkillInstall,
-			},
-			&cli.Command{
-				Group: "skill", Name: "uninstall",
-				Summary:  "Remove the installed agent skill",
-				Args:     "[--json]",
-				Examples: []string{"agentic-os skill uninstall"},
-				Run:      runSkillUninstall,
-			},
 			&cli.Command{
 				Group: "skill", Name: "show",
 				Summary:  "Print the bundled skill without installing it",
@@ -42,14 +51,14 @@ func init() {
 			},
 			&cli.Command{
 				Group: "skill", Name: "path",
-				Summary: "Print where the skill installs to",
+				Summary: "Print where `install --skills` would write",
 				Run: func(c *cli.Ctx, _ []string) error {
-					hosts, err := skill.Hosts(c.Env)
+					hosts, err := skill.Hosts(c.Env, true)
 					if err != nil {
 						return err
 					}
 					for _, host := range hosts {
-						c.Printf("%-8s %s\n", host.Name, host.Root+"/"+skill.Name)
+						c.Printf("%-8s %s/%s\n", host.Name, host.Root, skill.Name)
 					}
 					return nil
 				},
@@ -58,28 +67,47 @@ func init() {
 	})
 }
 
-func runSkillInstall(c *cli.Ctx, args []string) error {
-	return reportSkill(c, args, skill.Install)
-}
-
-func runSkillUninstall(c *cli.Ctx, args []string) error {
-	return reportSkill(c, args, skill.Uninstall)
-}
-
-// reportSkill runs an install or uninstall and prints what happened per host.
-func reportSkill(c *cli.Ctx, args []string, action func(func(string) string) ([]skill.Result, error)) error {
+func runInstall(c *cli.Ctx, args []string) error {
 	set, err := parseArgs(args)
 	if err != nil {
 		return err
 	}
-	if err := set.Reject("json"); err != nil {
+	if err := set.Reject("skills", "agents", "json"); err != nil {
 		return err
 	}
+	// Requiring --skills keeps the verb honest: `install` on its own should not
+	// guess what to install, and there will be more than one thing eventually.
+	if !set.Has("skills") {
+		return fmt.Errorf("say what to install: `agentic-os install --skills`")
+	}
 
-	results, err := action(c.Env)
+	results, err := skill.Install(c.Env, set.Has("agents"))
 	if err != nil {
 		return err
 	}
+	return reportSkill(c, set, results)
+}
+
+func runUninstall(c *cli.Ctx, args []string) error {
+	set, err := parseArgs(args)
+	if err != nil {
+		return err
+	}
+	if err := set.Reject("skills", "agents", "json"); err != nil {
+		return err
+	}
+	if !set.Has("skills") {
+		return fmt.Errorf("say what to remove: `agentic-os uninstall --skills`")
+	}
+
+	results, err := skill.Uninstall(c.Env)
+	if err != nil {
+		return err
+	}
+	return reportSkill(c, set, results)
+}
+
+func reportSkill(c *cli.Ctx, set *argSet, results []skill.Result) error {
 	if set.Has("json") {
 		enc := json.NewEncoder(c.Stdout)
 		enc.SetIndent("", "  ")

@@ -39,13 +39,14 @@ $ agentic-os serve mcp                    # now every command above is an agent 
 
 ```sh
 go install github.com/muthuishere/agentic-os/cmd/agentic-os@latest
-agentic-os skill install    # teach Claude Code and other agents to use it
+agentic-os install --skills # teach Claude Code and other agents to use it
 ```
 
-`skill install` writes the agent skill bundled inside the binary to
-`~/.claude/skills/` and `~/.agents/skills/`, so the instructions an agent reads
-can never describe a different version than the one installed. `skill show`
-prints it without installing.
+`install --skills` writes the agent skill bundled inside the binary to
+`~/.claude/skills/`, so the instructions an agent reads can never describe a
+different version than the one installed. `~/.agents/skills/` is included when
+codex is on PATH, or with `--agents`. `skill show` prints it without installing;
+`uninstall --skills` removes it.
 
 One binary, no runtime and no package manager of its own. The macOS window
 backend is CoreGraphics through cgo, so a Mac build needs `CGO_ENABLED=1` — the

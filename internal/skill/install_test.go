@@ -23,7 +23,7 @@ func TestInstallWritesToEveryHost(t *testing.T) {
 	claude, agents := t.TempDir(), t.TempDir()
 	env := testEnv(claude, agents)
 
-	results, err := Install(env)
+	results, err := Install(env, true)
 	if err != nil {
 		t.Fatalf("install: %v", err)
 	}
@@ -47,7 +47,7 @@ func TestInstallIsIdempotentAndReplaces(t *testing.T) {
 	claude, agents := t.TempDir(), t.TempDir()
 	env := testEnv(claude, agents)
 
-	if _, err := Install(env); err != nil {
+	if _, err := Install(env, true); err != nil {
 		t.Fatal(err)
 	}
 	stale := filepath.Join(claude, Name, "STALE.md")
@@ -55,7 +55,7 @@ func TestInstallIsIdempotentAndReplaces(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	results, err := Install(env)
+	results, err := Install(env, true)
 	if err != nil {
 		t.Fatalf("second install: %v", err)
 	}
@@ -73,7 +73,7 @@ func TestUninstallIsSafeToRepeat(t *testing.T) {
 	claude, agents := t.TempDir(), t.TempDir()
 	env := testEnv(claude, agents)
 
-	if _, err := Install(env); err != nil {
+	if _, err := Install(env, true); err != nil {
 		t.Fatal(err)
 	}
 	first, err := Uninstall(env)
