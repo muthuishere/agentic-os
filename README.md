@@ -107,11 +107,27 @@ not offering it — it will try, fail, and try again.
 | **Machine** | `system` (lock · sleep · restart · shutdown · logout · info), `power`, `battery`, `network`, `audio`, `font`, `pkg`, `debug` |
 | **Content** | `capture`, `clipboard`, `file`, `exec`, `open`, `launch`, `webapp` |
 | **Comms** | `msg` — send, poll, and follow the local messenger hub |
+| **Watch** | `watch` — long-running monitors (clipboard, focused window) that print one JSON line per change |
 | **Agents** | `serve` — expose all of the above over MCP; `headless` — run the desktop commands with no screen |
 
 Window, monitor, screenshot, and input work is
 [windowctl](https://github.com/muthuishere/windowctl), which already solved it on
 all three platforms; agentic-os is the command surface over it.
+
+## Reacting to what happens
+
+`watch` commands run until interrupted and print one compact JSON line per
+event, so an agent can pipe one and act on each line.
+
+```sh
+agentic-os watch clipboard              # {"event":"clipboard","at":…,"seq":1,"length":34,"digest":"7a37ded45b5e"}
+agentic-os watch clipboard --content    # include the text — opt-in, clipboards hold passwords
+agentic-os watch window --max=1         # wait for the next focus change, then exit
+```
+
+The first sample is only a baseline, so `--max=1` means "the next change", which
+is also what makes a watcher scriptable. Being blocking, they are deliberately
+absent from the MCP tool list — an agent reads them by running the CLI.
 
 ## How it is put together
 
