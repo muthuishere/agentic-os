@@ -38,6 +38,40 @@ run `aos adapters example --write` to start one
 `run` goes through the platform shell with the user's arguments appended and
 quoted.
 
+### This is where anything site-specific belongs
+
+agentic-os used to ship a `msg` group that talked to a local messenger hub. It
+was removed, because a built-in command that only works if you happen to run one
+particular service is a command that fails for everyone else — and the command
+list is a promise about what this machine can do.
+
+Notifications are personal: Slack, Telegram, ntfy, a webhook, a hub of your own.
+So they are an adapter, and yours works exactly like a built-in — it shows up in
+`commands`, in `--help`, and as an MCP tool:
+
+```json
+{
+  "group": "notify",
+  "description": "Tell me things",
+  "commands": [
+    {
+      "name": "send",
+      "summary": "Post a message to my Slack webhook",
+      "args": "<text...>",
+      "run": "curl -sS -X POST -H 'Content-Type: application/json' -d \"{\\\"text\\\":\\\"$*\\\"}\" \"$SLACK_WEBHOOK_URL\""
+    }
+  ]
+}
+```
+
+```sh
+aos notify send "build passed"
+```
+
+Keep the secret in the environment, not in the adapter file — the `run` line is
+a shell command, so `$SLACK_WEBHOOK_URL` expands at call time and never has to
+be written down here.
+
 ## Plugins — when you need a program
 
 Any executable named `agentic-os-<group>-<name>` in `$AGENTIC_OS_BIN_DIR`,

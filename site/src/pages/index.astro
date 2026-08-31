@@ -12,7 +12,7 @@ const bin = registry.binary;
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>agentic-os — one surface, two callers, three platforms</title>
+		<title>aos — the machine, as one command surface</title>
 		<meta
 			name="description"
 			content={`One CLI over the machine that agents drive the same way you do \u2014 as an installed agent skill, or over MCP. ${registry.commands} commands across ${registry.groups} groups, on macOS, Windows and Linux.`}
@@ -25,7 +25,8 @@ const bin = registry.binary;
 		<a id="scroll" href="#start">↓</a>
 
 		<section id="start">
-			<h1>agentic-os</h1>
+			<h1>aos</h1>
+			<p class="formal">agentic-os</p>
 			<p class="lede">
 				One CLI over the machine &mdash; windows, input, screenshots, files, processes, packages
 				&mdash; that an agent drives the same way you do. Install the skill and your agent just
@@ -94,9 +95,16 @@ ${bin} doctor`}</code></pre>
 				border-top: 1px solid #d6d2c8;
 			}
 			#start h1 {
-				font-size: 34px;
-				margin: 0 0 12px;
-				letter-spacing: -0.01em;
+				font-size: 46px;
+				margin: 0;
+				letter-spacing: -0.02em;
+			}
+			.formal {
+				margin: 2px 0 14px;
+				font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+				letter-spacing: 0.18em;
+				color: #8a857c;
+				text-transform: lowercase;
 			}
 			.lede {
 				color: #57534b;
@@ -143,7 +151,7 @@ ${bin} doctor`}</code></pre>
 			}
 		</style>
 
-		<script is:inline set:html={`window.AOS_STATS=${JSON.stringify({ commands: registry.commands, groups: registry.groups })}`} />
+		<script is:inline set:html={`window.AOS_STATS=${JSON.stringify(registry)}`} />
 		<script is:inline src={`${base}/canvas.js`}></script>
 	</body>
 </html>

@@ -16,7 +16,6 @@ page is the shape of it.
 | **Desktop** | `window` · `display` · `mouse` · `key` · `permission` |
 | **Machine** | `system` · `power` · `battery` · `network` · `audio` · `font` · `pkg` · `debug` |
 | **Content** | `capture` · `clipboard` · `file` · `exec` · `open` · `launch` · `webapp` · `subtitle` |
-| **Comms** | `msg` — send, poll and follow the local messenger hub |
 | **Remote** | `remote` — hand this screen and its input to a browser on the LAN |
 | **Watch** | `watch` — long-running monitors that print one JSON line per change |
 | **Agents** | `serve` (MCP) · `service` (keep it running) · `headless` (run without a screen) |
@@ -66,7 +65,7 @@ Linux-only, because macOS and Windows have no Xvfb equivalent.
 ## Blocking commands
 
 `watch clipboard`, `watch window` and `remote share` run until interrupted.
-Being blocking, they are deliberately absent from the MCP tool list — an agent
+Being blocking, they are deliberately absent from the tool list — an agent
 reads them by running the CLI and consuming the stream, and a screen-share can
 only be started by a person.
 

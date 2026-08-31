@@ -1,4 +1,6 @@
-# agentic-os
+# aos
+
+`agentic-os` — the binary is `aos`, which is what you type and what to call it.
 
 **One CLI over the machine that an agent drives the same way you do — on macOS,
 Windows, and Linux.**
@@ -16,7 +18,7 @@ packages, network, audio, messaging. Two ways in, and they run the same code:
 One surface, one code path, so what you test by hand is exactly what the agent
 gets.
 
-Two things the [2026 survey of desktop-automation MCP servers](https://chatforest.com/guides/best-desktop-automation-mcp-servers/)
+Two things a [2026 survey of desktop-automation tools for agents](https://chatforest.com/guides/best-desktop-automation-mcp-servers/)
 found missing across 25+ of them, and what this is built around:
 
 **Safety is structural, not a disclaimer.** Commands that need a screen are
@@ -39,8 +41,8 @@ $ aos system info
 $ aos window move Chrome --zone=1B
 $ aos capture screenshot --app=Chrome --out=/tmp/shot.png
 $ aos pkg install ripgrep          # brew / winget / pacman / apt, same verb
-$ aos obs audit --since=24h            # what an agent did on this machine
-$ aos serve mcp                    # now every command above is an agent tool
+$ aos obs audit --since=24h        # what an agent did on this machine
+$ aos install --skills             # now an agent runs all of the above
 ```
 
 ## Install
@@ -117,21 +119,20 @@ run and refuses anything without it, as a bearer header or `?t=`. Set
 `AGENTIC_OS_MCP_TOKEN` (or `--token`) to pin one so a client configured once
 survives a restart.
 
-Every non-hidden, non-blocking command on this platform becomes one MCP tool
-(`window_move`, `capture_screenshot`, `exec_capture`, …) carrying the same
-summary, usage, and examples the CLI documents. There is no second
-implementation: a tool call runs the identical `Runner` the terminal does.
+Every non-hidden, non-blocking command becomes one tool (`window_move`,
+`capture_screenshot`, …) with the same summary, usage and examples the CLI
+documents, running the identical `Runner`. Blocking commands are left out on
+purpose: a request/response call has no sensible end.
 
 ```sh
-aos serve tools                    # preview the catalogue
+aos serve tools                              # preview the catalogue
 aos serve mcp --groups=window,capture,exec   # expose a subset
 ```
 
-The MCP layer is [toolnexus](https://github.com/muthuishere/toolnexus)'s
-`Toolkit.Serve`, so the protocol work is conformance-tested rather than
-hand-rolled. It binds loopback by default — serving this registry is remote
-control of the machine, so reaching it from elsewhere should be a deliberate act
-(an SSH tunnel, or an explicit `--addr`).
+The protocol layer is [toolnexus](https://github.com/muthuishere/toolnexus)'s
+`Toolkit.Serve`, so it is conformance-tested rather than hand-rolled. Full
+details, including the token and scoping:
+[the docs](https://muthuishere.github.io/agentic-os/mcp/).
 
 ## Keeping it running
 
@@ -155,7 +156,7 @@ service it did not create.
 ## Headless machines
 
 Most of aos needs no screen at all. On a server, in CI, or in a container,
-`exec`, `file`, `msg`, `pkg`, `network`, `system`, `power`, `battery`, `font`,
+`exec`, `file`, `pkg`, `network`, `system`, `power`, `battery`, `font`,
 `debug`, and `serve` work exactly as they do on a laptop.
 
 The desktop commands do need a display, and they say so rather than failing deep
@@ -207,7 +208,6 @@ not offering it — it will try, fail, and try again.
 | **Desktop** | `window` (list · focus · move to zone/split/coords · resize · wait · arrange a saved layout), `display`, `mouse`, `key`, `permission` |
 | **Machine** | `system` (lock · sleep · restart · shutdown · logout · info), `power`, `battery`, `network`, `audio`, `font`, `pkg`, `debug` |
 | **Content** | `capture`, `clipboard`, `file`, `exec`, `open`, `launch`, `webapp`, `subtitle` |
-| **Comms** | `msg` — send, poll, and follow the local messenger hub |
 | **Remote** | `remote` — hand this screen and its input to a browser on the LAN, for as long as the command runs |
 | **Watch** | `watch` — long-running monitors (clipboard, focused window) that print one JSON line per change |
 | **Agents** | `serve` — expose all of the above over MCP; `service` — keep any of it running as a per-user OS service; `headless` — run the desktop commands with no screen |
@@ -229,8 +229,8 @@ aos watch window --max=1         # wait for the next focus change, then exit
 ```
 
 The first sample is only a baseline, so `--max=1` means "the next change", which
-is also what makes a watcher scriptable. Being blocking, they are deliberately
-absent from the MCP tool list — an agent reads them by running the CLI.
+is also what makes a watcher scriptable. An agent reads these by running the
+CLI — which is the case for the skill path in a sentence.
 
 ## How it is put together
 
@@ -274,9 +274,9 @@ aos adapters path
 ```
 
 `run` goes through the platform shell with the user's arguments appended and
-quoted. A command can declare `platforms`, `needsDisplay`, and `blocking`, so an
-adapter is gated and excluded from the MCP tool list on exactly the same terms
-as a built-in one — and adapter commands become MCP tools automatically.
+quoted. A command can declare `platforms`, `needsDisplay`, and `blocking`, so
+yours is gated on exactly the same terms as a built-in — in `commands`, in
+`--help`, and in the tool list.
 
 An adapter can never shadow a built-in command: a file in the config directory
 must not be able to change what a shipped command does. A malformed adapter is
@@ -285,8 +285,8 @@ reported by `commands --check` rather than silently ignored.
 ### Plugins — when you need a program
 
 Any executable named `aos-<group>-<name>` in `$AGENTIC_OS_BIN_DIR`,
-`~/.config/agentic-os/bin`, or on `PATH` joins the CLI — and therefore the MCP
-tool list. It describes itself with comment headers in its first 80 lines:
+`~/.config/agentic-os/bin`, or on `PATH` joins the CLI. It describes itself with
+comment headers in its first 80 lines:
 
 ```sh
 #!/bin/sh
@@ -399,7 +399,8 @@ scripts in as `aos-*` plugins and they will show up here.
 
 ### What this has that omarchy does not
 
-Windows and macOS at all. An MCP server, so an agent can drive the machine.
+Windows and macOS at all. An agent skill and an MCP server, so an agent can
+drive the machine.
 JSON adapters. An audit trail and usage stats. `doctor`. A LAN screen share.
 Headless operation with a managed virtual display. Cross-platform services.
 

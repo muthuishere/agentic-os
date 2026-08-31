@@ -1,21 +1,24 @@
 ---
 title: What it is
-description: A computer-use MCP server that is also a CLI a person can type, on macOS, Windows and Linux.
+description: One CLI over the machine that an agent drives the same way you do — via an installed agent skill, or over MCP. macOS, Windows and Linux.
 ---
 
 import registry from '../../data/registry.json';
 
-**A computer-use MCP server that is also a CLI a person can type.**
+**One CLI over the machine that an agent drives the same way you do.**
 {registry.commands} commands across {registry.groups} groups: windows, input,
-screen capture, files, processes, packages, network, audio, clipboard, services,
-messaging.
+screen capture, files, processes, packages, network, audio, clipboard and
+services.
 
 ## One surface, two callers
 
-Every command is an MCP tool, and every MCP tool runs the identical code path
-you get at a prompt. There is no second implementation behind the protocol — a
-tool call resolves the same route and invokes the same `Runner` the terminal
-does.
+An agent gets in through [the skill](/agentic-os/agent-skill/) — it already has
+a shell, so it runs the same commands you do, with nothing listening and nothing
+to start. [MCP](/agentic-os/mcp/) is the second way in, for agents that want
+typed tools.
+
+Both resolve the same route and invoke the same `Runner`. There is no second
+implementation behind the protocol.
 
 ```sh
 aos window move Chrome --zone=1B     # you, at a terminal
@@ -72,7 +75,7 @@ single verb set is for.
 ## Extensible without forking
 
 A JSON file in `~/.config/agentic-os/adapters/` adds a group. An executable
-named `agentic-os-<group>-<name>` on `PATH` adds a command. Both become MCP
+named `aos-<group>-<name>` on `PATH` adds a command. Both become MCP
 tools on exactly the same terms as a built-in — and neither can shadow one. See
 [extending it](/agentic-os/extending/).
 
@@ -82,5 +85,5 @@ The command *shape* — `<group> <command>` routes resolved by longest prefix,
 discoverable help, a machine-readable index, drop-in plugins — is borrowed from
 the [omarchy CLI](https://learn.omacom.io/2/the-omarchy-manual/115/omarchy-cli).
 The implementation is Go, on three platforms. Everything outside that
-map — `window`, `mouse`, `key`, `exec`, `file`, `msg`, `serve` — is new here:
+map — `window`, `mouse`, `key`, `exec`, `file`, `serve` — is new here:
 the parts an agent needs that a desktop CLI never had.

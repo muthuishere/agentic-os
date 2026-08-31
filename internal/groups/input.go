@@ -186,7 +186,18 @@ func runKeyPress(c *cli.Ctx, args []string) error {
 
 // optionalMatch reads --app / --title when the command's positionals are its
 // payload rather than a window name.
+//
+// It resolves a short app name the same way the window commands do. This is the
+// shared path for `capture screenshot --app=`, `key type --app=` and
+// `key press --app=`, all of which are documented with `--app=Chrome` — which
+// matched nothing on macOS, where the app is named "Google Chrome", until the
+// resolution moved in here.
 func optionalMatch(set *argSet) (windowctl.Match, bool) {
 	match := windowctl.Match{App: set.String("app", ""), Title: set.String("title", "")}
+	if match.App != "" && match.Title == "" {
+		if app, ok := resolveAppName(match.App); ok {
+			match.App = app
+		}
+	}
 	return match, match.App != "" || match.Title != ""
 }

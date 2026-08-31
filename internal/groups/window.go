@@ -106,10 +106,23 @@ func runWindowList(c *cli.Ctx, args []string) error {
 		return err
 	}
 
-	windows, err := windowctl.ListWindows(windowctl.Filter{
+	filter := windowctl.Filter{
 		App:   set.String("app", ""),
 		Title: set.String("title", ""),
-	})
+	}
+	// A bare positional means the same thing here as it does everywhere else.
+	// It used to be dropped on the floor, so `window list Chrome` quietly
+	// listed every window on the machine.
+	if filter.App == "" && filter.Title == "" && len(set.Rest) > 0 {
+		filter.App = strings.Join(set.Rest, " ")
+	}
+	if filter.App != "" {
+		if app, ok := resolveAppName(filter.App); ok {
+			filter.App = app
+		}
+	}
+
+	windows, err := windowctl.ListWindows(filter)
 	if err != nil {
 		return err
 	}
@@ -165,12 +178,62 @@ func resolveMatch(match windowctl.Match) (windowctl.Match, error) {
 		return match, nil
 	}
 	if match.App != "" && match.Title == "" {
+		if app, ok := resolveAppName(match.App); ok {
+			return windowctl.Match{App: app}, nil
+		}
 		byTitle := windowctl.Match{Title: match.App}
 		if _, ok := findWindow(byTitle); ok {
 			return byTitle, nil
 		}
 	}
 	return match, fmt.Errorf("no window matched %s", describeMatch(match))
+}
+
+// resolveAppName turns what a person or an agent actually types into the
+// application name this platform reports.
+//
+// The backend matches App exactly and case-sensitively, which makes the most
+// natural thing to write the one thing that cannot work: on macOS the browser
+// is "Google Chrome", so `--app=Chrome` matched nothing at all — while
+// `--title=` had always been a substring. Every example in the docs and in the
+// bundled agent skill is written the short way, because that is how people say
+// it, so the front door resolves the short way to the real name instead.
+//
+// An exact hit wins over a substring one, so a machine running both "Code" and
+// "Code - Insiders" still resolves `--app=Code` to the one that was named.
+func resolveAppName(query string) (string, bool) {
+	if strings.TrimSpace(query) == "" {
+		return "", false
+	}
+	windows, err := windowctl.ListWindows(windowctl.Filter{})
+	if err != nil {
+		return "", false
+	}
+	names := make([]string, 0, len(windows))
+	for _, w := range windows {
+		names = append(names, w.App)
+	}
+	return pickAppName(names, query)
+}
+
+// pickAppName is the resolution itself, split out from the window backend so
+// it can be tested without a display.
+func pickAppName(names []string, query string) (string, bool) {
+	q := strings.ToLower(strings.TrimSpace(query))
+	if q == "" {
+		return "", false
+	}
+	for _, name := range names {
+		if strings.EqualFold(name, query) {
+			return name, true
+		}
+	}
+	for _, name := range names {
+		if strings.Contains(strings.ToLower(name), q) {
+			return name, true
+		}
+	}
+	return "", false
 }
 
 func describeMatch(match windowctl.Match) string {

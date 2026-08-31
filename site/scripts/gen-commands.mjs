@@ -149,7 +149,33 @@ mkdirSync(dirname(dataOut), { recursive: true });
 writeFileSync(
 	dataOut,
 	JSON.stringify(
-		{ commands: commands.length, documented: visible.length, groups: names.length, binary: bin },
+		{
+			commands: commands.length,
+			documented: visible.length,
+			groups: names.length,
+			binary: bin,
+			// The whole surface, group by group. The landing canvas draws every
+			// group and lists a group's real commands when one is clicked, so it
+			// needs the registry itself rather than a count to quote.
+			groupList: names.map((g) => {
+				const cmds = groups
+					.get(g)
+					.filter((c) => !c.hidden)
+					.sort((a, b) => a.route.localeCompare(b.route));
+				return {
+					name: g,
+					count: cmds.length,
+					gui: cmds.some((c) => c.needs_display),
+					commands: cmds.map((c) => ({
+						// The leaf, without the group prefix the chip already shows.
+						name: c.route.split(' ').slice(2).join(' '),
+						summary: c.summary,
+						gui: !!c.needs_display,
+						only: (c.platforms || []).length ? c.platforms : undefined,
+					})),
+				};
+			}),
+		},
 		null,
 		2,
 	) + '\n',

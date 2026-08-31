@@ -24,7 +24,7 @@ export default defineConfig({
 	base: '/agentic-os',
 	integrations: [
 		starlight({
-			title: 'agentic-os',
+			title: 'aos',
 			description:
 				`One CLI over the machine that agents drive the same way you do — as an installed agent skill, or over MCP. ${surface}, on macOS, Windows and Linux.`,
 			// The audience for this product is substantially agents, so the
