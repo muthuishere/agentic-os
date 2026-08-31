@@ -3,16 +3,45 @@ title: Using it from an agent (MCP)
 description: Serve the whole command registry as MCP tools over streamable HTTP, scope what an agent sees, and keep the server running as a per-user service.
 ---
 
-```sh
-aos serve mcp     # streamable HTTP at 127.0.0.1:14320/mcp
+:::note
+MCP is the *second* way to use this. The first is
+[the agent skill](/agentic-os/quickstart/) — an agent that already has a shell
+needs nothing running to use `aos`, and that path works over SSH into any
+machine. Reach for MCP when your agent wants typed tools rather than a terminal.
+:::
+
+```console
+$ aos serve mcp
+aos mcp  http://127.0.0.1:14320/mcp
+token    9c23b0efb0a002fe536a579adfd7cdb1
 ```
 
 ```sh
-claude mcp add --transport http aos http://127.0.0.1:14320/mcp
+claude mcp add --transport http aos http://127.0.0.1:14320/mcp \
+  --header "Authorization: Bearer 9c23b0efb0a002fe536a579adfd7cdb1"
 ```
 
 Every non-hidden, non-blocking command available on this machine becomes one MCP
 tool, carrying the same summary, usage and examples the CLI documents.
+
+## The token is not optional
+
+Loopback is not a permission. Every process on the machine can reach
+`127.0.0.1`, and this surface drives windows, input and the filesystem — so a
+server that trusted loopback alone would be an open door for anything already
+running as you.
+
+`serve mcp` mints a random token per run and refuses any request without it,
+either as an `Authorization: Bearer` header or a `?t=` query parameter, compared
+in constant time. Pin one so a client configured once survives a restart:
+
+```sh
+export AGENTIC_OS_MCP_TOKEN=$(openssl rand -hex 16)   # or --token=…
+aos serve mcp
+```
+
+A pinned token must be at least 16 characters; a shorter one is refused rather
+than quietly accepted.
 
 ## Preview the catalogue first
 
@@ -48,7 +77,9 @@ it — it will try, fail, and try again.
 ## It binds loopback
 
 Serving this registry is remote control of the machine, so reaching it from
-elsewhere should be deliberate: an SSH tunnel, or an explicit `--addr`.
+elsewhere should be deliberate: an SSH tunnel, or an explicit `--addr`. The
+token travels in clear text, so `--addr` on an untrusted network wants a tunnel
+or a TLS front anyway — the tunnel is the better habit.
 
 ## Keeping it running
 

@@ -1,0 +1,100 @@
+---
+title: Using it from an agent (the skill)
+description: Install the agent skill bundled inside the binary, and an agent that already has a shell can drive the machine — locally or over SSH — with nothing running.
+---
+
+This is the primary way an agent uses agentic-os, and it needs no server.
+
+```sh
+aos install --skills
+```
+
+## Why the skill comes first
+
+An agent that can run shell commands already has everything it needs to drive
+this CLI. What it lacks is knowing the CLI exists, what its exit codes mean, and
+which commands need a screen. That is exactly what the skill supplies.
+
+So the skill path has properties MCP does not:
+
+- **Nothing is running.** No server, no port, no process to supervise, nothing
+  to restart when the machine wakes up.
+- **It works over SSH.** See below — this is the part that matters for servers.
+- **Nothing is filtered out.** Blocking commands like `watch clipboard` and
+  `remote share` are deliberately absent from the MCP tool list, because a
+  request/response call has no sensible end. From a shell they are just commands
+  an agent can run with `--max=1` or in the background.
+- **The output is the documentation.** `aos commands --json` and
+  `<group> --help` are always current, so the agent can ask the binary instead
+  of trusting a description of it.
+
+Use MCP when your agent wants typed tools with schemas rather than a terminal.
+Both run the identical code path, so it is a preference, not a trade-off.
+
+## It ships inside the binary
+
+The skill is compiled into the executable with `go:embed`, and `install --skills`
+writes it out to **both** `~/.claude/skills/` and `~/.agents/skills/`.
+
+That is deliberate. A skill distributed separately from the binary drifts: the
+agent reads about a flag that this build does not have, or misses one it does.
+Because the file is written *by* the binary, the instructions an agent reads
+cannot describe a different version than the one installed.
+
+```sh
+aos skill show          # print it without installing
+aos uninstall --skills  # remove it
+```
+
+## Driving another machine over SSH
+
+Because the skill is instructions rather than a connection, an agent can use it
+against any machine it can reach — the binary just has to be there.
+
+```sh
+ssh server aos system info
+ssh server aos exec capture -- systemctl is-active nginx
+ssh server aos file read /etc/hostname
+```
+
+Install it on the far machine the same way:
+
+```sh
+ssh server 'go install github.com/muthuishere/agentic-os/cmd/aos@latest'
+```
+
+Two things are worth knowing before an agent does this:
+
+**A headless server refuses the desktop commands, clearly.** `ssh server aos
+window list` exits 2 saying it needs a display, rather than failing somewhere
+inside a display-server call. On Linux you can give it one with
+`aos headless start --wm`, after which later commands adopt that display
+automatically. See [headless machines](/agentic-os/headless/).
+
+**The audit trail is per-machine.** Spans are written on the machine that ran
+the command, so `ssh server aos obs audit --since=24h` is how you see what an
+agent did *there*. That is usually what you want.
+
+MCP over SSH is the other shape of this — keep `serve mcp` on loopback and
+forward the port:
+
+```sh
+ssh -L 14320:127.0.0.1:14320 server
+```
+
+The token is still required through the tunnel, and now it never crosses the
+network in clear text.
+
+## What the skill tells the agent
+
+The full text is `aos skill show`. In short: ask the binary rather than guess,
+read the exit code (`0` worked, `1` ran and failed or is a deliberate "no", `2`
+refused before doing anything), a table of commands by intent, and the handful
+of things that reliably bite — `exec capture` runs a program rather than a
+shell, `launch` passes unknown flags to the app on purpose, `file delete`
+refuses filesystem roots and `$HOME`, and blocking commands never return.
+
+## For agents reading this site
+
+This site publishes [`/agentic-os/llms.txt`](/agentic-os/llms.txt) and
+`llms-full.txt` — the same documentation in the form an agent prefers to read.

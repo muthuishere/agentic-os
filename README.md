@@ -1,12 +1,20 @@
 # agentic-os
 
-**A computer-use MCP server that is also a CLI you can type — on macOS, Windows,
-and Linux.**
+**One CLI over the machine that an agent drives the same way you do — on macOS,
+Windows, and Linux.**
 
 Give an agent your machine: windows, input, screenshots, files, processes,
-packages, network, audio, messaging. Every command is an MCP tool, and every MCP
-tool is a command a person can run — one surface, one code path, so what you
-test by hand is exactly what the agent gets.
+packages, network, audio, messaging. Two ways in, and they run the same code:
+
+- **The agent skill** (primary) — `aos install --skills` and an agent that
+  already has a shell knows the CLI exists, what its exit codes mean, and which
+  commands need a screen. Nothing running, nothing to connect to, and it works
+  over `ssh` into any machine that has the binary.
+- **MCP** (second) — `aos serve mcp` turns every command into a typed tool for
+  agents that prefer that.
+
+One surface, one code path, so what you test by hand is exactly what the agent
+gets.
 
 Two things the [2026 survey of desktop-automation MCP servers](https://chatforest.com/guides/best-desktop-automation-mcp-servers/)
 found missing across 25+ of them, and what this is built around:
@@ -37,57 +45,63 @@ $ aos serve mcp                    # now every command above is an agent tool
 
 ## Install
 
-One line. It downloads the prebuilt binary for your platform, verifies it
-against the published checksums, and installs the agent skill. No Go needed.
-Everything lands in your home directory; nothing needs root.
-
 ```sh
-curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.sh | sh
+go install github.com/muthuishere/agentic-os/cmd/aos@latest
+aos install --skills   # teach Claude Code and other agents to use it
+aos doctor
 ```
 
-Or take the binary yourself from
-[the latest release](https://github.com/muthuishere/agentic-os/releases/latest):
+Needs Go 1.26+. If you would rather not build, every release also ships
+prebuilt binaries for macOS, Linux and Windows:
+[the latest release](https://github.com/muthuishere/agentic-os/releases/latest).
 
 ```sh
 curl -fsSL -o aos https://github.com/muthuishere/agentic-os/releases/latest/download/aos-darwin-arm64
 chmod +x aos && ./aos install --skills && ./aos doctor
 ```
 
-On Windows:
-
-```bat
-curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.cmd -o install.cmd
-install.cmd
-```
-
-A `.cmd` rather than a `.ps1` on purpose: PowerShell's execution policy blocks
-unsigned script files by default, which stops most people before they start.
-
-Reading a script before piping it into a shell is the right instinct:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.sh -o install.sh
-less install.sh && sh install.sh
-```
-
-With Go already installed:
-
-```sh
-go install github.com/muthuishere/agentic-os/cmd/aos@latest
-aos install --skills # teach Claude Code and other agents to use it
-```
-
-`install --skills` writes the agent skill bundled inside the binary to
-both `~/.claude/skills/` and `~/.agents/skills/`, so the instructions an agent
-reads can never describe a different version than the one installed. `skill show`
-prints it without installing; `uninstall --skills` removes it.
-
 One binary, no runtime and no package manager of its own. The macOS window
 backend is CoreGraphics through cgo, so a Mac build needs `CGO_ENABLED=1` — the
 default when building natively. Linux and Windows are pure Go and cross-compile
 from anywhere.
 
-## Agents connect over MCP
+## Agents connect through the skill
+
+```sh
+aos install --skills
+```
+
+That is the whole integration. The skill is compiled into the binary with
+`go:embed` and written out to **both** `~/.claude/skills/` and
+`~/.agents/skills/`, so the instructions an agent reads can never describe a
+different version than the one installed. `skill show` prints it without
+installing; `uninstall --skills` removes it.
+
+An agent that can run shell commands already has everything it needs to drive
+this CLI. What it lacked was knowing the CLI exists, what the exit codes mean
+(`0` worked, `1` ran and failed or is a deliberate "no", `2` refused before
+doing anything), and which commands need a screen. That is what the skill
+supplies — and it buys things a server cannot:
+
+- **Nothing is running.** No port, no process to supervise or restart.
+- **It works over SSH**, which is what makes this useful on servers:
+
+  ```sh
+  ssh server aos system info
+  ssh server aos exec capture -- systemctl is-active nginx
+  ssh server 'go install github.com/muthuishere/agentic-os/cmd/aos@latest'
+  ```
+
+  A headless server refuses the desktop commands with a reason rather than
+  failing deep; on Linux `headless start --wm` gives it a display. Spans are
+  written on the machine that ran the command, so `ssh server aos obs audit`
+  shows what an agent did *there*.
+- **Nothing is filtered out.** Blocking commands (`watch clipboard`,
+  `remote share`) are deliberately absent from the MCP tool list, because a
+  request/response call has no sensible end. From a shell they are ordinary
+  commands.
+
+## And over MCP, if the agent prefers tools
 
 ```sh
 aos serve mcp
@@ -304,8 +318,8 @@ aos doctor          # functional checks, each with a fix
 
 `doctor` does not check whether binaries are on PATH — it round-trips the
 clipboard, captures a real screenshot and inspects the bytes, asks the window
-backend for a list, and pings the messenger hub. Anything not `ok` prints what
-to run to fix it.
+backend for a list, and checks the permissions macOS requires. Anything not `ok`
+prints what to run to fix it.
 
 ## Audit trail
 

@@ -51,10 +51,22 @@ try {
 	process.exit(1);
 }
 
-const { commands } = JSON.parse(raw);
+const { commands: registered } = JSON.parse(raw);
 // The route strings carry the binary's own name; take it from there rather
 // than assuming it.
-const bin = commands[0].route.split(' ')[0];
+const bin = registered[0].route.split(' ')[0];
+
+// Only what ships inside the binary. The CLI deliberately discovers adapters
+// from the user's config directory and plugins from PATH, which means running
+// it on a build machine mixes that machine's private extensions into the
+// registry -- and this page is published. Filtering on `source` keeps the
+// reference reproducible: it documents the product, not the laptop that built
+// it.
+const commands = registered.filter((c) => c.source === 'builtin');
+const local = registered.length - commands.length;
+if (local > 0) {
+	console.log(`gen-commands: ignored ${local} adapter/plugin command(s) from this machine`);
+}
 const visible = commands.filter((c) => !c.hidden);
 
 const groups = new Map();

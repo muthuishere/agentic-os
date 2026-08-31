@@ -16,7 +16,9 @@ description: >
 # agentic-os
 
 One command surface over the machine, identical on macOS, Windows and Linux.
-Every command is also an MCP tool, so what you type by hand is what an agent gets.
+You already have a shell, so just run these commands — there is nothing to start
+and nothing to connect to. (The same commands are also available over MCP for
+agents that want typed tools; either way it is one code path.)
 
 ## The one rule
 
@@ -26,8 +28,8 @@ current:
 ```bash
 aos commands            # what this machine can run right now
 aos commands --json     # the same, parseable, with needs_display + platforms
-agentic-os <group> --help      # a group's commands
-agentic-os <group> <cmd> --help
+aos <group> --help      # a group's commands
+aos <group> <cmd> --help
 ```
 
 If a command is not in `commands`, it does not exist here. Do not invent flags —
@@ -59,7 +61,7 @@ there is no logged-in session and the desktop commands cannot work at all.
 | run something | `exec capture -- <cmd>` (JSON: stdout, stderr, exit) · `exec run` (streams) · `exec shell "a \| b"` |
 | packages | `pkg install X` · `search` · `list` · `upgrade` — one verb set over brew, winget, scoop, choco, apt, pacman, yay, dnf |
 | messages | `msg send --channel=X "text"` · `msg inbox` — needs a local messenger hub; skip unless one is running |
-| keep it running | `service create NAME -- <cmd> --autostart --now` · `start` · `status` · `stop` · `remove` · `list` |
+| keep it running | `service create NAME --autostart --now -- <cmd>` · `start` · `status` · `stop` · `remove` · `list` |
 | tell the human | `subtitle show "what I am doing" --seconds=10` — a caption that never steals focus |
 | let them watch | `remote share --monitor=2` — prints a LAN URL; the person opens it on a phone |
 | react to changes | `watch clipboard --max=1` · `watch window --max=1` — one JSON line per event |
@@ -97,6 +99,22 @@ aos doctor          # clipboard round trip, real screenshot, window backend,
 On macOS, denied permissions are the usual cause of blank screenshots or failing
 input: `aos permission request`.
 
+## Driving a different machine
+
+Nothing here is tied to a connection, so any machine you can `ssh` to and that
+has the binary works the same way — same commands, same exit codes:
+
+```bash
+ssh server aos system info
+ssh server aos exec capture -- systemctl is-active nginx
+ssh server 'go install github.com/muthuishere/agentic-os/cmd/aos@latest'
+```
+
+A server has no display, so the desktop commands there exit 2 with that reason.
+On Linux, `ssh server aos headless start --wm` gives it one and later commands
+adopt it. The audit trail lives on the machine that ran the command, so
+`ssh server aos obs audit` is how you see what happened *there*.
+
 ## Serving it to another agent
 
 ```bash
@@ -115,8 +133,8 @@ Two ways, both discovered automatically and both exposed over MCP:
 
 - **Adapter** — JSON in `~/.config/agentic-os/adapters/`, wrapping a command line.
   `aos adapters example --write` writes a starter.
-- **Plugin** — any executable named `agentic-os-<group>-<name>` on PATH, describing
-  itself in `# agentic-os:summary=` comment headers.
+- **Plugin** — any executable named `aos-<group>-<name>` on PATH, describing
+  itself in `# aos:summary=` comment headers.
 
 Neither can shadow a built-in command.
 

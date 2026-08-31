@@ -15,7 +15,7 @@ const bin = registry.binary;
 		<title>agentic-os — one surface, two callers, three platforms</title>
 		<meta
 			name="description"
-			content={`A computer-use MCP server that is also a CLI a person can type. ${registry.commands} commands across ${registry.groups} groups, on macOS, Windows and Linux.`}
+			content={`One CLI over the machine that agents drive the same way you do \u2014 as an installed agent skill, or over MCP. ${registry.commands} commands across ${registry.groups} groups, on macOS, Windows and Linux.`}
 		/>
 		<link rel="icon" href={`${base}/favicon.svg`} />
 	</head>
@@ -27,13 +27,15 @@ const bin = registry.binary;
 		<section id="start">
 			<h1>agentic-os</h1>
 			<p class="lede">
-				A computer-use MCP server that is also a CLI a person can type. Every command is an MCP
-				tool, and every MCP tool runs the identical code path you get at a prompt.
+				One CLI over the machine &mdash; windows, input, screenshots, files, processes, packages
+				&mdash; that an agent drives the same way you do. Install the skill and your agent just
+				uses it; serve it over MCP when you want typed tools instead. Same commands, one code
+				path, three platforms.
 			</p>
 
 			<pre><code>{`go install github.com/muthuishere/agentic-os/cmd/${bin}@latest
-${bin} doctor
-${bin} serve mcp`}</code></pre>
+${bin} install --skills
+${bin} doctor`}</code></pre>
 
 			<p class="links">
 				<a class="primary" href={`${base}/what-it-is/`}>Read the docs</a>

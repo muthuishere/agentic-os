@@ -10,19 +10,23 @@ import { Steps } from '@astrojs/starlight/components';
 1. **Install.**
 
    ```sh
-   go install github.com/muthuishere/agentic-os/cmd/agentic-os@latest
+   go install github.com/muthuishere/agentic-os/cmd/aos@latest
    ```
 
-   One static binary, no runtime and no package manager of its own. The macOS
-   window backend is CoreGraphics through cgo, so a Mac build needs
-   `CGO_ENABLED=1` — the default when building natively. Linux and Windows are
-   pure Go and cross-compile from anywhere.
+   Needs Go 1.26+. One static binary, no runtime and no package manager of its
+   own. The macOS window backend is CoreGraphics through cgo, so a Mac build
+   needs `CGO_ENABLED=1` — the default when building natively. Linux and Windows
+   are pure Go and cross-compile from anywhere.
+
+   Prefer not to build? Every release also ships prebuilt binaries for macOS,
+   Linux and Windows —
+   [the latest release](https://github.com/muthuishere/agentic-os/releases/latest).
 
 2. **Ask the machine what works.**
 
    ```console
    $ aos doctor
-   ok   registry     96 of 98 commands available on darwin
+   ok   registry     97 of 99 commands available on darwin
    ok   telemetry    recording to /Users/you/.local/state/agentic-os/telemetry
    ok   display      available; GUI commands will run
    ok   permissions  accessibility and screen capture granted
@@ -30,14 +34,13 @@ import { Steps } from '@astrojs/starlight/components';
    ok   screenshot   captured 2895667 bytes
    ok   clipboard    round trip succeeded
    ok   packages     homebrew
-   ok   messenger    messenger, 10 channels
-   ok   plugins      0 external commands across 38 directories
+   ok   plugins      0 external commands across 37 directories
    ```
 
    `doctor` does not check whether binaries are on `PATH`. It round-trips the
    clipboard, captures a real screenshot and inspects the bytes, asks the window
-   backend for a list, and pings the messenger hub. Anything not `ok` prints what
-   to run to fix it.
+   backend for a list, and checks the permissions macOS needs. Anything not `ok`
+   prints what to run to fix it.
 
 3. **Run something.**
 
@@ -57,26 +60,38 @@ import { Steps } from '@astrojs/starlight/components';
    aos pkg install ripgrep
    ```
 
-4. **Hand it to an agent.**
-
-   ```sh
-   aos serve mcp     # streamable HTTP at 127.0.0.1:14320/mcp
-   claude mcp add --transport http aos http://127.0.0.1:14320/mcp
-   ```
-
-   Every non-hidden, non-blocking command available on this machine is now one
-   MCP tool. See [using it from an agent](/agentic-os/mcp/).
-
-5. **Teach the agent how to use it.**
+4. **Hand it to an agent — the skill first.**
 
    ```sh
    aos install --skills
    ```
 
-   This writes the agent skill bundled *inside the binary* to `~/.claude/skills/`
+   It writes the agent skill bundled *inside the binary* to `~/.claude/skills/`
    and `~/.agents/skills/`, so the instructions an agent reads can never describe
    a different version than the one installed. `skill show` prints it without
    installing; `uninstall --skills` removes it.
+
+   That is the whole integration. The agent already has a shell, and now it knows
+   this CLI exists, what the exit codes mean, and which commands need a screen —
+   so it runs `aos` the way you do. Nothing to start, nothing listening, and it
+   works over SSH into any machine that has the binary.
+
+5. **Or serve it over MCP, if your agent prefers tools.**
+
+   ```console
+   $ aos serve mcp
+   aos mcp  http://127.0.0.1:14320/mcp
+   token    9c23b0efb0a002fe536a579adfd7cdb1
+   ```
+
+   ```sh
+   claude mcp add --transport http aos http://127.0.0.1:14320/mcp \
+     --header "Authorization: Bearer 9c23b0efb0a002fe536a579adfd7cdb1"
+   ```
+
+   Every non-hidden, non-blocking command available on this machine becomes one
+   MCP tool, running the identical code path. The token is minted per run and
+   required — see [using it from an agent](/agentic-os/mcp/).
 
 </Steps>
 
