@@ -2,7 +2,7 @@
 name: aos
 description: >
   Drive the machine you are on — macOS, Windows or Linux — through one CLI:
-  windows, mouse and keyboard, screenshots, files, processes, packages, network,
+  windows, mouse and keyboard, screenshots, files, shell commands, packages, network,
   audio, clipboard, services, on-screen captions, and a LAN screen-share you can
   watch from a phone. Trigger on: move/resize/focus a window, list windows or
   monitors, take a screenshot, screenshot an app, click, type, press a key

@@ -3,8 +3,8 @@
 **One CLI over the machine that an agent drives the same way you do — on macOS,
 Windows, and Linux.**
 
-Give an agent your machine: windows, input, screenshots, files, processes,
-packages, network, audio, messaging. Two ways in, and they run the same code:
+Give an agent your machine: windows, input, screenshots, files, shell
+commands, packages, network, audio, clipboard. Two ways in, and they run the same code:
 
 - **The agent skill** (primary) — `aos install --skills` and an agent that
   already has a shell knows the CLI exists, what its exit codes mean, and which

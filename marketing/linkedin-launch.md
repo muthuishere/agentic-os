@@ -86,8 +86,8 @@ guesses.
 
 Agents can write code. Almost none of them can use the computer.
 
-aos: one CLI over the machine — windows, input, screenshots, files, processes,
-packages, services. 95 commands, 33 groups, same on macOS, Windows and Linux.
+aos: one CLI over the machine — windows, input, screenshots, files, shell
+commands, packages, services. 95 commands, 33 groups, same on macOS, Windows and Linux.
 
 The contrarian bit: it leads with an **agent skill**, not MCP.
 
