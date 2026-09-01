@@ -10,7 +10,7 @@ Every agent can write code. Almost none of them can use the computer.
 Move a window. Take a screenshot. Check the battery. Install a package. Know
 whether the machine even has a screen.
 
-So I built aos — one CLI over the machine. 100 commands, 33 groups, same on
+So I built aos — one CLI over the machine. 100 commands, same on
 macOS, Windows and Linux.
 
 **2/**
