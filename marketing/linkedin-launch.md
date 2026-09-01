@@ -119,3 +119,27 @@ Plus screen share, windows, input, processes — 100 utilities, one CLI, for you
 That's aos.
 
 muthuishere.github.io/aos/
+
+---
+
+## Variant C — SHORT (use this one)
+
+Image: `marketing/linkedin-watchers.png` (1200x1200, source in `linkedin-watchers.html`)
+
+What if you could watch your machine at the OS level — and pipe it?
+
+  $ aos watch clipboard
+  $ aos watch window --max=1
+  $ aos watch file ./src --recursive
+
+One JSON line per change. Pipe it, act on it, stop after N.
+
+That's 3 of 100 commands. Windows, input, screenshots, files, processes, packages — plus a LAN screen share you can open on your phone.
+
+One CLI for you and your agent: `aos skill install` teaches your agent the whole surface. MCP is one command away if it wants typed tools.
+
+macOS, Windows, Linux. One static binary.
+
+go install github.com/muthuishere/aos/cmd/aos@latest
+
+https://muthuishere.github.io/aos/

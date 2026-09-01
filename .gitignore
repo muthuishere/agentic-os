@@ -7,3 +7,4 @@ site/.astro/
 # generated from the binary by site/scripts/gen-commands.mjs
 site/src/content/docs/reference/commands.mdx
 site/src/data/registry.json
+marketing/
