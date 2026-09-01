@@ -1,5 +1,5 @@
 ---
-name: agentic-os
+name: aos
 description: >
   Drive the machine you are on — macOS, Windows or Linux — through one CLI:
   windows, mouse and keyboard, screenshots, files, processes, packages, network,
@@ -13,7 +13,7 @@ description: >
   is this machine set up correctly, expose this machine to an agent over MCP.
 ---
 
-# agentic-os
+# aos
 
 One command surface over the machine, identical on macOS, Windows and Linux.
 You already have a shell, so just run these commands — there is nothing to start
@@ -106,7 +106,7 @@ has the binary works the same way — same commands, same exit codes:
 ```bash
 ssh server aos system info
 ssh server aos exec capture -- systemctl is-active nginx
-ssh server 'go install github.com/muthuishere/agentic-os/cmd/aos@latest'
+ssh server 'go install github.com/muthuishere/aos/cmd/aos@latest'
 ```
 
 A server has no display, so the desktop commands there exit 2 with that reason.
@@ -121,7 +121,7 @@ aos serve mcp        # prints the URL and a per-run token; both are needed
 ```
 
 The server refuses any request without the token, as a bearer header or `?t=`.
-Loopback is not a permission. `AGENTIC_OS_MCP_TOKEN` pins one across restarts.
+Loopback is not a permission. `AOS_MCP_TOKEN` pins one across restarts.
 
 GUI tools are exposed only when the machine has a display (`--gui=on|off|auto`),
 because offering a tool that cannot run is worse than not offering it.
@@ -130,7 +130,7 @@ because offering a tool that cannot run is worse than not offering it.
 
 Two ways, both discovered automatically and both exposed over MCP:
 
-- **Adapter** — JSON in `~/.config/agentic-os/adapters/`, wrapping a command line.
+- **Adapter** — JSON in `~/.config/aos/adapters/`, wrapping a command line.
   `aos adapters example --write` writes a starter.
 - **Plugin** — any executable named `aos-<group>-<name>` on PATH, describing
   itself in `# aos:summary=` comment headers.

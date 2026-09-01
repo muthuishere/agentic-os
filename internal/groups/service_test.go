@@ -8,7 +8,7 @@ import (
 func TestServiceNameNormalizesAndValidates(t *testing.T) {
 	for _, tc := range []struct{ in, want string }{
 		{"mcp", "mcp"},
-		{"agentic-os.mcp", "mcp"},
+		{"aos.mcp", "mcp"},
 		{"  serve.mcp  ", "serve.mcp"},
 		{"a_b-c.1", "a_b-c.1"},
 	} {
@@ -18,7 +18,7 @@ func TestServiceNameNormalizesAndValidates(t *testing.T) {
 		}
 	}
 
-	for _, bad := range []string{"", "   ", "agentic-os.", "../evil", ".hidden", "with space", "sl/ash", "na;me"} {
+	for _, bad := range []string{"", "   ", "aos.", "../evil", ".hidden", "with space", "sl/ash", "na;me"} {
 		if got, err := serviceName(bad); err == nil {
 			t.Fatalf("serviceName(%q) accepted as %q", bad, got)
 		}
@@ -27,7 +27,7 @@ func TestServiceNameNormalizesAndValidates(t *testing.T) {
 
 func TestServiceLabelRoundTripStaysInNamespace(t *testing.T) {
 	label := serviceLabel("mcp")
-	if label != "agentic-os.mcp" {
+	if label != "aos.mcp" {
 		t.Fatalf("label = %q", label)
 	}
 	if name, ok := serviceShortName(label); !ok || name != "mcp" {
@@ -35,7 +35,7 @@ func TestServiceLabelRoundTripStaysInNamespace(t *testing.T) {
 	}
 	// The listing filter is the safety net: nothing outside the namespace may
 	// ever be claimed as ours.
-	for _, foreign := range []string{"com.apple.Safari", "agentic-os", "agentic-os.", "ssh-agent"} {
+	for _, foreign := range []string{"com.apple.Safari", "aos", "aos.", "ssh-agent"} {
 		if name, ok := serviceShortName(foreign); ok {
 			t.Fatalf("serviceShortName(%q) claimed %q", foreign, name)
 		}
@@ -66,7 +66,7 @@ func TestSplitServiceCommand(t *testing.T) {
 func testSpec() serviceSpec {
 	return serviceSpec{
 		Name:      "nap",
-		Label:     "agentic-os.nap",
+		Label:     "aos.nap",
 		Command:   []string{"/bin/sleep", "60", `say "hi" & bye`},
 		Dir:       "/tmp",
 		Autostart: true,
@@ -78,7 +78,7 @@ func testSpec() serviceSpec {
 func TestRenderLaunchdPlist(t *testing.T) {
 	plist := renderLaunchdPlist(testSpec())
 	for _, want := range []string{
-		"<string>agentic-os.nap</string>",
+		"<string>aos.nap</string>",
 		"<string>/bin/sleep</string>",
 		"<string>60</string>",
 		"<key>WorkingDirectory</key>",
@@ -119,8 +119,8 @@ func TestRenderSystemdUnit(t *testing.T) {
 }
 
 func TestSchtasksCommandQuotesOnlyWhatNeedsIt(t *testing.T) {
-	got := schtasksCommand([]string{`C:\Program Files\agentic-os.exe`, "serve", "mcp", `--addr="x"`})
-	want := `"C:\Program Files\agentic-os.exe" serve mcp "--addr=\"x\""`
+	got := schtasksCommand([]string{`C:\Program Files\aos.exe`, "serve", "mcp", `--addr="x"`})
+	want := `"C:\Program Files\aos.exe" serve mcp "--addr=\"x\""`
 	if got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}

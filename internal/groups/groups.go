@@ -6,7 +6,7 @@ package groups
 import (
 	"errors"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // errUnsupported is what a platform backend returns for work it cannot do.

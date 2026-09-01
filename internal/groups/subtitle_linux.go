@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 	"github.com/muthuishere/windowctl"
 )
 
@@ -29,7 +29,7 @@ func showSubtitle(req subtitleRequest) (string, error) {
 			"-timeout", fmt.Sprint(req.Seconds), req.Text)
 	case "notify-send":
 		_, err := sys.Output("notify-send", "-t", fmt.Sprint(req.Seconds*1000),
-			"agentic-os", req.Text)
+			"aos", req.Text)
 		return "notification (notify-send)", err
 	}
 	return "", errUnsupported
@@ -49,7 +49,7 @@ func subtitleYad(req subtitleRequest) error {
 		"--no-focus",
 		"--timeout=" + fmt.Sprint(req.Seconds),
 		"--timeout-indicator=none",
-		"--class=agentic-os-subtitle",
+		"--class=aos-subtitle",
 	}
 	if geometry, ok := subtitleGeometry(req); ok {
 		args = append(args, "--geometry="+geometry)

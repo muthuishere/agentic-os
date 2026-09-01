@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/skill"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/skill"
 )
 
 func init() {

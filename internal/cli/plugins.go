@@ -22,12 +22,18 @@ var Prefixes = []string{"aos-", "agentic-os-"}
 // Prefix is the canonical prefix, used in documentation and examples.
 var Prefix = Prefixes[0]
 
-// metaKey is the comment tag external commands use to describe themselves,
-// e.g. `# agentic-os:summary=Apply a theme`.
-const metaKey = "agentic-os:"
+// metaKeys are the comment tags external commands use to describe themselves,
+// e.g. `# aos:summary=Apply a theme`.
+//
+// Both are accepted for the same reason both file-name prefixes are: the
+// documented form is the short one, and a plugin author who wrote the long one
+// should not silently lose its description. Only the file name was forgiving
+// before, so a plugin named `aos-demo-thing` carrying `# aos:summary=` was
+// discovered and then listed with no summary at all.
+var metaKeys = []string{"aos:", "agentic-os:"}
 
 // PluginDirs lists, in order, where external commands are looked for:
-// $AGENTIC_OS_BIN_DIR, the user config bin dir, then every PATH entry.
+// $AOS_BIN_DIR, the user config bin dir, then every PATH entry.
 func PluginDirs(env func(string) string) []string {
 	var dirs []string
 	seen := map[string]bool{}
@@ -43,9 +49,9 @@ func PluginDirs(env func(string) string) []string {
 			dirs = append(dirs, dir)
 		}
 	}
-	add(env("AGENTIC_OS_BIN_DIR"))
+	add(env("AOS_BIN_DIR"))
 	if home, err := os.UserHomeDir(); err == nil {
-		add(filepath.Join(home, ".config", "agentic-os", "bin"))
+		add(filepath.Join(home, ".config", "aos", "bin"))
 	}
 	for _, dir := range filepath.SplitList(env("PATH")) {
 		add(dir)
@@ -53,7 +59,7 @@ func PluginDirs(env func(string) string) []string {
 	return dirs
 }
 
-// DiscoverPlugins registers every external `agentic-os-<route>` executable it
+// DiscoverPlugins registers every external `aos-<route>` executable it
 // can find. Builtins already registered win: a duplicate route is skipped, so
 // shipping a Go implementation of a command shadows a script of the same name.
 func DiscoverPlugins(r *Registry, env func(string) string) {
@@ -98,7 +104,7 @@ func trimPluginPrefix(name string) (string, bool) {
 }
 
 // parsePlugin turns a file name and its metadata header into a Command.
-// `agentic-os-audio-output-volume` becomes the route `audio output volume`.
+// `aos-audio-output-volume` becomes the route `audio output volume`.
 func parsePlugin(path, stem string) *Command {
 	stem = strings.TrimSuffix(stem, filepath.Ext(stem))
 	if stem == "" {
@@ -141,7 +147,7 @@ func applyMetadata(cmd *Command, meta map[string]string) {
 	}
 }
 
-// readMetadata scans the head of a file for `# agentic-os:key=value` comments.
+// readMetadata scans the head of a file for `# aos:key=value` comments.
 func readMetadata(path string) map[string]string {
 	file, err := os.Open(path)
 	if err != nil {
@@ -154,16 +160,27 @@ func readMetadata(path string) map[string]string {
 	for line := 0; line < metadataScanLimit && scanner.Scan(); line++ {
 		text := strings.TrimSpace(scanner.Text())
 		text = strings.TrimLeft(text, "#/;'\" \t")
-		if !strings.HasPrefix(text, metaKey) {
+		rest, ok := trimMetaKey(text)
+		if !ok {
 			continue
 		}
-		key, value, ok := strings.Cut(strings.TrimPrefix(text, metaKey), "=")
+		key, value, ok := strings.Cut(rest, "=")
 		if !ok {
 			continue
 		}
 		meta[strings.TrimSpace(key)] = strings.TrimSpace(value)
 	}
 	return meta
+}
+
+// trimMetaKey removes whichever metadata tag a line carries.
+func trimMetaKey(text string) (string, bool) {
+	for _, key := range metaKeys {
+		if strings.HasPrefix(text, key) {
+			return strings.TrimPrefix(text, key), true
+		}
+	}
+	return "", false
 }
 
 func splitPipe(value string) []string {
@@ -204,9 +221,9 @@ func runExternal(c *Ctx, cmd *Command, args []string) int {
 	child := exec.Command(cmd.Binary, args...)
 	child.Stdin, child.Stdout, child.Stderr = c.Stdin, c.Stdout, c.Stderr
 	child.Env = append(os.Environ(),
-		"AGENTIC_OS=1",
-		"AGENTIC_OS_VERSION="+c.Version,
-		"AGENTIC_OS_ROUTE="+cmd.Route(),
+		"AOS=1",
+		"AOS_VERSION="+c.Version,
+		"AOS_ROUTE="+cmd.Route(),
 	)
 	if err := child.Run(); err != nil {
 		var exit *exec.ExitError

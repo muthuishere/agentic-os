@@ -2,11 +2,11 @@
 # Install aos, installing Go first if it is missing.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/muthuishere/aos/main/install.sh | sh
 #
 # Or, if you would rather read it first — which is the right instinct for
 # anything you pipe into a shell:
-#   curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.sh -o install.sh
+#   curl -fsSL https://raw.githubusercontent.com/muthuishere/aos/main/install.sh -o install.sh
 #   less install.sh && sh install.sh
 #
 # It installs into your home directory only. Nothing here needs root, and the
@@ -14,8 +14,8 @@
 
 set -eu
 
-MODULE="github.com/muthuishere/agentic-os/cmd/aos@latest"
-RELEASE_BASE="https://github.com/muthuishere/agentic-os/releases/latest/download"
+MODULE="github.com/muthuishere/aos/cmd/aos@latest"
+RELEASE_BASE="https://github.com/muthuishere/aos/releases/latest/download"
 BIN_DIR="${BIN_DIR:-$HOME/.local/bin}"
 MIN_GO_MAJOR=1
 MIN_GO_MINOR=24

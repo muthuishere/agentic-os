@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 func getVolume() (int, error) {

@@ -1,6 +1,6 @@
 package groups
 
-import "github.com/muthuishere/agentic-os/internal/sys"
+import "github.com/muthuishere/aos/internal/sys"
 
 func systemLock() error {
 	if sys.Has("loginctl") {

@@ -1,6 +1,6 @@
 // Generates src/content/docs/reference/commands.mdx from the binary itself.
 //
-// It shells out to `go run ./cmd/agentic-os commands --json --all` in the repo
+// It shells out to `go run ./cmd/aos commands --json --all` in the repo
 // root, so the reference page cannot drift from what the CLI actually
 // registers: if a command is added, renamed or given a new example, the next
 // site build picks it up. `--all` is used deliberately — the page documents the
@@ -82,7 +82,7 @@ const lines = [];
 lines.push('---');
 lines.push('title: Every command');
 lines.push(
-	'description: The complete agentic-os command registry — ' +
+	'description: The complete aos command registry — ' +
 		`${commands.length} commands across ${names.length} groups — generated from the binary at build time.`,
 );
 lines.push('---');

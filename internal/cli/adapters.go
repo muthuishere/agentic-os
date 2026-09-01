@@ -8,20 +8,20 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // ConfigDir is where a user's own additions live: adapters, plugin binaries,
 // and anything else aos reads but does not ship.
 func ConfigDir(env func(string) string) string {
-	if dir := strings.TrimSpace(env("AGENTIC_OS_CONFIG_DIR")); dir != "" {
+	if dir := strings.TrimSpace(env("AOS_CONFIG_DIR")); dir != "" {
 		return dir
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return filepath.Join(os.TempDir(), "agentic-os")
+		return filepath.Join(os.TempDir(), "aos")
 	}
-	return filepath.Join(home, ".config", "agentic-os")
+	return filepath.Join(home, ".config", "aos")
 }
 
 // AdapterDir holds the JSON files that define user commands.

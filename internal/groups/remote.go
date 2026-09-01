@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 	"github.com/muthuishere/windowctl"
 )
 
@@ -55,7 +55,7 @@ func init() {
 // pins `"port": 0` means "pick a free port", which is not the same as saying
 // nothing at all.
 //
-// Defaults live here, in agentic-os's own config dir, rather than in
+// Defaults live here, in aos's own config dir, rather than in
 // windowctl's environment: the two tools are configured separately on purpose,
 // so a key exported for the windowctl CLI does not silently become the key for
 // a share an aos user started.
@@ -110,7 +110,7 @@ const (
 
 // resolveRemoteOptions folds flags, the config file, the environment, and the
 // built-in defaults into one windowctl.RemoteOptions. Precedence is
-// flags > config file > built-in, with AGENTIC_OS_REMOTE_KEY sitting between
+// flags > config file > built-in, with AOS_REMOTE_KEY sitting between
 // the flag and the file for the key alone: an env var is how a launcher or a
 // service unit injects a secret, so it must beat a file on disk, while an
 // explicit --key typed at the terminal still wins over everything.
@@ -123,7 +123,7 @@ func resolveRemoteOptions(set *argSet, cfg remoteConfig, env func(string) string
 	// --- key ---
 	key := set.String("key", "")
 	if key == "" {
-		key = env("AGENTIC_OS_REMOTE_KEY")
+		key = env("AOS_REMOTE_KEY")
 	}
 	if key == "" && cfg.Key != nil {
 		key = *cfg.Key
@@ -229,7 +229,7 @@ func runRemoteShare(c *cli.Ctx, args []string) error {
 	c.Printf("  Local     %s\n\n", handle.LoopbackURL)
 	if generated {
 		c.Println("This run minted a fresh key, so this link dies with this process.")
-		c.Printf("For a link that survives a restart, set a key in %s or AGENTIC_OS_REMOTE_KEY.\n\n", remoteConfigPath(c.Env))
+		c.Printf("For a link that survives a restart, set a key in %s or AOS_REMOTE_KEY.\n\n", remoteConfigPath(c.Env))
 	}
 	c.Println("Press Ctrl-C to revoke the link and stop.")
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 	"github.com/muthuishere/windowctl"
 )
 
@@ -73,7 +73,7 @@ func init() {
 				Summary: "Apply a saved layout of many windows in one pass",
 				Args:    "<layout.json>",
 				Examples: []string{
-					"aos window arrange ~/.config/agentic-os/layouts/work.json",
+					"aos window arrange ~/.config/aos/layouts/work.json",
 				},
 				Run: runWindowArrange,
 			},

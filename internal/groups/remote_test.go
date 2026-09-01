@@ -111,7 +111,7 @@ func TestResolveRemoteOptionsFlagsBeatConfig(t *testing.T) {
 
 	opts, _, err := resolveRemoteOptions(
 		argsOf(t, "--key=flag-key-long-enough", "--port=7777", "--fps=8", "--monitor=3"),
-		cfg, envWith(map[string]string{"AGENTIC_OS_REMOTE_KEY": "env-key-long-enough"}),
+		cfg, envWith(map[string]string{"AOS_REMOTE_KEY": "env-key-long-enough"}),
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -129,7 +129,7 @@ func TestResolveRemoteOptionsFlagsBeatConfig(t *testing.T) {
 func TestResolveRemoteOptionsEnvKeyBeatsConfig(t *testing.T) {
 	key := "config-key-long-enough"
 	opts, generated, err := resolveRemoteOptions(argsOf(t), remoteConfig{Key: &key},
-		envWith(map[string]string{"AGENTIC_OS_REMOTE_KEY": "env-key-long-enough"}))
+		envWith(map[string]string{"AOS_REMOTE_KEY": "env-key-long-enough"}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,7 +166,7 @@ func TestResolveRemoteOptionsRejectsShortKey(t *testing.T) {
 		case "flag":
 			set = argsOf(t, "--key=short")
 		case "env":
-			env = envWith(map[string]string{"AGENTIC_OS_REMOTE_KEY": "short"})
+			env = envWith(map[string]string{"AOS_REMOTE_KEY": "short"})
 		case "config":
 			k := "short"
 			cfg = remoteConfig{Key: &k}
@@ -194,7 +194,7 @@ func TestResolveRemoteOptionsRejectsBadValues(t *testing.T) {
 // A recorded share whose port no longer answers is history, not a live link.
 func TestReadRemoteStateRejectsDeadShare(t *testing.T) {
 	dir := t.TempDir()
-	env := envWith(map[string]string{"AGENTIC_OS_CONFIG_DIR": dir})
+	env := envWith(map[string]string{"AOS_CONFIG_DIR": dir})
 	if err := writeRemoteState(env, remoteState{URL: "http://x/?t=k", Port: 1, PID: 1}); err != nil {
 		t.Fatal(err)
 	}

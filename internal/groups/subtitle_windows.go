@@ -3,7 +3,7 @@ package groups
 import (
 	"fmt"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // showSubtitle puts up a borderless, topmost WinForms window.

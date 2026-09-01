@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 	toolnexus "github.com/muthuishere/toolnexus/golang"
 )
 

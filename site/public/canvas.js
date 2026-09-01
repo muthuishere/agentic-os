@@ -1,5 +1,5 @@
 "use strict";
-// agentic-os, drawn — and clickable.
+// aos, drawn — and clickable.
 //
 // Warm off-white plate, hairline cards, one orange accent, one travelling blue
 // dot, no gradients and no glow. Everything is laid out in a virtual 1600x1000
@@ -466,11 +466,8 @@ function drawEdges(t){
 }
 
 function drawTitle(){
-  // The short name is the brand: it is what gets typed, so it is what gets
-  // remembered. "agentic-os" is the formal name and sits under it, small.
-  text(BIN, VW-60, 124, {size:82, weight:800, align:"right", spacing:-1});
-  text("agentic-os", VW-60, 150, {size:13, color:MUTED, align:"right",
-    weight:600, font:MONO, spacing:2.6});
+  // The name is the thing you type. That is the whole idea.
+  text(BIN, VW-60, 130, {size:82, weight:800, align:"right", spacing:-1});
   text("One CLI over the machine that an agent drives the way you do.", VW-60, 182,
     {size:16, color:"#57534b", align:"right"});
   text("Install the skill. Or serve it over MCP.", VW-60, 207,

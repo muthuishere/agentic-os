@@ -1,4 +1,4 @@
-module github.com/muthuishere/agentic-os
+module github.com/muthuishere/aos
 
 go 1.26
 

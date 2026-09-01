@@ -1,6 +1,6 @@
 package groups
 
-import "github.com/muthuishere/agentic-os/internal/sys"
+import "github.com/muthuishere/aos/internal/sys"
 
 func openTarget(target string) error {
 	// Openers hand their stdio to the application they start, so spawn instead

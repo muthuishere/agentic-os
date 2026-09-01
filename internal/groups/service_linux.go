@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // systemdUserDir is where a user's own units live, and the directory listing is

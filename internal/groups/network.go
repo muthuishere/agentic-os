@@ -1,7 +1,7 @@
 package groups
 
 import (
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // netState is the connectivity snapshot the network group renders.

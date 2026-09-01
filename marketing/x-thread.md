@@ -83,6 +83,6 @@ I'll use omarchy's.
 **10/**
 MIT, one static binary, no runtime:
 
-go install github.com/muthuishere/agentic-os/cmd/aos@latest
+go install github.com/muthuishere/aos/cmd/aos@latest
 
-https://muthuishere.github.io/agentic-os/
+https://muthuishere.github.io/aos/

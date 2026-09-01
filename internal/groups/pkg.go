@@ -3,8 +3,8 @@ package groups
 import (
 	"fmt"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // packageManager adapts one native package manager to a shared verb set.

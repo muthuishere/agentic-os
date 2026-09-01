@@ -1,8 +1,8 @@
 # LinkedIn — aos launch
 
 Status: **DRAFT, not posted.** Publishing is owner-gated.
-Repo: https://github.com/muthuishere/agentic-os
-Site: https://muthuishere.github.io/agentic-os/
+Repo: https://github.com/muthuishere/aos
+Site: https://muthuishere.github.io/aos/
 
 ---
 
@@ -51,9 +51,9 @@ I wanted those ergonomics everywhere. If I move to omarchy full time, I'll use
 omarchy's.
 
 Free, MIT, one static binary:
-go install github.com/muthuishere/agentic-os/cmd/aos@latest
+go install github.com/muthuishere/aos/cmd/aos@latest
 
-https://muthuishere.github.io/agentic-os/
+https://muthuishere.github.io/aos/
 
 ---
 
@@ -101,8 +101,8 @@ you'll want to know what the agent actually did.
 
 Command shape borrowed, with credit, from DHH's omarchy CLI.
 
-go install github.com/muthuishere/agentic-os/cmd/aos@latest
-https://muthuishere.github.io/agentic-os/
+go install github.com/muthuishere/aos/cmd/aos@latest
+https://muthuishere.github.io/aos/
 
 ---
 

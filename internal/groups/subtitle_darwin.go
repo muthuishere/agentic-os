@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // showSubtitle draws a borderless, click-through NSWindow through
@@ -22,7 +22,7 @@ func showSubtitle(req subtitleRequest) (string, error) {
 		// lands in Notification Centre, obeys Do Not Disturb, and may never be
 		// seen — so a caller that silently got one would draw a false
 		// conclusion about what is on the user's screen.
-		script := "display notification " + appleScriptString(req.Text) + ` with title "agentic-os"`
+		script := "display notification " + appleScriptString(req.Text) + ` with title "aos"`
 		if _, err := sys.Osascript(script); err != nil {
 			return "", err
 		}

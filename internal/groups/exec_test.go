@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // captureJSON runs `exec capture` and decodes what it printed, failing the test
@@ -92,7 +92,7 @@ func TestExecCaptureStillPrintsJSONWhenTheChildFails(t *testing.T) {
 // would tell an agent a typo'd program name succeeded; `-1` plus the reason is
 // the only honest answer, and it must not panic on the nil ProcessState.
 func TestExecCaptureReportsACommandThatNeverStarted(t *testing.T) {
-	result, err := captureJSON(t, []string{"agentic-os-no-such-program"})
+	result, err := captureJSON(t, []string{"aos-no-such-program"})
 	if err == nil {
 		t.Fatal("want a non-zero exit for a program that does not exist")
 	}

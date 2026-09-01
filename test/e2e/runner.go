@@ -92,7 +92,7 @@ func (r *Runner) remotePath() string {
 	if r.target.RemotePath != "" {
 		return r.target.RemotePath
 	}
-	return "/tmp/agentic-os-e2e"
+	return "/tmp/aos-e2e"
 }
 
 // runAgentbus ships the binary with each job — agentbus runs every job in a
@@ -109,7 +109,7 @@ func (r *Runner) runAgentbus(ctx context.Context, args []string) (Result, error)
 	}
 	name := filepath.Base(binary)
 
-	fetchDir, err := os.MkdirTemp("", "agentic-os-e2e-")
+	fetchDir, err := os.MkdirTemp("", "aos-e2e-")
 	if err != nil {
 		return Result{}, err
 	}

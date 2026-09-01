@@ -184,7 +184,7 @@ func (r *Registry) Resolve(args []string) (*Command, []string, error) {
 	}
 	if g := r.groups[args[0]]; g != nil {
 		// A bare group name, or a group name followed by a help flag, both mean
-		// "document this group". Only the first was handled, so `agentic-os
+		// "document this group". Only the first was handled, so `aos
 		// window --help` reported the help flag as an unknown command and then
 		// suggested the very command that had just failed.
 		if len(args) == 1 || (len(args) == 2 && isHelpFlag(args[1])) {

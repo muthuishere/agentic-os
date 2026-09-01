@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // execResult is the machine-readable shape `exec capture` prints. It is the
@@ -59,7 +59,7 @@ func init() {
 	})
 }
 
-// stripSeparator drops a leading `--`, which callers use to stop agentic-os
+// stripSeparator drops a leading `--`, which callers use to stop aos
 // from claiming flags that belong to the child command.
 func stripSeparator(args []string) []string {
 	if len(args) > 0 && args[0] == "--" {

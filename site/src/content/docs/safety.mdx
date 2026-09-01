@@ -1,6 +1,6 @@
 ---
 title: Safety model
-description: What agentic-os refuses to do, where each refusal lives, and why the refusals are structural rather than advisory.
+description: What aos refuses to do, where each refusal lives, and why the refusals are structural rather than advisory.
 ---
 
 Handing an agent a machine is the whole point of this tool, which is why the
@@ -20,7 +20,7 @@ Start one with `aos headless start`, or check `aos headless status`.
 
 The alternative — failing three layers deep inside a display-server call — gives
 an agent an error it cannot act on. See [headless
-machines](/agentic-os/headless/).
+machines](/aos/headless/).
 
 ## `file delete` will not delete the things you cannot undo
 
@@ -52,7 +52,7 @@ exactly as long as the process a human is looking at.
 
 ## Services are namespaced
 
-Every service `aos` creates is named `agentic-os.<name>`, and `service
+Every service `aos` creates is named `aos.<name>`, and `service
 list` and `service remove` only ever see that namespace. This CLI cannot delete
 a service it did not create. Everything is per-user — a launchd user agent on
 macOS, a `systemd --user` unit on Linux, a Scheduled Task on Windows — so
@@ -71,7 +71,7 @@ route.
 A span carries the route, the source (`cli` or `mcp`), the exit code, the
 duration, and the *number* of arguments. Never the arguments themselves — they
 routinely carry paths, message bodies and clipboard text. Nothing is sent
-anywhere; see [observability](/agentic-os/observability/).
+anywhere; see [observability](/aos/observability/).
 
 ## `watch clipboard` hides the clipboard by default
 

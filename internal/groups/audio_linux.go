@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // defaultSink is wireplumber's name for the current default output.

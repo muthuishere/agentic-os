@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 rem Install aos on Windows, installing Go first if it is missing.
 rem
-rem   curl -fsSL https://raw.githubusercontent.com/muthuishere/agentic-os/main/install.cmd -o install.cmd
+rem   curl -fsSL https://raw.githubusercontent.com/muthuishere/aos/main/install.cmd -o install.cmd
 rem   install.cmd
 rem
 rem A .cmd rather than a .ps1 on purpose: PowerShell's execution policy blocks
@@ -11,8 +11,8 @@ rem It does not block -Command, so the fiddly parts below still use PowerShell.
 rem
 rem Everything installs under your user profile. Nothing here needs administrator.
 
-set "MODULE=github.com/muthuishere/agentic-os/cmd/aos@latest"
-set "GO_INSTALL_DIR=%LOCALAPPDATA%\agentic-os\go"
+set "MODULE=github.com/muthuishere/aos/cmd/aos@latest"
+set "GO_INSTALL_DIR=%LOCALAPPDATA%\aos\go"
 
 echo.
 echo ==^> Looking for Go

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // subtitleRequest is one caption: what to say, for how long, and where on

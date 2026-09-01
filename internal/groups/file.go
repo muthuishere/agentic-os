@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // fileInfoJSON is the shape `file stat` and `file list --json` emit.
@@ -75,7 +75,7 @@ func init() {
 				Group: "file", Name: "mkdir",
 				Summary:  "Create a directory, including parents",
 				Args:     "<path>",
-				Examples: []string{"aos file mkdir ~/.config/agentic-os/layouts"},
+				Examples: []string{"aos file mkdir ~/.config/aos/layouts"},
 				Run:      runFileMkdir,
 			},
 			&cli.Command{

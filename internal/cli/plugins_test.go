@@ -21,16 +21,16 @@ func writePlugin(t *testing.T, dir, name, body string) string {
 
 func TestDiscoverPluginsReadsMetadata(t *testing.T) {
 	dir := t.TempDir()
-	writePlugin(t, dir, "agentic-os-demo-do-thing", `#!/bin/sh
-# agentic-os:summary=Do the thing
-# agentic-os:args=<target>
-# agentic-os:examples=aos demo do thing a | aos demo do thing b
-# agentic-os:platforms=darwin | linux
+	writePlugin(t, dir, "aos-demo-do-thing", `#!/bin/sh
+# aos:summary=Do the thing
+# aos:args=<target>
+# aos:examples=aos demo do thing a | aos demo do thing b
+# aos:platforms=darwin | linux
 echo hi
 `)
 	r := NewRegistry()
 	DiscoverPlugins(r, func(key string) string {
-		if key == "AGENTIC_OS_BIN_DIR" {
+		if key == "AOS_BIN_DIR" {
 			return dir
 		}
 		return ""
@@ -53,12 +53,12 @@ echo hi
 
 func TestBuiltinShadowsPlugin(t *testing.T) {
 	dir := t.TempDir()
-	writePlugin(t, dir, "agentic-os-demo-thing", "#!/bin/sh\n# agentic-os:summary=From script\n")
+	writePlugin(t, dir, "aos-demo-thing", "#!/bin/sh\n# aos:summary=From script\n")
 
 	r := NewRegistry()
 	r.Add(&Command{Group: "demo", Name: "thing", Summary: "Built in", Run: func(*Ctx, []string) error { return nil }})
 	DiscoverPlugins(r, func(key string) string {
-		if key == "AGENTIC_OS_BIN_DIR" {
+		if key == "AOS_BIN_DIR" {
 			return dir
 		}
 		return ""
@@ -71,11 +71,44 @@ func TestBuiltinShadowsPlugin(t *testing.T) {
 
 func TestParsePluginExplicitRoute(t *testing.T) {
 	dir := t.TempDir()
-	path := writePlugin(t, dir, "agentic-os-theme-bg-switcher",
-		"#!/bin/sh\n# agentic-os:summary=Switch\n# agentic-os:route=theme bg-switcher\n")
+	path := writePlugin(t, dir, "aos-theme-bg-switcher",
+		"#!/bin/sh\n# aos:summary=Switch\n# aos:route=theme bg-switcher\n")
 
 	cmd := parsePlugin(path, "theme-bg-switcher")
 	if cmd.Route() != "theme bg-switcher" {
 		t.Fatalf("got route %q", cmd.Route())
+	}
+}
+
+// The docs and the bundled agent skill both show the short forms — a file named
+// `aos-<group>-<name>` describing itself with `# aos:summary=`. Only the file
+// name was forgiving, so a plugin written exactly the documented way was
+// discovered and then listed with an empty summary.
+func TestPluginMetadataAcceptsBothTags(t *testing.T) {
+	for _, tag := range []string{"aos", "agentic-os"} {
+		t.Run(tag, func(t *testing.T) {
+			dir := t.TempDir()
+			writePlugin(t, dir, "aos-demo-thing",
+				"#!/bin/sh\n# "+tag+":summary=From script\n# "+tag+":args=<target>\n")
+
+			r := NewRegistry()
+			DiscoverPlugins(r, func(key string) string {
+				if key == "AOS_BIN_DIR" {
+					return dir
+				}
+				return ""
+			})
+
+			cmd := r.Lookup("demo", "thing")
+			if cmd == nil {
+				t.Fatal("plugin was not discovered")
+			}
+			if cmd.Summary != "From script" {
+				t.Fatalf("summary = %q, want %q", cmd.Summary, "From script")
+			}
+			if cmd.Args != "<target>" {
+				t.Fatalf("args = %q, want %q", cmd.Args, "<target>")
+			}
+		})
 	}
 }

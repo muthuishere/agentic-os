@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Install agentic-os, check the machine, run a command, and hand the whole surface to an agent over MCP.
+description: Install aos, check the machine, run a command, and hand the whole surface to an agent over MCP.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -10,7 +10,7 @@ import { Steps } from '@astrojs/starlight/components';
 1. **Install.**
 
    ```sh
-   go install github.com/muthuishere/agentic-os/cmd/aos@latest
+   go install github.com/muthuishere/aos/cmd/aos@latest
    ```
 
    Needs Go 1.26+. One static binary, no runtime and no package manager of its
@@ -20,14 +20,14 @@ import { Steps } from '@astrojs/starlight/components';
 
    Prefer not to build? Every release also ships prebuilt binaries for macOS,
    Linux and Windows —
-   [the latest release](https://github.com/muthuishere/agentic-os/releases/latest).
+   [the latest release](https://github.com/muthuishere/aos/releases/latest).
 
 2. **Ask the machine what works.**
 
    ```console
    $ aos doctor
    ok   registry     97 of 99 commands available on darwin
-   ok   telemetry    recording to /Users/you/.local/state/agentic-os/telemetry
+   ok   telemetry    recording to /Users/you/.local/state/aos/telemetry
    ok   display      available; GUI commands will run
    ok   permissions  accessibility and screen capture granted
    ok   windows      16 windows visible
@@ -91,12 +91,12 @@ import { Steps } from '@astrojs/starlight/components';
 
    Every non-hidden, non-blocking command available on this machine becomes one
    MCP tool, running the identical code path. The token is minted per run and
-   required — see [using it from an agent](/agentic-os/mcp/).
+   required — see [using it from an agent](/aos/mcp/).
 
 </Steps>
 
 ## Where to go next
 
-- [The command surface](/agentic-os/command-surface/) — what the groups cover.
-- [Every command](/agentic-os/reference/commands/) — the full reference, generated from the binary.
-- [Safety model](/agentic-os/safety/) — what it refuses, and why.
+- [The command surface](/aos/command-surface/) — what the groups cover.
+- [Every command](/aos/reference/commands/) — the full reference, generated from the binary.
+- [Safety model](/aos/safety/) — what it refuses, and why.

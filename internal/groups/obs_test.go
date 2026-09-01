@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/obs"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/obs"
 )
 
 // obsCtx points the obs commands at a temp telemetry directory, so nothing here
@@ -26,7 +26,7 @@ func obsCtx(t *testing.T) (*cli.Ctx, *bytes.Buffer, string) {
 		Stdin:    io.NopCloser(strings.NewReader("")),
 		Stdout:   &out,
 		Stderr:   &out,
-		Env:      func(key string) string { return map[string]string{"AGENTIC_OS_TELEMETRY_DIR": dir}[key] },
+		Env:      func(key string) string { return map[string]string{"AOS_TELEMETRY_DIR": dir}[key] },
 		GOOS:     runtime.GOOS,
 		Version:  "test-version",
 	}
@@ -74,7 +74,7 @@ func span(route, source string, at time.Time, durationMS int64, exit int) obs.Sp
 			obs.IntAttr("agentic_os.exit_code", int64(exit)),
 		},
 		Resource: []obs.Attribute{
-			obs.StringAttr("service.name", "agentic-os"),
+			obs.StringAttr("service.name", "aos"),
 			obs.StringAttr("host.name", "test-host"),
 		},
 	}
@@ -123,7 +123,7 @@ func TestObsExportProducesOTLPShapedJSON(t *testing.T) {
 		t.Fatalf("want one scopeSpans entry, got %d", len(resource.ScopeSpans))
 	}
 	scope := resource.ScopeSpans[0]
-	if scope.Scope.Name != "agentic-os" || scope.Scope.Version != "test-version" {
+	if scope.Scope.Name != "aos" || scope.Scope.Version != "test-version" {
 		t.Fatalf("scope = %+v", scope.Scope)
 	}
 	if len(scope.Spans) != 2 {

@@ -5,8 +5,8 @@ package main
 import (
 	"os"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/groups"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/groups"
 )
 
 // version is overridden at build time with -ldflags "-X main.version=...".

@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // fontExtensions are the font container formats worth listing.

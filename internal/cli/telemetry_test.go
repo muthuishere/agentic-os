@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/muthuishere/agentic-os/internal/obs"
+	"github.com/muthuishere/aos/internal/obs"
 )
 
 // recordingCtx builds a context whose telemetry lands in a temp directory, and
@@ -17,7 +17,7 @@ import (
 func recordingCtx(t *testing.T, r *Registry, goos string) (*Ctx, func() []obs.Span, func() string) {
 	t.Helper()
 	dir := t.TempDir()
-	env := envOf(map[string]string{"AGENTIC_OS_TELEMETRY_DIR": dir})
+	env := envOf(map[string]string{"AOS_TELEMETRY_DIR": dir})
 
 	var out, errOut bytes.Buffer
 	c := &Ctx{
@@ -235,8 +235,8 @@ func TestARefusedGUICommandIsRecorded(t *testing.T) {
 func TestTelemetryOffWritesNothing(t *testing.T) {
 	dir := t.TempDir()
 	env := envOf(map[string]string{
-		"AGENTIC_OS_TELEMETRY_DIR": dir,
-		"AGENTIC_OS_TELEMETRY":     "off",
+		"AOS_TELEMETRY_DIR": dir,
+		"AOS_TELEMETRY":     "off",
 	})
 	var out bytes.Buffer
 	c := &Ctx{

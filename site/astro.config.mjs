@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 const registry = JSON.parse(readFileSync('./src/data/registry.json', 'utf8'));
 const surface = `${registry.commands} commands across ${registry.groups} groups`;
 
-// Project GitHub Pages: https://muthuishere.github.io/agentic-os
+// Project GitHub Pages: https://muthuishere.github.io/aos
 // The landing page is src/pages/index.astro — a full-viewport canvas, outside
 // the Starlight layout on purpose. Starlight owns everything under /docs-ish
 // slugs below it.
@@ -21,7 +21,7 @@ const surface = `${registry.commands} commands across ${registry.groups} groups`
 // chrome with nothing behind it.
 export default defineConfig({
 	site: 'https://muthuishere.github.io',
-	base: '/agentic-os',
+	base: '/aos',
 	integrations: [
 		starlight({
 			title: 'aos',
@@ -31,7 +31,7 @@ export default defineConfig({
 			// llms.txt is load-bearing, not decoration.
 			plugins: [
 				starlightLlmsTxt({
-					projectName: 'agentic-os',
+					projectName: 'aos',
 					description:
 						`One CLI over the machine that agents drive the same way a person does: ${surface} covering windows, input, screen capture, files, processes, packages, network, audio, clipboard, services and messaging, on macOS, Windows and Linux.`,
 					details:
@@ -40,7 +40,7 @@ export default defineConfig({
 			],
 			customCss: ['@fontsource-variable/inter', './src/styles/theme.css'],
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/muthuishere/agentic-os' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/muthuishere/aos' },
 			],
 			sidebar: [
 				{

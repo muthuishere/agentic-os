@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/obs"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/obs"
 )
 
 func init() {
@@ -67,7 +67,7 @@ func init() {
 				Examples: []string{"aos obs path"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					if obs.Disabled(c.Env) {
-						c.Println("telemetry is off (AGENTIC_OS_TELEMETRY)")
+						c.Println("telemetry is off (AOS_TELEMETRY)")
 						return &cli.ExitError{Code: 1}
 					}
 					c.Println(obs.Dir(c.Env))
@@ -353,7 +353,7 @@ func runObsExport(c *cli.Ctx, args []string) error {
 		"resourceSpans": []any{map[string]any{
 			"resource": map[string]any{"attributes": resource},
 			"scopeSpans": []any{map[string]any{
-				"scope": map[string]any{"name": "agentic-os", "version": c.Version},
+				"scope": map[string]any{"name": "aos", "version": c.Version},
 				"spans": stripped,
 			}},
 		}},

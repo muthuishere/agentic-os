@@ -82,29 +82,29 @@ type Recorder struct {
 
 // Disabled reports whether telemetry is switched off for this process.
 func Disabled(env func(string) string) bool {
-	switch strings.ToLower(strings.TrimSpace(env("AGENTIC_OS_TELEMETRY"))) {
+	switch strings.ToLower(strings.TrimSpace(env("AOS_TELEMETRY"))) {
 	case "off", "0", "false", "no":
 		return true
 	}
 	return false
 }
 
-// Dir is where spans are written: $AGENTIC_OS_TELEMETRY_DIR, else the
+// Dir is where spans are written: $AOS_TELEMETRY_DIR, else the
 // platform's state directory. Runtime data, never the repo.
 func Dir(env func(string) string) string {
-	if dir := strings.TrimSpace(env("AGENTIC_OS_TELEMETRY_DIR")); dir != "" {
+	if dir := strings.TrimSpace(env("AOS_TELEMETRY_DIR")); dir != "" {
 		return dir
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return filepath.Join(os.TempDir(), "agentic-os", "telemetry")
+		return filepath.Join(os.TempDir(), "aos", "telemetry")
 	}
 	if runtime.GOOS == "windows" {
 		if local := env("LOCALAPPDATA"); local != "" {
-			return filepath.Join(local, "agentic-os", "telemetry")
+			return filepath.Join(local, "aos", "telemetry")
 		}
 	}
-	return filepath.Join(home, ".local", "state", "agentic-os", "telemetry")
+	return filepath.Join(home, ".local", "state", "aos", "telemetry")
 }
 
 // NewRecorder builds a recorder, or nil when telemetry is disabled.
@@ -116,7 +116,7 @@ func NewRecorder(env func(string) string, version string) *Recorder {
 	return &Recorder{
 		dir: Dir(env),
 		resource: []Attribute{
-			StringAttr("service.name", "agentic-os"),
+			StringAttr("service.name", "aos"),
 			StringAttr("service.version", version),
 			StringAttr("host.name", host),
 			StringAttr("os.type", runtime.GOOS),

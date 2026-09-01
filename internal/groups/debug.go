@@ -4,8 +4,8 @@ import (
 	"runtime"
 	"sort"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // probedTools are the helpers the backends shell out to. `debug` reports which

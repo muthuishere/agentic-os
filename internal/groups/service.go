@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // servicePrefix namespaces every service aos installs.
@@ -20,7 +20,7 @@ import (
 // verb addresses a service by prefixing the name the user typed. A typo can
 // therefore never bootout a login agent, disable a systemd unit, or delete a
 // scheduled task that belongs to something else.
-const servicePrefix = "agentic-os."
+const servicePrefix = "aos."
 
 // serviceState is what `status` reports and what `list` shows per row.
 type serviceState string
@@ -102,7 +102,7 @@ func init() {
 }
 
 // serviceName validates a user-supplied name and returns it without the
-// namespace prefix, so `mcp` and `agentic-os.mcp` both address one service.
+// namespace prefix, so `mcp` and `aos.mcp` both address one service.
 func serviceName(raw string) (string, error) {
 	name := strings.TrimPrefix(strings.TrimSpace(raw), servicePrefix)
 	if name == "" {
@@ -163,13 +163,13 @@ func serviceLogDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(home, ".config", "agentic-os", "services"), nil
+	return filepath.Join(home, ".config", "aos", "services"), nil
 }
 
 // newServiceSpec resolves a command line into something a service manager can
 // run. The program is looked up on PATH here because launchd, systemd, and
 // schtasks all start their children with a minimal environment and no shell: a
-// bare `agentic-os` that works in a terminal would simply never start.
+// bare `aos` that works in a terminal would simply never start.
 func newServiceSpec(name string, command []string, autostart bool) (serviceSpec, error) {
 	if len(command) == 0 {
 		return serviceSpec{}, fmt.Errorf("`service create` needs a command after `--`")

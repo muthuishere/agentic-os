@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // headlessState is what `headless start` records so `status`, `run`, and `stop`
@@ -67,7 +67,7 @@ func stateFile() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(home, ".config", "agentic-os", "headless.json"), nil
+	return filepath.Join(home, ".config", "aos", "headless.json"), nil
 }
 
 func readState() (headlessState, bool) {

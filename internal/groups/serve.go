@@ -15,7 +15,7 @@ import (
 	"os/signal"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 	toolnexus "github.com/muthuishere/toolnexus/golang"
 )
 
@@ -333,7 +333,7 @@ func runServeMCP(c *cli.Ctx, args []string) error {
 
 // serveTokenEnv names the variable that pins the token across restarts, so a
 // client configured once does not have to be reconfigured on every start.
-const serveTokenEnv = "AGENTIC_OS_MCP_TOKEN"
+const serveTokenEnv = "AOS_MCP_TOKEN"
 
 // resolveServeToken picks the token: an explicit flag, then the environment,
 // then a fresh random one for this run.

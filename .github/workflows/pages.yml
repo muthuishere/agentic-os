@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # site/scripts/gen-commands.mjs runs `go run ./cmd/agentic-os commands
+      # site/scripts/gen-commands.mjs runs `go run ./cmd/aos commands
       # --json --all` during `npm run build`, so the reference page cannot drift
       # from the registry. That needs a Go toolchain on the runner.
       - uses: actions/setup-go@v5

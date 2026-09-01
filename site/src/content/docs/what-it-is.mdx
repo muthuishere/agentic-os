@@ -12,9 +12,9 @@ services.
 
 ## One surface, two callers
 
-An agent gets in through [the skill](/agentic-os/agent-skill/) — it already has
+An agent gets in through [the skill](/aos/agent-skill/) — it already has
 a shell, so it runs the same commands you do, with nothing listening and nothing
-to start. [MCP](/agentic-os/mcp/) is the second way in, for agents that want
+to start. [MCP](/aos/mcp/) is the second way in, for agents that want
 typed tools.
 
 Both resolve the same route and invoke the same `Runner`. There is no second
@@ -47,7 +47,7 @@ The refusals are part of the design, not a disclaimer in a README.
 - `file delete` will not touch a filesystem root, `$HOME`, or a system
   directory.
 - `serve` binds loopback.
-- Services are namespaced `agentic-os.<name>`, so removing one cannot reach a
+- Services are namespaced `aos.<name>`, so removing one cannot reach a
   system service.
 - Telemetry records how many arguments a command got, never what they were.
 
@@ -58,7 +58,7 @@ $ aos file delete $HOME
 aos: refusing to delete /Users/muthuishere
 ```
 
-The [safety model](/agentic-os/safety/) page has the rest.
+The [safety model](/aos/safety/) page has the rest.
 
 ## One verb set that means the same thing everywhere
 
@@ -74,10 +74,10 @@ single verb set is for.
 
 ## Extensible without forking
 
-A JSON file in `~/.config/agentic-os/adapters/` adds a group. An executable
+A JSON file in `~/.config/aos/adapters/` adds a group. An executable
 named `aos-<group>-<name>` on `PATH` adds a command. Both become MCP
 tools on exactly the same terms as a built-in — and neither can shadow one. See
-[extending it](/agentic-os/extending/).
+[extending it](/aos/extending/).
 
 ## Where the shape came from
 

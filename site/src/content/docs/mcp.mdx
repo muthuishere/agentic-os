@@ -5,7 +5,7 @@ description: Serve the whole command registry as MCP tools over streamable HTTP,
 
 :::note
 MCP is the *second* way to use this. The first is
-[the agent skill](/agentic-os/quickstart/) — an agent that already has a shell
+[the agent skill](/aos/quickstart/) — an agent that already has a shell
 needs nothing running to use `aos`, and that path works over SSH into any
 machine. Reach for MCP when your agent wants typed tools rather than a terminal.
 :::
@@ -36,7 +36,7 @@ either as an `Authorization: Bearer` header or a `?t=` query parameter, compared
 in constant time. Pin one so a client configured once survives a restart:
 
 ```sh
-export AGENTIC_OS_MCP_TOKEN=$(openssl rand -hex 16)   # or --token=…
+export AOS_MCP_TOKEN=$(openssl rand -hex 16)   # or --token=…
 aos serve mcp
 ```
 
@@ -100,7 +100,7 @@ Task on Windows — per-user throughout, so nothing here asks for admin or sudo.
 MCP serving is [toolnexus](https://github.com/muthuishere/toolnexus)'s
 `Toolkit.Serve`, so the protocol work is conformance-tested rather than
 reimplemented here. Windows, monitors, input and screenshots come from
-[windowctl](https://github.com/muthuishere/windowctl). agentic-os is the front
+[windowctl](https://github.com/muthuishere/windowctl). aos is the front
 door.
 
 ## What an agent should read
@@ -113,6 +113,6 @@ writes the agent skill bundled inside the binary to `~/.claude/skills/` and
 `~/.agents/skills/`. Because it ships *in* the binary, the instructions an agent
 reads cannot describe a different version than the one installed.
 
-This site also publishes [`/agentic-os/llms.txt`](/agentic-os/llms.txt) and
+This site also publishes [`/aos/llms.txt`](/aos/llms.txt) and
 `llms-full.txt`, which is the same documentation in the form an agent prefers to
 read it.

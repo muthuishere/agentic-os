@@ -98,7 +98,7 @@ func (t Target) StepTimeout() time.Duration {
 // ConfigPath is where the machine list lives, overridable so CI can point
 // somewhere else.
 func ConfigPath() string {
-	if path := os.Getenv("AGENTIC_OS_E2E_CONFIG"); path != "" {
+	if path := os.Getenv("AOS_E2E_CONFIG"); path != "" {
 		return path
 	}
 	return filepath.Join("config.json")

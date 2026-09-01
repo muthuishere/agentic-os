@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // batteryStatusNames maps Win32_Battery.BatteryStatus codes to words. Code 2

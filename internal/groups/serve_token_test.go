@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // TestTokenMatches pins the gate on the MCP surface. Loopback is not a

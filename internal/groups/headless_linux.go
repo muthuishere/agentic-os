@@ -7,8 +7,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/sys"
 	"github.com/muthuishere/windowctl"
 )
 

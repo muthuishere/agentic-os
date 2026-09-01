@@ -43,7 +43,7 @@ func TestSpawnReturnsImmediately(t *testing.T) {
 }
 
 func TestSpawnReportsAMissingProgram(t *testing.T) {
-	if err := Spawn("agentic-os-no-such-program"); err == nil {
+	if err := Spawn("aos-no-such-program"); err == nil {
 		t.Fatal("want an error when the program does not exist")
 	}
 }

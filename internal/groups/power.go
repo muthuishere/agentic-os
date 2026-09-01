@@ -3,7 +3,7 @@ package groups
 import (
 	"fmt"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // powerState is the one reading both the `power` and `battery` groups render.

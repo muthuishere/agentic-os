@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
-	"github.com/muthuishere/agentic-os/internal/obs"
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/cli"
+	"github.com/muthuishere/aos/internal/obs"
+	"github.com/muthuishere/aos/internal/sys"
 	"github.com/muthuishere/windowctl"
 )
 
@@ -138,20 +138,20 @@ func checkRegistry(c *cli.Ctx) checkResult {
 
 func checkTelemetry(c *cli.Ctx) checkResult {
 	if obs.Disabled(c.Env) {
-		return checkResult{"telemetry", statusWarn, "off via AGENTIC_OS_TELEMETRY",
-			"unset AGENTIC_OS_TELEMETRY to record what this machine is asked to do"}
+		return checkResult{"telemetry", statusWarn, "off via AOS_TELEMETRY",
+			"unset AOS_TELEMETRY to record what this machine is asked to do"}
 	}
 	dir := obs.Dir(c.Env)
 	// A functional check: telemetry that cannot be written is worse than none,
 	// because it looks enabled.
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return checkResult{"telemetry", statusFail, "cannot create " + dir,
-			"set AGENTIC_OS_TELEMETRY_DIR to a writable path"}
+			"set AOS_TELEMETRY_DIR to a writable path"}
 	}
 	probe := filepath.Join(dir, ".doctor-probe")
 	if err := os.WriteFile(probe, []byte("ok"), 0o644); err != nil {
 		return checkResult{"telemetry", statusFail, "cannot write to " + dir,
-			"set AGENTIC_OS_TELEMETRY_DIR to a writable path"}
+			"set AOS_TELEMETRY_DIR to a writable path"}
 	}
 	os.Remove(probe)
 	return checkResult{"telemetry", statusOK, "recording to " + dir, ""}
@@ -216,7 +216,7 @@ func checkScreenshot(c *cli.Ctx) checkResult {
 	if !cli.HasDisplay(c.Env, c.GOOS) {
 		return checkResult{"screenshot", statusWarn, "skipped; no display", ""}
 	}
-	path := filepath.Join(os.TempDir(), fmt.Sprintf("agentic-os-doctor-%d.png", time.Now().UnixNano()))
+	path := filepath.Join(os.TempDir(), fmt.Sprintf("aos-doctor-%d.png", time.Now().UnixNano()))
 	defer os.Remove(path)
 
 	monitor := 1
@@ -243,7 +243,7 @@ func checkClipboard(c *cli.Ctx) checkResult {
 	if !cli.HasDisplay(c.Env, c.GOOS) {
 		return checkResult{"clipboard", statusWarn, "skipped; no display", ""}
 	}
-	probe := fmt.Sprintf("agentic-os-doctor-%d", time.Now().UnixNano())
+	probe := fmt.Sprintf("aos-doctor-%d", time.Now().UnixNano())
 	if err := clipboardWrite(probe); err != nil {
 		return checkResult{"clipboard", statusFail, "cannot write: " + err.Error(), clipboardRemedy(c.GOOS)}
 	}

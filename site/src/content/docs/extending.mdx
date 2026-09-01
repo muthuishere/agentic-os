@@ -9,7 +9,7 @@ become MCP tools.
 
 ## Adapters — when it is a command line you already run
 
-Drop a JSON file in `~/.config/agentic-os/adapters/` and it becomes a group:
+Drop a JSON file in `~/.config/aos/adapters/` and it becomes a group:
 
 ```json
 {
@@ -29,9 +29,9 @@ Drop a JSON file in `~/.config/agentic-os/adapters/` and it becomes a group:
 ```console
 $ aos adapters example --write   # a working starter file
 $ aos adapters path
-/Users/you/.config/agentic-os/adapters
+/Users/you/.config/aos/adapters
 $ aos adapters list
-no adapters in /Users/you/.config/agentic-os/adapters
+no adapters in /Users/you/.config/aos/adapters
 run `aos adapters example --write` to start one
 ```
 
@@ -40,7 +40,7 @@ quoted.
 
 ### This is where anything site-specific belongs
 
-agentic-os used to ship a `msg` group that talked to a local messenger hub. It
+aos used to ship a `msg` group that talked to a local messenger hub. It
 was removed, because a built-in command that only works if you happen to run one
 particular service is a command that fails for everyone else — and the command
 list is a promise about what this machine can do.
@@ -74,17 +74,17 @@ be written down here.
 
 ## Plugins — when you need a program
 
-Any executable named `agentic-os-<group>-<name>` in `$AGENTIC_OS_BIN_DIR`,
-`~/.config/agentic-os/bin`, or on `PATH` joins the CLI, and therefore the MCP
+Any executable named `aos-<group>-<name>` in `$AOS_BIN_DIR`,
+`~/.config/aos/bin`, or on `PATH` joins the CLI, and therefore the MCP
 tool list. It describes itself with comment headers in its first 80 lines:
 
 ```sh
 #!/bin/sh
-# agentic-os:summary=Do the thing
-# agentic-os:args=<target>
-# agentic-os:examples=aos demo do thing a | aos demo do thing b
-# agentic-os:platforms=darwin | linux
-# agentic-os:route=theme bg-switcher   # when a word contains a hyphen
+# aos:summary=Do the thing
+# aos:args=<target>
+# aos:examples=aos demo do thing a | aos demo do thing b
+# aos:platforms=darwin | linux
+# aos:route=theme bg-switcher   # when a word contains a hyphen
 ```
 
 ## Neither can shadow a built-in
@@ -109,7 +109,7 @@ platform    darwin/arm64
 commands    96 available of 98 registered, in 34 groups
 
 plugin dirs:
-  /Users/you/.config/agentic-os/bin
+  /Users/you/.config/aos/bin
   …
 ```
 

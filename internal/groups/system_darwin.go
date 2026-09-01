@@ -1,6 +1,6 @@
 package groups
 
-import "github.com/muthuishere/agentic-os/internal/sys"
+import "github.com/muthuishere/aos/internal/sys"
 
 const cgSession = "/System/Library/CoreServices/Menu Extras/User.menu/Contents/Resources/CGSession"
 

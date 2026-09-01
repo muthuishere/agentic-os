@@ -1,7 +1,5 @@
 # aos
 
-`agentic-os` — the binary is `aos`, which is what you type and what to call it.
-
 **One CLI over the machine that an agent drives the same way you do — on macOS,
 Windows, and Linux.**
 
@@ -48,17 +46,17 @@ $ aos install --skills             # now an agent runs all of the above
 ## Install
 
 ```sh
-go install github.com/muthuishere/agentic-os/cmd/aos@latest
+go install github.com/muthuishere/aos/cmd/aos@latest
 aos install --skills   # teach Claude Code and other agents to use it
 aos doctor
 ```
 
 Needs Go 1.26+. If you would rather not build, every release also ships
 prebuilt binaries for macOS, Linux and Windows:
-[the latest release](https://github.com/muthuishere/agentic-os/releases/latest).
+[the latest release](https://github.com/muthuishere/aos/releases/latest).
 
 ```sh
-curl -fsSL -o aos https://github.com/muthuishere/agentic-os/releases/latest/download/aos-darwin-arm64
+curl -fsSL -o aos https://github.com/muthuishere/aos/releases/latest/download/aos-darwin-arm64
 chmod +x aos && ./aos install --skills && ./aos doctor
 ```
 
@@ -91,7 +89,7 @@ supplies — and it buys things a server cannot:
   ```sh
   ssh server aos system info
   ssh server aos exec capture -- systemctl is-active nginx
-  ssh server 'go install github.com/muthuishere/agentic-os/cmd/aos@latest'
+  ssh server 'go install github.com/muthuishere/aos/cmd/aos@latest'
   ```
 
   A headless server refuses the desktop commands with a reason rather than
@@ -116,7 +114,7 @@ aos serve mcp
 Loopback is not a permission — every process on the machine shares it, and this
 surface drives windows, input and the filesystem. The server mints a token per
 run and refuses anything without it, as a bearer header or `?t=`. Set
-`AGENTIC_OS_MCP_TOKEN` (or `--token`) to pin one so a client configured once
+`AOS_MCP_TOKEN` (or `--token`) to pin one so a client configured once
 survives a restart.
 
 Every non-hidden, non-blocking command becomes one tool (`window_move`,
@@ -132,7 +130,7 @@ aos serve mcp --groups=window,capture,exec   # expose a subset
 The protocol layer is [toolnexus](https://github.com/muthuishere/toolnexus)'s
 `Toolkit.Serve`, so it is conformance-tested rather than hand-rolled. Full
 details, including the token and scoping:
-[the docs](https://muthuishere.github.io/agentic-os/mcp/).
+[the docs](https://muthuishere.github.io/aos/mcp/).
 
 ## Keeping it running
 
@@ -149,7 +147,7 @@ aos service remove mcp
 
 That is a launchd user agent on macOS, a `systemd --user` unit on Linux, and a
 Scheduled Task on Windows — per-user throughout, so nothing here asks for admin
-or sudo. Every service aos creates is namespaced `agentic-os.<name>`, and
+or sudo. Every service aos creates is namespaced `aos.<name>`, and
 `list` and `remove` only ever see that namespace: this CLI cannot delete a
 service it did not create.
 
@@ -164,7 +162,7 @@ inside a display-server call:
 
 ```console
 $ aos window list
-agentic-os: "window list" needs a display, and this machine has none
+aos: "window list" needs a display, and this machine has none
 Start one with `aos headless start`, or check `aos headless status`.
 ```
 
@@ -254,7 +252,7 @@ resolves by longest prefix, and everything after it is the command's own args.
 ### Adapters — add a command without writing a program
 
 Most additions are a command line someone already runs. Drop a JSON file in
-`~/.config/agentic-os/adapters/` and it becomes a group:
+`~/.config/aos/adapters/` and it becomes a group:
 
 ```json
 {
@@ -284,17 +282,17 @@ reported by `commands --check` rather than silently ignored.
 
 ### Plugins — when you need a program
 
-Any executable named `aos-<group>-<name>` in `$AGENTIC_OS_BIN_DIR`,
-`~/.config/agentic-os/bin`, or on `PATH` joins the CLI. It describes itself with
+Any executable named `aos-<group>-<name>` in `$AOS_BIN_DIR`,
+`~/.config/aos/bin`, or on `PATH` joins the CLI. It describes itself with
 comment headers in its first 80 lines:
 
 ```sh
 #!/bin/sh
 # aos:summary=Do the thing
-# agentic-os:args=<target>
-# agentic-os:examples=aos demo do thing a | aos demo do thing b
-# agentic-os:platforms=darwin | linux
-# agentic-os:route=theme bg-switcher   # when a word contains a hyphen
+# aos:args=<target>
+# aos:examples=aos demo do thing a | aos demo do thing b
+# aos:platforms=darwin | linux
+# aos:route=theme bg-switcher   # when a word contains a hyphen
 ```
 
 Built-in commands win over a plugin with the same route, so shipping a Go
@@ -350,8 +348,8 @@ aos obs path                     # where it is written
 
 Spans record the route, source (`cli` or `mcp`), exit code and duration — and
 the *count* of arguments, never their contents, which routinely carry paths and
-message bodies. Set `AGENTIC_OS_TELEMETRY=off` to disable, or
-`AGENTIC_OS_TELEMETRY_DIR` to relocate.
+message bodies. Set `AOS_TELEMETRY=off` to disable, or
+`AOS_TELEMETRY_DIR` to relocate.
 
 ## Testing on real machines
 

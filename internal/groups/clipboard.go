@@ -5,7 +5,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 func init() {

@@ -135,7 +135,7 @@ func testFilesystem(t *testing.T, runner *Runner, target Target) {
 	}
 
 	// An absolute path, because a remote step may run in a fresh directory.
-	path := target.Path("agentic-os-e2e-probe.txt")
+	path := target.Path("aos-e2e-probe.txt")
 	payload := "e2e-round-trip"
 	wantExit(t, mustRun(t, runner, "file", "write", path, payload), 0, "file write")
 
@@ -203,7 +203,7 @@ func testDisplay(t *testing.T, runner *Runner, target Target) {
 
 	// A capture that writes an empty file is the failure that matters, so
 	// check the reported geometry rather than only the exit code.
-	shot := target.Path("agentic-os-e2e-shot.png")
+	shot := target.Path("aos-e2e-shot.png")
 	result = mustRun(t, runner, "capture", "screenshot", "--monitor=1", "--out="+shot)
 	wantExit(t, result, 0, "capture screenshot")
 	wantContains(t, result, "x", "capture screenshot")

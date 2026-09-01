@@ -5,7 +5,7 @@ package groups
 import (
 	"os"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 func isLinux() bool { return false }

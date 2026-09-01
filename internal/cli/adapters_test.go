@@ -11,7 +11,7 @@ import (
 // adapterEnv points the loader at a temporary config directory.
 func adapterEnv(dir string) func(string) string {
 	return func(key string) string {
-		if key == "AGENTIC_OS_CONFIG_DIR" {
+		if key == "AOS_CONFIG_DIR" {
 			return dir
 		}
 		return ""

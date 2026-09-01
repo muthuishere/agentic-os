@@ -19,7 +19,7 @@ import (
 var bundled embed.FS
 
 // Name is the directory the skill is installed as.
-const Name = "agentic-os"
+const Name = "aos"
 
 // Host is one place skills are read from.
 type Host struct {

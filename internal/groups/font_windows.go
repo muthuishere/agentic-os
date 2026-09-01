@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/sys"
+	"github.com/muthuishere/aos/internal/sys"
 )
 
 // fontRegistryKey maps installed fonts to their real display names, which the

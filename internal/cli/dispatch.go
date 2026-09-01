@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/muthuishere/agentic-os/internal/obs"
+	"github.com/muthuishere/aos/internal/obs"
 )
 
 // Run dispatches argv and returns a process exit code, recording one span for

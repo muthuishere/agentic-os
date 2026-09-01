@@ -21,7 +21,7 @@ func TestDisabledRecognisesEveryOffSpelling(t *testing.T) {
 		"": false, "on": false, "1": false, "true": false, "yes": false,
 	}
 	for value, want := range cases {
-		if got := Disabled(envOf(map[string]string{"AGENTIC_OS_TELEMETRY": value})); got != want {
+		if got := Disabled(envOf(map[string]string{"AOS_TELEMETRY": value})); got != want {
 			t.Errorf("Disabled(%q) = %v, want %v", value, got, want)
 		}
 	}
@@ -29,17 +29,17 @@ func TestDisabledRecognisesEveryOffSpelling(t *testing.T) {
 
 func TestDirHonoursTheExplicitDirectory(t *testing.T) {
 	dir := t.TempDir()
-	if got := Dir(envOf(map[string]string{"AGENTIC_OS_TELEMETRY_DIR": dir})); got != dir {
+	if got := Dir(envOf(map[string]string{"AOS_TELEMETRY_DIR": dir})); got != dir {
 		t.Fatalf("Dir = %q, want %q", got, dir)
 	}
 	// A blank value is not a directory; it must fall through to the default.
-	if got := Dir(envOf(map[string]string{"AGENTIC_OS_TELEMETRY_DIR": "   "})); got == "" || strings.TrimSpace(got) != got {
+	if got := Dir(envOf(map[string]string{"AOS_TELEMETRY_DIR": "   "})); got == "" || strings.TrimSpace(got) != got {
 		t.Fatalf("Dir with a blank override = %q", got)
 	}
 }
 
 func TestNewRecorderIsNilWhenTelemetryIsOff(t *testing.T) {
-	r := NewRecorder(envOf(map[string]string{"AGENTIC_OS_TELEMETRY": "off"}), "test")
+	r := NewRecorder(envOf(map[string]string{"AOS_TELEMETRY": "off"}), "test")
 	if r != nil {
 		t.Fatal("telemetry off must yield a nil recorder")
 	}
@@ -52,7 +52,7 @@ func TestNewRecorderIsNilWhenTelemetryIsOff(t *testing.T) {
 
 func recorderIn(t *testing.T, dir string) *Recorder {
 	t.Helper()
-	r := NewRecorder(envOf(map[string]string{"AGENTIC_OS_TELEMETRY_DIR": dir}), "test-version")
+	r := NewRecorder(envOf(map[string]string{"AOS_TELEMETRY_DIR": dir}), "test-version")
 	if r == nil {
 		t.Fatal("recorder should be enabled")
 	}
@@ -154,7 +154,7 @@ func TestRecordStampsTheResource(t *testing.T) {
 			attrs[attr.Key] = *attr.Value.String
 		}
 	}
-	if attrs["service.name"] != "agentic-os" {
+	if attrs["service.name"] != "aos" {
 		t.Fatalf("service.name = %q", attrs["service.name"])
 	}
 	if attrs["service.version"] != "test-version" {

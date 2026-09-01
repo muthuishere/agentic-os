@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // testCtx is a context wired to buffers, so a command's output can be asserted
@@ -425,7 +425,7 @@ func TestIsProtectedPathAllowsOrdinaryPaths(t *testing.T) {
 	allowed := []string{
 		filepath.Join(t.TempDir(), "scratch"),
 		filepath.FromSlash("/tmp/build-output"),
-		filepath.FromSlash("/var/log/agentic-os"),
+		filepath.FromSlash("/var/log/aos"),
 	}
 	for _, path := range allowed {
 		absolute, err := filepath.Abs(path)

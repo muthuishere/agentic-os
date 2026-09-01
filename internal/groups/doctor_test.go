@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 )
 
 // doctorCtx builds a context with a controllable environment. Only the checks
@@ -64,7 +64,7 @@ func TestDoctorRegistryCheckReportsRegistrationProblems(t *testing.T) {
 // enabled — so the check writes for real rather than testing for a directory.
 func TestDoctorTelemetryCheckIsFunctional(t *testing.T) {
 	dir := t.TempDir()
-	c := doctorCtx("darwin", map[string]string{"AGENTIC_OS_TELEMETRY_DIR": dir})
+	c := doctorCtx("darwin", map[string]string{"AOS_TELEMETRY_DIR": dir})
 	if got := checkTelemetry(c); got.Status != statusOK {
 		t.Fatalf("a writable directory should pass: %+v", got)
 	}
@@ -82,12 +82,12 @@ func TestDoctorTelemetryCheckIsFunctional(t *testing.T) {
 	if err := os.WriteFile(blocker, []byte("x"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	c = doctorCtx("darwin", map[string]string{"AGENTIC_OS_TELEMETRY_DIR": filepath.Join(blocker, "telemetry")})
+	c = doctorCtx("darwin", map[string]string{"AOS_TELEMETRY_DIR": filepath.Join(blocker, "telemetry")})
 	got := checkTelemetry(c)
 	if got.Status != statusFail {
 		t.Fatalf("an unwritable telemetry directory must fail: %+v", got)
 	}
-	if !strings.Contains(got.Remedy, "AGENTIC_OS_TELEMETRY_DIR") {
+	if !strings.Contains(got.Remedy, "AOS_TELEMETRY_DIR") {
 		t.Fatalf("remedy = %q; it must name the variable to set", got.Remedy)
 	}
 }
@@ -95,7 +95,7 @@ func TestDoctorTelemetryCheckIsFunctional(t *testing.T) {
 // Telemetry switched off is a report, not a fault: `doctor` stays usable in a
 // health-check loop on a machine that opted out.
 func TestDoctorTelemetryOffIsAWarningNotAFailure(t *testing.T) {
-	c := doctorCtx("darwin", map[string]string{"AGENTIC_OS_TELEMETRY": "off"})
+	c := doctorCtx("darwin", map[string]string{"AOS_TELEMETRY": "off"})
 	got := checkTelemetry(c)
 	if got.Status != statusWarn {
 		t.Fatalf("telemetry off should warn, not fail: %+v", got)
@@ -159,7 +159,7 @@ func TestDoctorExitFailsOnlyOnAFailure(t *testing.T) {
 
 func TestDoctorPluginsCheckCountsExternalCommands(t *testing.T) {
 	c := doctorCtx("darwin", nil)
-	c.Registry.Add(&cli.Command{Group: "demo", Name: "thing", Summary: "Plugin", Binary: "/usr/local/bin/agentic-os-demo-thing"})
+	c.Registry.Add(&cli.Command{Group: "demo", Name: "thing", Summary: "Plugin", Binary: "/usr/local/bin/aos-demo-thing"})
 
 	got := checkPlugins(c)
 	if got.Status != statusOK || !strings.Contains(got.Detail, "1 external") {

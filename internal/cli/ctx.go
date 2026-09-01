@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/muthuishere/agentic-os/internal/obs"
+	"github.com/muthuishere/aos/internal/obs"
 )
 
 // Ctx is the execution context handed to every Runner.

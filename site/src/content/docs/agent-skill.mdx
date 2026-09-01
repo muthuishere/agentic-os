@@ -3,7 +3,7 @@ title: Using it from an agent (the skill)
 description: Install the agent skill bundled inside the binary, and an agent that already has a shell can drive the machine — locally or over SSH — with nothing running.
 ---
 
-This is the primary way an agent uses agentic-os, and it needs no server.
+This is the primary way an agent uses aos, and it needs no server.
 
 ```sh
 aos install --skills
@@ -60,7 +60,7 @@ ssh server aos file read /etc/hostname
 Install it on the far machine the same way:
 
 ```sh
-ssh server 'go install github.com/muthuishere/agentic-os/cmd/aos@latest'
+ssh server 'go install github.com/muthuishere/aos/cmd/aos@latest'
 ```
 
 Two things are worth knowing before an agent does this:
@@ -69,7 +69,7 @@ Two things are worth knowing before an agent does this:
 window list` exits 2 saying it needs a display, rather than failing somewhere
 inside a display-server call. On Linux you can give it one with
 `aos headless start --wm`, after which later commands adopt that display
-automatically. See [headless machines](/agentic-os/headless/).
+automatically. See [headless machines](/aos/headless/).
 
 **The audit trail is per-machine.** Spans are written on the machine that ran
 the command, so `ssh server aos obs audit --since=24h` is how you see what an
@@ -96,5 +96,5 @@ refuses filesystem roots and `$HOME`, and blocking commands never return.
 
 ## For agents reading this site
 
-This site publishes [`/agentic-os/llms.txt`](/agentic-os/llms.txt) and
+This site publishes [`/aos/llms.txt`](/aos/llms.txt) and
 `llms-full.txt` — the same documentation in the form an agent prefers to read.

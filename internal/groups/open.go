@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/muthuishere/agentic-os/internal/cli"
+	"github.com/muthuishere/aos/internal/cli"
 	"github.com/muthuishere/windowctl"
 )
 

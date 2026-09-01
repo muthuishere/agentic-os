@@ -1,6 +1,6 @@
 ---
 title: What it's not
-description: Eight things agentic-os is regularly mistaken for, and what each confusion actually gets wrong.
+description: Eight things aos is regularly mistaken for, and what each confusion actually gets wrong.
 ---
 
 Most of what people need to know about a tool like this is what it declines to
@@ -23,10 +23,10 @@ Telemetry exists, and it is OTLP-shaped JSON in a local file:
 
 ```console
 $ aos obs path
-/Users/you/.local/state/agentic-os/telemetry
+/Users/you/.local/state/aos/telemetry
 ```
 
-Delete it whenever you like. `AGENTIC_OS_TELEMETRY=off` stops it being written
+Delete it whenever you like. `AOS_TELEMETRY=off` stops it being written
 at all.
 
 ## Not a screen-scraper
@@ -42,7 +42,7 @@ server:
 $ aos window list
 * Finder            mon 3  1379x890+2235+134  pathextra
   Ghostty           mon 2  1900x940+0+30      Omarchy CLI cross-platform
-  Google Chrome     mon 3  1920x1050+1920+30  muthuishere/agentic-os
+  Google Chrome     mon 3  1920x1050+1920+30  muthuishere/aos
 ```
 
 ## Not unrestricted system access
@@ -50,7 +50,7 @@ $ aos window list
 That is what most desktop-automation MCP servers hand an agent: a shell, a
 click, a keystroke, and nothing in between. Every dangerous edge here is
 deliberately blunted, and the blunting is written down rather than assumed —
-see the [safety model](/agentic-os/safety/).
+see the [safety model](/aos/safety/).
 
 `remote share` is a good example of the pattern: it is marked *blocking*, and
 blocking commands are excluded from the MCP tool list, so an agent cannot open
@@ -69,7 +69,7 @@ see exactly what was taken and what was not.
 One static binary:
 
 ```sh
-go install github.com/muthuishere/agentic-os/cmd/aos@latest
+go install github.com/muthuishere/aos/cmd/aos@latest
 ```
 
 It uses native tools when they are present, and says so plainly when they are
