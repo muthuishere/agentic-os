@@ -72,3 +72,50 @@ github.com/muthuishere/aos
 - Better still: put the URL in the first comment and keep the post link-free. The `go install` line is not a link.
 - Tue-Thu, 8-10am or 7-9pm IST. Reply to everything in the first hour.
 - The 10-post X thread is in `marketing/x-thread.md` if you want the long form instead.
+
+---
+
+## Variant B — the watcher hook (owner's angle)
+
+### LinkedIn
+
+What if you could watch your machine at the OS level, and pipe it?
+
+    $ aos watch clipboard
+    {"event":"clipboard","seq":1,"length":34,...}
+
+    $ aos watch window --max=1
+    {"event":"window","app":"Chrome",...}
+
+    $ aos watch file ./src --recursive
+    {"event":"file","kind":"created","path":"./src/x.go",...}
+
+One JSON line per change. Pipe it, act on it, stop after N.
+
+That's three of a hundred. The rest: move and resize windows, screenshots, mouse and keyboard, files, processes, packages, network, audio, services, on-screen captions — and `aos remote share`, which hands this screen and its input to a browser on your LAN, so you can watch the machine from your phone.
+
+100 commands. One static binary. macOS, Windows and Linux, including a headless Linux server.
+
+The part that matters: it's the same CLI for you and for your agent.
+
+`aos skill install` writes an agent skill that ships inside the binary — so your agent knows the commands exist, what the exit codes mean, and which ones need a screen. Nothing running, nothing to connect to, and it works over ssh into any machine that has the binary.
+
+MCP is one command away for agents that want typed tools. Same routes, same code path. Agent skill first, MCP second.
+
+That's aos.
+
+go install github.com/muthuishere/aos/cmd/aos@latest
+
+https://muthuishere.github.io/aos/
+
+### X
+
+What if your machine had OS-level watchers you could pipe?
+
+Clipboard changed. Window changed. File changed. One JSON line each.
+
+Plus screen share, windows, input, processes — 100 utilities, one CLI, for you and your agent.
+
+That's aos.
+
+muthuishere.github.io/aos/
