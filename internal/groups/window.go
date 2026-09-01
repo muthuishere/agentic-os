@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -76,6 +77,18 @@ func init() {
 					"aos window arrange ~/.config/aos/layouts/work.json",
 				},
 				Run: runWindowArrange,
+			},
+			&cli.Command{
+				Group: "window", Name: "save",
+				Summary: "Save the current layout to a file `window arrange` can apply",
+				Args:    "<layout.json> [--app=<name>] [--monitor=<n>]",
+				Examples: []string{
+					"aos window save ~/.config/aos/layouts/work.json",
+					"aos window save ~/work.json --app=Chrome",
+					"aos window save ~/second-screen.json --monitor=2",
+				},
+				NeedsDisplay: true,
+				Run:          runWindowSave,
 			},
 		)
 	})
@@ -415,9 +428,9 @@ func runWindowArrange(c *cli.Ctx, args []string) error {
 	if err != nil {
 		return err
 	}
-	var entries []windowctl.BatchEntry
-	if err := json.Unmarshal(data, &entries); err != nil {
-		return fmt.Errorf("parse layout: %w", err)
+	entries, err := parseLayout(data)
+	if err != nil {
+		return err
 	}
 
 	// Batch never aborts on a failing entry, so report per-entry and fail at
@@ -438,6 +451,123 @@ func runWindowArrange(c *cli.Ctx, args []string) error {
 	if failed > 0 {
 		return &cli.ExitError{Code: 1, Message: fmt.Sprintf("%d of %d entries failed", failed, len(entries))}
 	}
+	return nil
+}
+
+// parseLayout reads a layout file into the entries `window arrange` applies.
+// `window save` writes through layoutFrom, so this is the other half of the
+// round trip and both sides stay honest about the shape.
+func parseLayout(data []byte) ([]windowctl.BatchEntry, error) {
+	var entries []windowctl.BatchEntry
+	if err := json.Unmarshal(data, &entries); err != nil {
+		return nil, fmt.Errorf("parse layout: %w", err)
+	}
+	return entries, nil
+}
+
+// layoutFrom turns a live window list into layout entries. It is the whole of
+// `window save` that does not touch a display, so it is the part worth testing.
+//
+// Bounds are written absolute and the monitor is deliberately left out: a
+// BatchEntry carrying a monitor has its X/Y read as monitor-relative, so
+// stamping the monitor next to global coordinates would offset every window by
+// that monitor's origin on the way back.
+//
+// The title is only written when the app name alone would be ambiguous. Titles
+// drift — a browser retitles itself with every tab — so pinning one costs a
+// match later, and it is only worth paying when two saved windows share an app.
+func layoutFrom(windows []windowctl.Window) []windowctl.BatchEntry {
+	perApp := map[string]int{}
+	for _, w := range windows {
+		perApp[w.App]++
+	}
+
+	entries := make([]windowctl.BatchEntry, 0, len(windows))
+	for _, w := range windows {
+		// Arrange rejects a zero-sized entry, so a window that reports no
+		// size is dropped here rather than saved as a guaranteed failure.
+		if w.Bounds.W <= 0 || w.Bounds.H <= 0 {
+			continue
+		}
+		entry := windowctl.BatchEntry{
+			App: w.App,
+			X:   intPtr(w.Bounds.X),
+			Y:   intPtr(w.Bounds.Y),
+			W:   intPtr(w.Bounds.W),
+			H:   intPtr(w.Bounds.H),
+		}
+		if w.App == "" || perApp[w.App] > 1 {
+			entry.Title = w.Title
+		}
+		if entry.App == "" && entry.Title == "" {
+			continue
+		}
+		entries = append(entries, entry)
+	}
+	return entries
+}
+
+func intPtr(n int) *int { return &n }
+
+// runWindowSave captures what is on screen right now as a layout file, which
+// is the missing half of `window arrange`: until this existed the only way to
+// get a layout was to hand-write the JSON.
+func runWindowSave(c *cli.Ctx, args []string) error {
+	set, err := parseArgs(args, "app", "monitor")
+	if err != nil {
+		return err
+	}
+	if err := set.Reject("app", "monitor"); err != nil {
+		return err
+	}
+	if len(set.Rest) != 1 {
+		return fmt.Errorf("`window save` takes one layout file")
+	}
+	monitor, err := set.IntPtr("monitor")
+	if err != nil {
+		return err
+	}
+
+	filter := windowctl.Filter{App: set.String("app", "")}
+	if filter.App != "" {
+		if app, ok := resolveAppName(filter.App); ok {
+			filter.App = app
+		}
+	}
+	windows, err := windowctl.ListWindows(filter)
+	if err != nil {
+		return err
+	}
+	if monitor != nil {
+		kept := make([]windowctl.Window, 0, len(windows))
+		for _, w := range windows {
+			if w.Monitor == *monitor {
+				kept = append(kept, w)
+			}
+		}
+		windows = kept
+	}
+
+	entries := layoutFrom(windows)
+	if len(entries) == 0 {
+		c.Println("no windows matched — nothing saved")
+		return &cli.ExitError{Code: 1}
+	}
+
+	data, err := json.MarshalIndent(entries, "", "  ")
+	if err != nil {
+		return err
+	}
+	path := expandHome(set.Rest[0])
+	if dir := filepath.Dir(path); dir != "" && dir != "." {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return err
+		}
+	}
+	if err := os.WriteFile(path, append(data, '\n'), 0o644); err != nil {
+		return err
+	}
+	c.Printf("saved %d window(s) to %s\n", len(entries), path)
 	return nil
 }
 

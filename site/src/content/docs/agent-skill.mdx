@@ -6,7 +6,7 @@ description: Install the agent skill bundled inside the binary, and an agent tha
 This is the primary way an agent uses aos, and it needs no server.
 
 ```sh
-aos install --skills
+aos skill install
 ```
 
 ## Why the skill comes first
@@ -33,7 +33,7 @@ Both run the identical code path, so it is a preference, not a trade-off.
 
 ## It ships inside the binary
 
-The skill is compiled into the executable with `go:embed`, and `install --skills`
+The skill is compiled into the executable with `go:embed`, and `skill install`
 writes it out to **both** `~/.claude/skills/` and `~/.agents/skills/`.
 
 That is deliberate. A skill distributed separately from the binary drifts: the
@@ -43,7 +43,7 @@ cannot describe a different version than the one installed.
 
 ```sh
 aos skill show          # print it without installing
-aos uninstall --skills  # remove it
+aos skill uninstall  # remove it
 ```
 
 ## Driving another machine over SSH

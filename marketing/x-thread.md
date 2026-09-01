@@ -10,7 +10,7 @@ Every agent can write code. Almost none of them can use the computer.
 Move a window. Take a screenshot. Check the battery. Install a package. Know
 whether the machine even has a screen.
 
-So I built aos — one CLI over the machine. 95 commands, 33 groups, same on
+So I built aos — one CLI over the machine. 100 commands, 33 groups, same on
 macOS, Windows and Linux.
 
 **2/**
@@ -24,7 +24,7 @@ mean, and which commands need a screen.
 That's a document, not a server.
 
 **3/**
-`aos install --skills` writes a skill that ships *inside* the binary.
+`aos skill install` writes a skill that ships *inside* the binary.
 
 No port. No process to supervise. Nothing to restart when the laptop wakes.
 

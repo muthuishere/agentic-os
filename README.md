@@ -6,7 +6,7 @@ Windows, and Linux.**
 Give an agent your machine: windows, input, screenshots, files, shell
 commands, packages, network, audio, clipboard. Two ways in, and they run the same code:
 
-- **The agent skill** (primary) — `aos install --skills` and an agent that
+- **The agent skill** (primary) — `aos skill install` and an agent that
   already has a shell knows the CLI exists, what its exit codes mean, and which
   commands need a screen. Nothing running, nothing to connect to, and it works
   over `ssh` into any machine that has the binary.
@@ -40,14 +40,14 @@ $ aos window move Chrome --zone=1B
 $ aos capture screenshot --app=Chrome --out=/tmp/shot.png
 $ aos pkg install ripgrep          # brew / winget / pacman / apt, same verb
 $ aos obs audit --since=24h        # what an agent did on this machine
-$ aos install --skills             # now an agent runs all of the above
+$ aos skill install             # now an agent runs all of the above
 ```
 
 ## Install
 
 ```sh
 go install github.com/muthuishere/aos/cmd/aos@latest
-aos install --skills   # teach Claude Code and other agents to use it
+aos skill install   # teach Claude Code and other agents to use it
 aos doctor
 ```
 
@@ -57,7 +57,7 @@ prebuilt binaries for macOS, Linux and Windows:
 
 ```sh
 curl -fsSL -o aos https://github.com/muthuishere/aos/releases/latest/download/aos-darwin-arm64
-chmod +x aos && ./aos install --skills && ./aos doctor
+chmod +x aos && ./aos skill install && ./aos doctor
 ```
 
 One binary, no runtime and no package manager of its own. The macOS window
@@ -68,14 +68,14 @@ from anywhere.
 ## Agents connect through the skill
 
 ```sh
-aos install --skills
+aos skill install
 ```
 
 That is the whole integration. The skill is compiled into the binary with
 `go:embed` and written out to **both** `~/.claude/skills/` and
 `~/.agents/skills/`, so the instructions an agent reads can never describe a
 different version than the one installed. `skill show` prints it without
-installing; `uninstall --skills` removes it.
+installing; `skill uninstall` removes it.
 
 An agent that can run shell commands already has everything it needs to drive
 this CLI. What it lacked was knowing the CLI exists, what the exit codes mean
@@ -203,12 +203,12 @@ not offering it — it will try, fail, and try again.
 
 | | |
 |---|---|
-| **Desktop** | `window` (list · focus · move to zone/split/coords · resize · wait · arrange a saved layout), `display`, `mouse`, `key`, `permission` |
-| **Machine** | `system` (lock · sleep · restart · shutdown · logout · info), `power`, `battery`, `network`, `audio`, `font`, `pkg`, `debug` |
+| **Desktop** | `window` (list · focus · move to zone/split/coords · resize · wait · save a layout · arrange it back), `display`, `mouse`, `key`, `permission` |
+| **Machine** | `system` (lock · sleep · restart · shutdown · logout · info), `process` (list · find · kill), `power`, `battery`, `network`, `audio`, `font`, `pkg`, `debug` |
 | **Content** | `capture`, `clipboard`, `file`, `exec`, `open`, `launch`, `webapp`, `subtitle` |
 | **Remote** | `remote` — hand this screen and its input to a browser on the LAN, for as long as the command runs |
-| **Watch** | `watch` — long-running monitors (clipboard, focused window) that print one JSON line per change |
-| **Agents** | `serve` — expose all of the above over MCP; `service` — keep any of it running as a per-user OS service; `headless` — run the desktop commands with no screen |
+| **Watch** | `watch` — long-running monitors (clipboard, focused window, files and directories) that print one JSON line per change |
+| **Agents** | `serve` — expose all of the above over MCP; `service` — keep any of it running as a per-user OS service; `headless` — run the desktop commands with no screen; `completion` — shell completions generated from the registry |
 
 Windows, monitors, input and screenshots are handled by
 [windowctl](https://github.com/muthuishere/windowctl); MCP serving by
@@ -224,11 +224,51 @@ event, so an agent can pipe one and act on each line.
 aos watch clipboard              # {"event":"clipboard","at":…,"seq":1,"length":34,"digest":"7a37ded45b5e"}
 aos watch clipboard --content    # include the text — opt-in, clipboards hold passwords
 aos watch window --max=1         # wait for the next focus change, then exit
+aos watch file ./src --recursive # {"event":"file",…,"kind":"created","path":"./src/x.go","size":12}
 ```
 
 The first sample is only a baseline, so `--max=1` means "the next change", which
 is also what makes a watcher scriptable. An agent reads these by running the
 CLI — which is the case for the skill path in a sentence.
+
+## Window layouts
+
+`window save` captures where everything is; `window arrange` puts it back. The
+file is plain JSON, so it is reviewable and editable:
+
+```sh
+aos window save ~/.config/aos/layouts/work.json
+aos window arrange ~/.config/aos/layouts/work.json
+```
+
+## Processes
+
+`exec` starts a program. `process` is for the ones already running:
+
+```sh
+aos process list --json
+aos process find Chrome
+aos process kill 76980
+aos process kill Chrome          # by name, only when it is unambiguous
+```
+
+Killing by name refuses rather than guesses when the name matches more than one
+process, and lists the candidates. It will not kill pid 1, and it will not kill
+the `aos` process asking.
+
+## Shell completions
+
+Generated from the registry at runtime, so they cannot describe a command the
+binary does not have:
+
+```sh
+aos completion zsh  > "${fpath[1]}/_aos"
+aos completion bash > ~/.local/share/bash-completion/completions/aos
+aos completion fish > ~/.config/fish/completions/aos.fish
+```
+
+Completes group names, multi-token routes (`audio output set default`) and the
+flags each command documents. Hidden commands are left out.
 
 ## How it is put together
 

@@ -150,7 +150,12 @@ writeFileSync(
 	dataOut,
 	JSON.stringify(
 		{
-			commands: commands.length,
+			// The headline number is what a reader can actually run and find
+			// documented. Counting hidden commands here while `groups` counted
+			// only groups that have a visible command made the pair disagree:
+			// "102 commands across 33 groups" was two different populations.
+			commands: visible.length,
+			total: commands.length,
 			documented: visible.length,
 			groups: names.length,
 			binary: bin,

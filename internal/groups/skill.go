@@ -2,7 +2,6 @@ package groups
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/muthuishere/aos/internal/cli"
 	"github.com/muthuishere/aos/internal/skill"
@@ -10,29 +9,49 @@ import (
 
 func init() {
 	register(func(r *cli.Registry) {
-		// `install --skills` rather than `skill install`: the same shape the
-		// other tools here use, so one habit works across all of them, and so
-		// `install` has room for whatever else becomes installable.
-		r.Describe("install", "Install what this binary carries")
+		// The only thing this installs is the skill, and `pkg install` sits
+		// right beside it -- so a top-level `install` read like it installed
+		// anything. It lives with the rest of the skill commands now.
+		//
+		// The old routes stay as hidden aliases: they are in the v0.1 and v0.2
+		// docs and in anything anyone scripted, and a one-line alias is cheaper
+		// than a broken command.
+		r.Describe("install", "Install the bundled agent skill (use `skill install`)")
 		r.Add(&cli.Command{
 			Group:    "install",
-			Summary:  "Install the bundled agent skill",
-			Args:     "--skills [--json]",
-			Examples: []string{"aos install --skills"},
+			Summary:  "Deprecated alias for `skill install`",
+			Args:     "[--skills] [--json]",
+			Examples: []string{"aos skill install"},
+			Hidden:   true,
 			Run:      runInstall,
 		})
 
-		r.Describe("uninstall", "Remove what this binary installed")
+		r.Describe("uninstall", "Remove the installed agent skill (use `skill uninstall`)")
 		r.Add(&cli.Command{
 			Group:    "uninstall",
-			Summary:  "Remove the installed agent skill",
-			Args:     "--skills [--json]",
-			Examples: []string{"aos uninstall --skills"},
+			Summary:  "Deprecated alias for `skill uninstall`",
+			Args:     "[--skills] [--json]",
+			Examples: []string{"aos skill uninstall"},
+			Hidden:   true,
 			Run:      runUninstall,
 		})
 
 		r.Describe("skill", "The agent skill bundled in this binary")
 		r.Add(
+			&cli.Command{
+				Group: "skill", Name: "install",
+				Summary:  "Install the bundled agent skill for every agent on this machine",
+				Args:     "[--json]",
+				Examples: []string{"aos skill install"},
+				Run:      runInstall,
+			},
+			&cli.Command{
+				Group: "skill", Name: "uninstall",
+				Summary:  "Remove the installed agent skill",
+				Args:     "[--json]",
+				Examples: []string{"aos skill uninstall"},
+				Run:      runUninstall,
+			},
 			&cli.Command{
 				Group: "skill", Name: "show",
 				Summary:  "Print the bundled skill without installing it",
@@ -48,7 +67,7 @@ func init() {
 			},
 			&cli.Command{
 				Group: "skill", Name: "path",
-				Summary:  "Print where `install --skills` would write",
+				Summary:  "Print where `skill install` would write",
 				Examples: []string{"aos skill path"},
 				Run: func(c *cli.Ctx, _ []string) error {
 					hosts, err := skill.Hosts(c.Env)
@@ -73,11 +92,9 @@ func runInstall(c *cli.Ctx, args []string) error {
 	if err := set.Reject("skills", "json"); err != nil {
 		return err
 	}
-	// Requiring --skills keeps the verb honest: `install` on its own should not
-	// guess what to install, and there will be more than one thing eventually.
-	if !set.Has("skills") {
-		return fmt.Errorf("say what to install: `aos install --skills`")
-	}
+	// `--skills` is still accepted, and ignored: `skill install` already says
+	// what it installs, and the flag is in every doc and script written against
+	// the old route.
 
 	results, err := skill.Install(c.Env)
 	if err != nil {
@@ -94,10 +111,6 @@ func runUninstall(c *cli.Ctx, args []string) error {
 	if err := set.Reject("skills", "json"); err != nil {
 		return err
 	}
-	if !set.Has("skills") {
-		return fmt.Errorf("say what to remove: `aos uninstall --skills`")
-	}
-
 	results, err := skill.Uninstall(c.Env)
 	if err != nil {
 		return err

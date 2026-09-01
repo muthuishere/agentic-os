@@ -12,12 +12,48 @@
 //      one lists the real commands, straight from the generated registry.
 
 const VW = 1600, VH = 1000;
-const INK   = "#1c1b19";
-const MUTED = "#8a857c";
-const HAIR  = "#d6d2c8";
-const CARD  = "#ffffff";
-const ACC   = "#e08a1e";          // orange accent
-const DOT   = "#4a5cd0";          // travelling dot blue
+
+// One palette per scheme, taken from the docs theme tokens so the landing page
+// and the documentation read as the same product. Dark is the default there, so
+// it is the default here; the page follows the reader's system setting rather
+// than insisting on one look.
+const PALETTES = {
+  dark: {
+    page:"#0f0e0c", plate:"#161512", card:"#1f1e1b", panel:"#1b1a17",
+    ink:"#f4f3ef", muted:"#8a857c", dim:"#a8a299", faint:"#6f6a61",
+    hair:"#2b2926", hair2:"#302d29", panelEdge:"#2b2926", rule:"#2b2926",
+    num:"#514c44", bullet:"#4f4a42", subtle:"#262420",
+    codeBg:"#0b0a09", codeInk:"#e6e2d9", codeInk2:"#c4bfb4",
+    acc:"#e08a1e", accEdge:"#6b4a15", accInk:"#e8a44f", accInk2:"#c08f4a",
+    accNote:"#a8895c", accFill:"#241a0b", accFill2:"#241a0b", accFill3:"#2e2210",
+    surfaceEdge:"#5c4318", surfaceGlow:"rgba(224,138,30,.18)",
+    chipInk:"#c4bfb4", routeInk:"#e6e2d9",
+    hover:"#262420", hoverEdge:"#3d3a35",
+    edge:"#3a352c", thin:"#2f2b25", arrow:"#5a544a", hot:"#f2c489",
+    dotRGB:"232,164,79", tick:"#7fd6a0",
+    statusBg:"#242220", sep:"#575249", green:"#7fd6a0", amber:"#e0a955",
+    shadow:"rgba(0,0,0,.55)", shadowSoft:"rgba(0,0,0,.45)", shadowBar:"rgba(0,0,0,.5)",
+  },
+  light: {
+    page:"#f4f3ef", plate:"#fbfaf8", card:"#ffffff", panel:"#fbfaf7",
+    ink:"#1c1b19", muted:"#8a857c", dim:"#6f6a61", faint:"#b0aa9e",
+    hair:"#d6d2c8", hair2:"#e6e2d9", panelEdge:"#e2ddd2", rule:"#eeebe4",
+    num:"#b8b3a8", bullet:"#d9d4c9", subtle:"#f3f1ec",
+    codeBg:"#151412", codeInk:"#e6e2d9", codeInk2:"#4a463f",
+    acc:"#e08a1e", accEdge:"#e3b877", accInk:"#8a5a12", accInk2:"#a07a3a",
+    accNote:"#8a7a5a", accFill:"#fbf4e8", accFill2:"#fdf6ea", accFill3:"#fdf3e3",
+    surfaceEdge:"#c3c9ee", surfaceGlow:"rgba(74,92,208,.16)",
+    chipInk:"#5e594f", routeInk:"#3d3a34",
+    hover:"#f7f5f0", hoverEdge:"#c9c4b8",
+    edge:"#cfcabf", thin:"#ddd8cd", arrow:"#b6b0a4", hot:"#b9c0ea",
+    dotRGB:"74,92,208", tick:"#9aa2dd",
+    statusBg:"#151412", sep:"#5a564e", green:"#7fd6a0", amber:"#e0a955",
+    shadow:"rgba(30,28,24,.10)", shadowSoft:"rgba(30,28,24,.08)", shadowBar:"rgba(0,0,0,.22)",
+  },
+};
+
+const darkQuery = matchMedia("(prefers-color-scheme: dark)");
+let P = PALETTES[darkQuery.matches ? "dark" : "light"];
 
 const SANS = '-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif';
 const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
@@ -58,7 +94,7 @@ function roundRect(x,y,w,h,r){
   ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
   ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
 }
-function text(str,x,y,{size=14,weight=400,color=INK,font=SANS,align="left",spacing=0}={}){
+function text(str,x,y,{size=14,weight=400,color=P.ink,font=SANS,align="left",spacing=0}={}){
   const p=T(V(x,y));
   ctx.font = `${weight} ${S(size)}px ${font}`;
   ctx.fillStyle=color; ctx.textAlign=align; ctx.textBaseline="alphabetic";
@@ -218,45 +254,45 @@ function edgeList(t){
 function drawCard(c, hot){
   const p=T(V(c.x,c.y));
   ctx.save();
-  ctx.shadowColor="rgba(30,28,24,.10)"; ctx.shadowBlur=S(18); ctx.shadowOffsetY=S(5);
-  ctx.fillStyle=CARD; roundRect(p.x,p.y,S(c.w),S(c.h),S(12)); ctx.fill();
+  ctx.shadowColor=P.shadow; ctx.shadowBlur=S(18); ctx.shadowOffsetY=S(5);
+  ctx.fillStyle=P.card; roundRect(p.x,p.y,S(c.w),S(c.h),S(12)); ctx.fill();
   ctx.restore();
-  ctx.strokeStyle=hot?"#b9c0ea":HAIR; ctx.lineWidth=Math.max(1,S(hot?1.8:1));
+  ctx.strokeStyle=hot?P.hot:P.hair; ctx.lineWidth=Math.max(1,S(hot?1.8:1));
   roundRect(p.x,p.y,S(c.w),S(c.h),S(12)); ctx.stroke();
 
-  text(c.n, c.x+18, c.y+34, {size:19, weight:300, color:"#b8b3a8", font:MONO});
+  text(c.n, c.x+18, c.y+34, {size:19, weight:300, color:P.num, font:MONO});
 
   const ip=T(V(c.x+18,c.y+48));
-  ctx.fillStyle="#f3f1ec"; roundRect(ip.x,ip.y,S(26),S(26),S(7)); ctx.fill();
-  ctx.strokeStyle="#e6e2d9"; ctx.lineWidth=Math.max(1,S(1));
+  ctx.fillStyle=P.subtle; roundRect(ip.x,ip.y,S(26),S(26),S(7)); ctx.fill();
+  ctx.strokeStyle=P.hair2; ctx.lineWidth=Math.max(1,S(1));
   roundRect(ip.x,ip.y,S(26),S(26),S(7)); ctx.stroke();
-  text(c.icon, c.x+31, c.y+66, {size:13, color:"#6f6a61", align:"center", font:MONO});
+  text(c.icon, c.x+31, c.y+66, {size:13, color:P.dim, align:"center", font:MONO});
 
   text(c.title, c.x+54, c.y+67, {size:16.5, weight:700});
-  text(c.detail, c.x+18, c.y+c.h-16, {size:12, color:MUTED});
+  text(c.detail, c.x+18, c.y+c.h-16, {size:12, color:P.muted});
 }
 
 function drawSurface(){
   const p=T(V(surface.x,surface.y));
   ctx.save();
-  ctx.shadowColor="rgba(74,92,208,.16)"; ctx.shadowBlur=S(30); ctx.shadowOffsetY=S(6);
-  ctx.fillStyle=CARD; roundRect(p.x,p.y,S(surface.w),S(surface.h),S(14)); ctx.fill();
+  ctx.shadowColor=P.surfaceGlow; ctx.shadowBlur=S(30); ctx.shadowOffsetY=S(6);
+  ctx.fillStyle=P.card; roundRect(p.x,p.y,S(surface.w),S(surface.h),S(14)); ctx.fill();
   ctx.restore();
-  ctx.strokeStyle="#c3c9ee"; ctx.lineWidth=S(3);
+  ctx.strokeStyle=P.surfaceEdge; ctx.lineWidth=S(3);
   roundRect(p.x,p.y,S(surface.w),S(surface.h),S(14)); ctx.stroke();
 
   const cx = surface.x + surface.w/2;
-  text("03", surface.x+20, surface.y+38, {size:19, weight:300, color:"#b8b3a8", font:MONO});
+  text("03", surface.x+20, surface.y+38, {size:19, weight:300, color:P.num, font:MONO});
   text("One command surface", cx, surface.y+84, {size:18, weight:700, align:"center"});
-  text(SURFACE_LABEL, cx, surface.y+106, {size:12, color:MUTED, align:"center"});
+  text(SURFACE_LABEL, cx, surface.y+106, {size:12, color:P.muted, align:"center"});
 
   const bw = surface.w-40, ry = surface.y+126;
   const r=T(V(surface.x+20,ry));
-  ctx.fillStyle="#fbf4e8"; roundRect(r.x,r.y,S(bw),S(50),S(9)); ctx.fill();
-  ctx.strokeStyle="#e3b877"; ctx.lineWidth=Math.max(1,S(1.4));
+  ctx.fillStyle=P.accFill; roundRect(r.x,r.y,S(bw),S(50),S(9)); ctx.fill();
+  ctx.strokeStyle=P.accEdge; ctx.lineWidth=Math.max(1,S(1.4));
   roundRect(r.x,r.y,S(bw),S(50),S(9)); ctx.stroke();
-  text("one Runner, one code path", cx, ry+21, {size:12.5, weight:700, color:"#8a5a12", align:"center"});
-  text("no second implementation", cx, ry+38, {size:11, color:"#a07a3a", align:"center"});
+  text("one Runner, one code path", cx, ry+21, {size:12.5, weight:700, color:P.accInk, align:"center"});
+  text("no second implementation", cx, ry+38, {size:11, color:P.accInk2, align:"center"});
 
   const gates = ["no display? refused, with a reason",
                  "delete a root or $HOME? refused",
@@ -264,146 +300,146 @@ function drawSurface(){
   gates.forEach((g,i)=>{
     const y = surface.y+198+i*20;
     const d=T(V(surface.x+22,y-4));
-    ctx.fillStyle="#d9d4c9"; ctx.beginPath(); ctx.arc(d.x,d.y,S(2.4),0,7); ctx.fill();
-    text(ellipsize(g, bw-22, 11), surface.x+34, y, {size:11, color:"#6f6a61"});
+    ctx.fillStyle=P.bullet; ctx.beginPath(); ctx.arc(d.x,d.y,S(2.4),0,7); ctx.fill();
+    text(ellipsize(g, bw-22, 11), surface.x+34, y, {size:11, color:P.dim});
   });
 
   text("SAFETY IS STRUCTURE", cx, surface.y+surface.h-14,
-    {size:9, color:MUTED, align:"center", weight:700, spacing:1.4});
+    {size:9, color:P.muted, align:"center", weight:700, spacing:1.4});
 }
 
 // The heart of the reordering: the skill is the headline path, MCP is the
 // footnote. Both show the same call so the claim above stays legible.
 function drawWays(t){
   const p=T(V(ways.x,ways.y));
-  ctx.fillStyle="#fbfaf7"; roundRect(p.x,p.y,S(ways.w),S(ways.h),S(14)); ctx.fill();
-  ctx.strokeStyle="#e2ddd2"; ctx.lineWidth=Math.max(1,S(1));
+  ctx.fillStyle=P.panel; roundRect(p.x,p.y,S(ways.w),S(ways.h),S(14)); ctx.fill();
+  ctx.strokeStyle=P.panelEdge; ctx.lineWidth=Math.max(1,S(1));
   roundRect(p.x,p.y,S(ways.w),S(ways.h),S(14)); ctx.stroke();
 
   text("two ways in", ways.x+22, ways.y+36, {size:16.5, weight:700});
   text("the skill first · MCP second", ways.x+ways.w-22, ways.y+36,
-    {size:11.5, color:MUTED, align:"right"});
+    {size:11.5, color:P.muted, align:"right"});
 
   const bw = ways.w-44;
 
   // --- primary: the agent skill
   const ay = ways.y+56;
   const a=T(V(ways.x+22,ay));
-  ctx.fillStyle="#fdf6ea"; roundRect(a.x,a.y,S(bw),S(104),S(10)); ctx.fill();
-  ctx.strokeStyle="#e3b877"; ctx.lineWidth=Math.max(1,S(1.6));
+  ctx.fillStyle=P.accFill2; roundRect(a.x,a.y,S(bw),S(104),S(10)); ctx.fill();
+  ctx.strokeStyle=P.accEdge; ctx.lineWidth=Math.max(1,S(1.6));
   roundRect(a.x,a.y,S(bw),S(104),S(10)); ctx.stroke();
 
   const pill=T(V(ways.x+36,ay+14));
   const pw = measure("PRIMARY",9,700,MONO)+18;
-  ctx.fillStyle=ACC; roundRect(pill.x,pill.y,S(pw),S(17),S(8.5)); ctx.fill();
+  ctx.fillStyle=P.acc; roundRect(pill.x,pill.y,S(pw),S(17),S(8.5)); ctx.fill();
   text("PRIMARY", ways.x+36+pw/2, ay+26, {size:9, color:"#fff", font:MONO, weight:700, align:"center", spacing:1});
-  text("agent skill", ways.x+42+pw+10, ay+27, {size:13.5, weight:700, color:"#8a5a12"});
-  text(`${BIN} install --skills`, ways.x+bw-2, ay+27,
-    {size:11.5, color:"#a07a3a", font:MONO, align:"right"});
+  text("agent skill", ways.x+42+pw+10, ay+27, {size:13.5, weight:700, color:P.accInk});
+  text(`${BIN} skill install`, ways.x+bw-2, ay+27,
+    {size:11.5, color:P.accInk2, font:MONO, align:"right"});
 
   const cmd=T(V(ways.x+36,ay+40));
-  ctx.fillStyle="#151412"; roundRect(cmd.x,cmd.y,S(bw-28),S(30),S(7)); ctx.fill();
+  ctx.fillStyle=P.codeBg; roundRect(cmd.x,cmd.y,S(bw-28),S(30),S(7)); ctx.fill();
   text(`$ ${BIN} window move Chrome --zone=1B`, ways.x+48, ay+60,
-    {size:12, color:"#e6e2d9", font:MONO});
+    {size:12, color:P.codeInk, font:MONO});
   text("nothing running · nothing to connect to · works over ssh", ways.x+36, ay+90,
-    {size:11.5, color:"#8a7a5a"});
+    {size:11.5, color:P.accNote});
 
   // --- secondary: MCP
   const my = ways.y+176;
   const m=T(V(ways.x+22,my));
-  ctx.fillStyle=CARD; roundRect(m.x,m.y,S(bw),S(74),S(10)); ctx.fill();
-  ctx.strokeStyle="#e6e2d9"; ctx.lineWidth=Math.max(1,S(1));
+  ctx.fillStyle=P.card; roundRect(m.x,m.y,S(bw),S(74),S(10)); ctx.fill();
+  ctx.strokeStyle=P.hair2; ctx.lineWidth=Math.max(1,S(1));
   roundRect(m.x,m.y,S(bw),S(74),S(10)); ctx.stroke();
 
-  text("MCP", ways.x+36, my+24, {size:11, color:"#6f6a61", font:MONO, weight:700, spacing:1.2});
+  text("MCP", ways.x+36, my+24, {size:11, color:P.dim, font:MONO, weight:700, spacing:1.2});
   text("for agents that want typed tools", ways.x+36+measure("MCP",11,700,MONO)+14, my+24,
-    {size:11.5, color:MUTED});
-  text(`${BIN} serve mcp`, ways.x+bw-2, my+24, {size:11.5, color:MUTED, font:MONO, align:"right"});
+    {size:11.5, color:P.muted});
+  text(`${BIN} serve mcp`, ways.x+bw-2, my+24, {size:11.5, color:P.muted, font:MONO, align:"right"});
 
   const q=T(V(ways.x+36,my+34));
-  ctx.fillStyle="#f3f1ec"; roundRect(q.x,q.y,S(bw-28),S(28),S(7)); ctx.fill();
+  ctx.fillStyle=P.subtle; roundRect(q.x,q.y,S(bw-28),S(28),S(7)); ctx.fill();
   text('window_move {"app":"Chrome","zone":"1B"}', ways.x+48, my+53,
-    {size:11.5, color:"#4a463f", font:MONO});
+    {size:11.5, color:P.codeInk2, font:MONO});
 }
 
 function drawPlatforms(){
   platforms.forEach((pf,i)=>{
     const p=T(V(PX,pf.y));
     ctx.save();
-    ctx.shadowColor="rgba(30,28,24,.08)"; ctx.shadowBlur=S(14); ctx.shadowOffsetY=S(4);
-    ctx.fillStyle=CARD; roundRect(p.x,p.y,S(PW),S(PH),S(12)); ctx.fill();
+    ctx.shadowColor=P.shadowSoft; ctx.shadowBlur=S(14); ctx.shadowOffsetY=S(4);
+    ctx.fillStyle=P.card; roundRect(p.x,p.y,S(PW),S(PH),S(12)); ctx.fill();
     ctx.restore();
-    ctx.strokeStyle=HAIR; ctx.lineWidth=Math.max(1,S(1));
+    ctx.strokeStyle=P.hair; ctx.lineWidth=Math.max(1,S(1));
     roundRect(p.x,p.y,S(PW),S(PH),S(12)); ctx.stroke();
 
     text(String(i+4).padStart(2,"0"), PX+18, pf.y+28,
-      {size:16, weight:300, color:"#b8b3a8", font:MONO});
+      {size:16, weight:300, color:P.num, font:MONO});
     text(pf.name, PX+18, pf.y+58, {size:18, weight:700});
-    text(pf.sub, PX+PW-18, pf.y+58, {size:11, color:MUTED, font:MONO, align:"right"});
+    text(pf.sub, PX+PW-18, pf.y+58, {size:11, color:P.muted, font:MONO, align:"right"});
 
     const tp=T(V(PX+PW-24, pf.y+24));
-    ctx.strokeStyle="#9aa2dd"; ctx.lineWidth=S(1.6); ctx.lineCap="round";
+    ctx.strokeStyle=P.tick; ctx.lineWidth=S(1.6); ctx.lineCap="round";
     ctx.beginPath();
     ctx.moveTo(tp.x-S(6), tp.y); ctx.lineTo(tp.x-S(2), tp.y+S(5)); ctx.lineTo(tp.x+S(6), tp.y-S(6));
     ctx.stroke(); ctx.lineCap="butt";
   });
   text("ONE BACKEND EACH · VERIFIED ON ALL THREE", PX+PW, platforms[2].y+PH+26,
-    {size:9, color:MUTED, align:"right", weight:700, spacing:1.4});
+    {size:9, color:P.muted, align:"right", weight:700, spacing:1.4});
 }
 
 // ------------------------------------------------------- band B: every group
 function drawGrid(t){
-  text("07", grid.x, grid.y-58, {size:19, weight:300, color:"#b8b3a8", font:MONO});
+  text("07", grid.x, grid.y-58, {size:19, weight:300, color:P.num, font:MONO});
   text("every command", grid.x+38, grid.y-58, {size:17, weight:700});
   text("click a group — these are the real routes, generated from the binary",
-    grid.x+38+measure("every command",17,700)+16, grid.y-58, {size:12, color:MUTED});
+    grid.x+38+measure("every command",17,700)+16, grid.y-58, {size:12, color:P.muted});
 
   GROUPS.forEach((g,i)=>{
     const b = chipBox(i);
     const on = i === selected, hov = i === hovered;
     const p=T(V(b.x,b.y));
-    ctx.fillStyle = on ? "#fdf3e3" : (hov ? "#f7f5f0" : CARD);
+    ctx.fillStyle = on ? P.accFill3 : (hov ? P.hover : P.card);
     roundRect(p.x,p.y,S(b.w),S(b.h),S(8)); ctx.fill();
-    ctx.strokeStyle = on ? ACC : (hov ? "#c9c4b8" : "#e6e2d9");
+    ctx.strokeStyle = on ? P.acc : (hov ? P.hoverEdge : P.hair2);
     ctx.lineWidth = Math.max(1,S(on?1.8:1));
     roundRect(p.x,p.y,S(b.w),S(b.h),S(8)); ctx.stroke();
 
     text(g.name, b.x+12, b.y+22,
-      {size:12.5, weight:on?700:500, color:on?"#8a5a12":"#5e594f", font:MONO});
+      {size:12.5, weight:on?700:500, color:on?P.accInk:P.chipInk, font:MONO});
     text(String(g.count), b.x+b.w-12, b.y+22,
-      {size:11, color:on?"#a07a3a":"#b0aa9e", align:"right", font:MONO});
+      {size:11, color:on?P.accInk2:P.faint, align:"right", font:MONO});
     // a quiet dot marks a group that needs a screen
     if(g.gui){
       const d=T(V(b.x+b.w-26,b.y+17));
-      ctx.fillStyle = on ? "#e3b877" : "#ddd8cd";
+      ctx.fillStyle = on ? P.accEdge : P.thin;
       ctx.beginPath(); ctx.arc(d.x,d.y,S(2.6),0,7); ctx.fill();
     }
   });
 
   const last = chipBox(GROUPS.length-1);
-  text("● needs a display", grid.x, last.y+last.h+26, {size:11, color:MUTED});
+  text("● needs a display", grid.x, last.y+last.h+26, {size:11, color:P.muted});
   text(pinned ? "pinned — click again or press Esc to resume the tour"
               : "touring · click to pin · arrow keys to move",
-    grid.x+140, last.y+last.h+26, {size:11, color:"#b0aa9e"});
+    grid.x+140, last.y+last.h+26, {size:11, color:P.faint});
 }
 
 function drawDetail(){
   const g = GROUPS[selected];
   const p=T(V(detail.x,detail.y));
   ctx.save();
-  ctx.shadowColor="rgba(30,28,24,.10)"; ctx.shadowBlur=S(20); ctx.shadowOffsetY=S(6);
-  ctx.fillStyle=CARD; roundRect(p.x,p.y,S(detail.w),S(detail.h),S(14)); ctx.fill();
+  ctx.shadowColor=P.shadow; ctx.shadowBlur=S(20); ctx.shadowOffsetY=S(6);
+  ctx.fillStyle=P.card; roundRect(p.x,p.y,S(detail.w),S(detail.h),S(14)); ctx.fill();
   ctx.restore();
-  ctx.strokeStyle="#e3b877"; ctx.lineWidth=Math.max(1,S(1.6));
+  ctx.strokeStyle=P.accEdge; ctx.lineWidth=Math.max(1,S(1.6));
   roundRect(p.x,p.y,S(detail.w),S(detail.h),S(14)); ctx.stroke();
   if(!g) return;
 
   text(`${BIN} ${g.name}`, detail.x+22, detail.y+40, {size:19, weight:700, font:MONO});
   text(`${g.count} command${g.count===1?"":"s"}`, detail.x+detail.w-22, detail.y+40,
-    {size:12, color:MUTED, align:"right", font:MONO});
+    {size:12, color:P.muted, align:"right", font:MONO});
 
   const rule=T(V(detail.x+22,detail.y+54));
-  ctx.strokeStyle="#eeebe4"; ctx.lineWidth=Math.max(1,S(1));
+  ctx.strokeStyle=P.rule; ctx.lineWidth=Math.max(1,S(1));
   ctx.beginPath(); ctx.moveTo(rule.x,rule.y); ctx.lineTo(rule.x+S(detail.w-44),rule.y); ctx.stroke();
 
   const rowH = 27, top = detail.y+78;
@@ -413,17 +449,17 @@ function drawDetail(){
     // a group default is invoked as the bare group name
     const route = c.name ? `${g.name} ${c.name}` : g.name;
     const rw = measure(route,12.5,600,MONO);
-    text(route, detail.x+22, y, {size:12.5, weight:600, color:"#3d3a34", font:MONO});
+    text(route, detail.x+22, y, {size:12.5, weight:600, color:P.routeInk, font:MONO});
     if(c.gui){
       const d=T(V(detail.x+30+rw, y-4));
-      ctx.fillStyle="#e3b877"; ctx.beginPath(); ctx.arc(d.x,d.y,S(2.4),0,7); ctx.fill();
+      ctx.fillStyle=P.accEdge; ctx.beginPath(); ctx.arc(d.x,d.y,S(2.4),0,7); ctx.fill();
     }
     text(ellipsize(c.summary, detail.w-44, 11.5), detail.x+22, y+14,
-      {size:11.5, color:MUTED});
+      {size:11.5, color:P.muted});
   });
   if(g.commands.length > max){
     text(`+${g.commands.length-max} more`, detail.x+22, top+max*rowH,
-      {size:11.5, color:"#b0aa9e"});
+      {size:11.5, color:P.faint});
   }
 }
 
@@ -433,13 +469,13 @@ function drawEdges(t){
     const [p1,p2]=ctrl(p0,p3,e.bend||0);
     const A=T(p0),B=T(p1),C=T(p2),D=T(p3);
 
-    ctx.strokeStyle = e.hot ? "#b9c0ea" : (e.thin ? "#ddd8cd" : "#cfcabf");
+    ctx.strokeStyle = e.hot ? P.hot : (e.thin ? P.thin : P.edge);
     ctx.lineWidth = Math.max(1, S(e.hot ? 1.8 : (e.thin ? 1 : 1.3)));
     ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.bezierCurveTo(B.x,B.y,C.x,C.y,D.x,D.y); ctx.stroke();
 
     const tg=bezT(p0,p1,p2,p3,1), tip=T(p3), ang=Math.atan2(tg.y,tg.x);
     ctx.save(); ctx.translate(tip.x,tip.y); ctx.rotate(ang);
-    ctx.strokeStyle="#b6b0a4"; ctx.lineWidth=Math.max(1,S(1.4));
+    ctx.strokeStyle=P.arrow; ctx.lineWidth=Math.max(1,S(1.4));
     ctx.beginPath(); ctx.moveTo(-S(8),-S(4.5)); ctx.lineTo(0,0); ctx.lineTo(-S(8),S(4.5)); ctx.stroke();
     ctx.restore();
 
@@ -450,9 +486,9 @@ function drawEdges(t){
       if(e.rev) u=1-u;
       const q=T(bez(p0,p1,p2,p3,u));
       const fade=Math.min(1, Math.sin(Math.PI*Math.min(u,1-u)*2.6)+0.35) * dim;
-      ctx.fillStyle=`rgba(74,92,208,${0.85*fade})`;
+      ctx.fillStyle=`rgba(${P.dotRGB},${0.85*fade})`;
       ctx.beginPath(); ctx.arc(q.x,q.y,S(e.thin?3:4),0,7); ctx.fill();
-      ctx.fillStyle=`rgba(74,92,208,${0.13*fade})`;
+      ctx.fillStyle=`rgba(${P.dotRGB},${0.13*fade})`;
       ctx.beginPath(); ctx.arc(q.x,q.y,S(e.thin?6.5:9),0,7); ctx.fill();
     }
 
@@ -460,7 +496,7 @@ function drawEdges(t){
       const lt=e.lt||0.5, lo=(e.lo===undefined?20:e.lo);
       const m=bez(p0,p1,p2,p3,lt), mt=bezT(p0,p1,p2,p3,lt);
       text(e.label, m.x - mt.y*lo, m.y + mt.x*lo + 4,
-        {size:10.5, color:MUTED, align:"center", weight:600, spacing:1.2});
+        {size:10.5, color:P.muted, align:"center", weight:600, spacing:1.2});
     }
   }
 }
@@ -469,31 +505,31 @@ function drawTitle(){
   // The name is the thing you type. That is the whole idea.
   text(BIN, VW-60, 130, {size:82, weight:800, align:"right", spacing:-1});
   text("One CLI over the machine that an agent drives the way you do.", VW-60, 182,
-    {size:16, color:"#57534b", align:"right"});
+    {size:16, color:P.dim, align:"right"});
   text("Install the skill. Or serve it over MCP.", VW-60, 207,
     {size:16, weight:700, align:"right"});
   text(SURFACE_LABEL + " · macOS · Windows · Linux", VW-60, 231,
-    {size:12, color:ACC, align:"right", weight:700, spacing:.6});
+    {size:12, color:P.acc, align:"right", weight:700, spacing:.6});
 }
 
 function drawStatusBar(t){
   const w=640,h=48,x=60,y=74;
   const p=T(V(x,y));
   ctx.save();
-  ctx.shadowColor="rgba(0,0,0,.22)"; ctx.shadowBlur=S(16); ctx.shadowOffsetY=S(4);
-  ctx.fillStyle="#151412"; roundRect(p.x,p.y,S(w),S(h),S(10)); ctx.fill();
+  ctx.shadowColor=P.shadowBar; ctx.shadowBlur=S(16); ctx.shadowOffsetY=S(4);
+  ctx.fillStyle=P.statusBg; roundRect(p.x,p.y,S(w),S(h),S(10)); ctx.fill();
   ctx.restore();
 
-  const segs=[[BIN,"#e6e2d9"],["|","#5a564e"],[DATA.commands+" commands","#7fd6a0"],
-              ["|","#5a564e"],[DATA.groups+" groups","#e6e2d9"],["|","#5a564e"],
-              ["3 platforms","#e0a955"]];
+  const segs=[[BIN,P.codeInk],["|",P.sep],[DATA.commands+" commands",P.green],
+              ["|",P.sep],[DATA.groups+" groups",P.codeInk],["|",P.sep],
+              ["3 platforms",P.amber]];
   let cx=x+22;
   for(const [s,col] of segs){
     text(s, cx, y+31, {size:14, color:col, font:MONO, weight:600});
     cx += measure(s,14,600,MONO)+10;
   }
   if(Math.floor(t*1.8)%2){
-    const q=T(V(cx+2,y+16)); ctx.fillStyle="#7fd6a0"; ctx.fillRect(q.x,q.y,S(8),S(17));
+    const q=T(V(cx+2,y+16)); ctx.fillStyle=P.green; ctx.fillRect(q.x,q.y,S(8),S(17));
   }
 }
 
@@ -503,10 +539,10 @@ function drawChips(){
   for(const s of chips){
     const w=measure(s,12,500)+26;
     const p=T(V(x,y));
-    ctx.fillStyle="#fbfaf7"; roundRect(p.x,p.y,S(w),S(30),S(15)); ctx.fill();
-    ctx.strokeStyle="#e2ddd2"; ctx.lineWidth=Math.max(1,S(1));
+    ctx.fillStyle=P.panel; roundRect(p.x,p.y,S(w),S(30),S(15)); ctx.fill();
+    ctx.strokeStyle=P.panelEdge; ctx.lineWidth=Math.max(1,S(1));
     roundRect(p.x,p.y,S(w),S(30),S(15)); ctx.stroke();
-    text(s, x+w/2, y+20, {size:12, color:"#5e594f", align:"center"});
+    text(s, x+w/2, y+20, {size:12, color:P.chipInk, align:"center"});
     x += w+10;
   }
 }
@@ -518,9 +554,9 @@ const fpsEl = document.getElementById("fps");
 
 function draw(t){
   autoSelect(t);
-  ctx.fillStyle="#f4f3ef"; ctx.fillRect(0,0,innerWidth,innerHeight);
+  ctx.fillStyle=P.page; ctx.fillRect(0,0,innerWidth,innerHeight);
   const p=T(V(0,0));
-  ctx.fillStyle="#fbfaf8"; ctx.fillRect(p.x,p.y,S(VW),S(VH));
+  ctx.fillStyle=P.plate; ctx.fillRect(p.x,p.y,S(VW),S(VH));
 
   drawEdges(t);
   drawWays(t);
@@ -541,6 +577,12 @@ function frame(now){
   draw(t);
   requestAnimationFrame(frame);
 }
+
+// Follow the reader's system setting live, the way the docs theme does.
+darkQuery.addEventListener("change", e => {
+  P = PALETTES[e.matches ? "dark" : "light"];
+  if(still) draw(2.0);
+});
 
 if(still){ draw(2.0); addEventListener("resize", ()=>{ resize(); draw(2.0); }); }
 else requestAnimationFrame(frame);

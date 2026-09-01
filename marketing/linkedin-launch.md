@@ -14,7 +14,7 @@ They can't move a window, take a screenshot, read the battery, install a
 package, or find out whether the machine even has a screen. So we hand them a
 raw shell and hope.
 
-I spent the last stretch building **aos** — one CLI over the machine, 95
+I spent the last stretch building **aos** — one CLI over the machine, 100
 commands across 33 groups, identical on macOS, Windows and Linux.
 
 The part I'd push back on if someone else built it: **it leads with an agent
@@ -24,7 +24,7 @@ Everyone is shipping MCP servers. But an agent already has a shell. What it
 lacks isn't a protocol — it's knowing the CLI exists, what the exit codes mean,
 and which commands need a screen. That's a document, not a server.
 
-So `aos install --skills` writes a skill that ships *inside* the binary. No
+So `aos skill install` writes a skill that ships *inside* the binary. No
 port. No process to supervise. Nothing to restart when the laptop wakes up. And
 because it's instructions rather than a connection, it works over `ssh` into any
 machine that has the binary — which is the whole story on servers.
@@ -44,6 +44,11 @@ choco, apt, pacman, yay and dnf.
 
 → **An audit trail.** Hand an agent your machine and you will eventually want
 one question answered: what did it actually do. `aos obs audit --since=24h`.
+
+It also does the unglamorous things agents actually need: `process list/find/kill`,
+`watch file` for change events as JSON lines, `window save` and `window arrange`
+to snapshot a layout and put it back, and shell completions generated from the
+registry so they can't drift.
 
 The shape is stolen, and I'll say so plainly: it's DHH's **omarchy** CLI. Best
 system command centre I've used. I'm not on Arch, I work across three OSes, and
@@ -87,7 +92,7 @@ guesses.
 Agents can write code. Almost none of them can use the computer.
 
 aos: one CLI over the machine — windows, input, screenshots, files, shell
-commands, packages, services. 95 commands, 33 groups, same on macOS, Windows and Linux.
+commands, packages, services. 100 commands, 33 groups, same on macOS, Windows and Linux.
 
 The contrarian bit: it leads with an **agent skill**, not MCP.
 

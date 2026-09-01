@@ -63,13 +63,13 @@ import { Steps } from '@astrojs/starlight/components';
 4. **Hand it to an agent — the skill first.**
 
    ```sh
-   aos install --skills
+   aos skill install
    ```
 
    It writes the agent skill bundled *inside the binary* to `~/.claude/skills/`
    and `~/.agents/skills/`, so the instructions an agent reads can never describe
    a different version than the one installed. `skill show` prints it without
-   installing; `uninstall --skills` removes it.
+   installing; `skill uninstall` removes it.
 
    That is the whole integration. The agent already has a shell, and now it knows
    this CLI exists, what the exit codes mean, and which commands need a screen —

@@ -2,13 +2,14 @@
 name: aos
 description: >
   Drive the machine you are on — macOS, Windows or Linux — through one CLI:
-  windows, mouse and keyboard, screenshots, files, shell commands, packages, network,
+  windows, mouse and keyboard, screenshots, files, processes, shell commands, packages, network,
   audio, clipboard, services, on-screen captions, and a LAN screen-share you can
   watch from a phone. Trigger on: move/resize/focus a window, list windows or
   monitors, take a screenshot, screenshot an app, click, type, press a key
   combination, launch an app, open a URL, read/write/delete a file, run a command
   and capture its output, install a package, check wifi or battery or volume,
-  lock or sleep the machine, watch the clipboard, run something as a service,
+  lock or sleep the machine, list or kill a process, watch a file or the clipboard,
+  run something as a service,
   show a caption on screen, share my screen on the LAN, what can this machine do,
   is this machine set up correctly, expose this machine to an agent over MCP.
 ---
@@ -54,16 +55,18 @@ there is no logged-in session and the desktop commands cannot work at all.
 | see the machine | `system info`, `doctor`, `display list`, `network status`, `battery status` |
 | find a window | `window list`, `window list --app=Chrome`, `window list --json` |
 | place a window | `window move Chrome --zone=1B` · `--at=x,y,w,h` · `--monitor=2` · `window resize Chrome --w=900 --h=500` |
+| save / restore a layout | `window save P` captures every window · `window arrange P` puts them back |
 | focus / wait | `window focus Chrome` · `launch Chrome --wait` · `window wait Chrome --timeout=5000` |
 | capture | `capture screenshot` · `--monitor=2` · `--app=Chrome` · `--region=x,y,w,h` · `--out=path` |
 | click and type | `mouse move X Y` · `mouse click X Y --double` · `key type "text" --app=Chrome` · `key press cmd+shift+s` |
 | files | `file read P --lines=10:40` · `file write P text` · `file list D --json` · `file stat P` · `file delete P --recursive` |
 | run something | `exec capture -- <cmd>` (JSON: stdout, stderr, exit) · `exec run` (streams) · `exec shell "a \| b"` |
+| running processes | `process list --json` · `process find X` · `process kill <pid\|name>` — kill by name refuses when ambiguous |
 | packages | `pkg install X` · `search` · `list` · `upgrade` — one verb set over brew, winget, scoop, choco, apt, pacman, yay, dnf |
 | keep it running | `service create NAME --autostart --now -- <cmd>` · `start` · `status` · `stop` · `remove` · `list` |
 | tell the human | `subtitle show "what I am doing" --seconds=10` — a caption that never steals focus |
 | let them watch | `remote share --monitor=2` — prints a LAN URL; the person opens it on a phone |
-| react to changes | `watch clipboard --max=1` · `watch window --max=1` — one JSON line per event |
+| react to changes | `watch clipboard --max=1` · `watch window --max=1` · `watch file P --recursive --max=1` — one JSON line per event |
 
 `--app` and `--title` both select a window; a bare word is treated as an app name
 and falls back to matching the title, so `window focus Chrome` works everywhere.
