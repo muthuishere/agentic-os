@@ -19,7 +19,7 @@ const VW = 1600, VH = 1000;
 // than insisting on one look.
 const PALETTES = {
   dark: {
-    page:"#0f0e0c", plate:"#161512", card:"#1f1e1b", panel:"#1b1a17",
+    page:"#161512", plate:"#161512", card:"#1f1e1b", panel:"#1b1a17",
     ink:"#f4f3ef", muted:"#8a857c", dim:"#a8a299", faint:"#6f6a61",
     hair:"#2b2926", hair2:"#302d29", panelEdge:"#2b2926", rule:"#2b2926",
     num:"#514c44", bullet:"#4f4a42", subtle:"#262420",
@@ -35,7 +35,7 @@ const PALETTES = {
     shadow:"rgba(0,0,0,.55)", shadowSoft:"rgba(0,0,0,.45)", shadowBar:"rgba(0,0,0,.5)",
   },
   light: {
-    page:"#f4f3ef", plate:"#fbfaf8", card:"#ffffff", panel:"#fbfaf7",
+    page:"#f4f3ef", plate:"#f4f3ef", card:"#ffffff", panel:"#fbfaf7",
     ink:"#1c1b19", muted:"#8a857c", dim:"#6f6a61", faint:"#b0aa9e",
     hair:"#d6d2c8", hair2:"#e6e2d9", panelEdge:"#e2ddd2", rule:"#eeebe4",
     num:"#b8b3a8", bullet:"#d9d4c9", subtle:"#f3f1ec",
